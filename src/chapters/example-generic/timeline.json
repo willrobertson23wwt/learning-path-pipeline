@@ -1,0 +1,42 @@
+{
+  "audio": "chapters/example-ch1/narration.mp3",
+  "cues": [
+    {
+      "type": "waveform",
+      "start": 0,
+      "duration": 37
+    },
+    {
+      "type": "title",
+      "start": 0.3,
+      "duration": 5.5,
+      "text": "Subnetting Basics",
+      "subtitle": "Chapter 3 · Network Fundamentals"
+    },
+    {
+      "type": "lowerThird",
+      "start": 6.5,
+      "duration": 9,
+      "text": "CIDR Notation",
+      "subtitle": "10.0.0.0/24 — prefix length = network bits"
+    },
+    {
+      "type": "bullets",
+      "start": 16.5,
+      "duration": 16.5,
+      "heading": "Three things to remember",
+      "items": [
+        {"text": "Prefix length defines the network size", "at": 1.2},
+        {"text": "Each additional bit doubles your subnets", "at": 5.0},
+        {"text": "Every subnet reserves 2 addresses (network + broadcast)", "at": 9.0}
+      ]
+    },
+    {
+      "type": "lowerThird",
+      "start": 33.5,
+      "duration": 3.4,
+      "text": "Up next",
+      "subtitle": "Hands-on subnetting exercise"
+    }
+  ]
+}

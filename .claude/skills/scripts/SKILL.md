@@ -9,7 +9,7 @@ follows the slug to (re)generate just that video's chapters
 (e.g. `/scripts powershell-fundamentals 3`).
 
 **Guard:** course content never lives in the template repo. If the current
-project is `remotion-training-graphics` (check the `name` in package.json),
+project is `learning-path-pipeline` (check the `name` in package.json),
 stop and point the user at `/new-path`.
 
 ## Input

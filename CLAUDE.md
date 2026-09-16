@@ -5,9 +5,9 @@
   pipeline. To start a new learning path (Linux, Windows Server, PowerShell,
   Cisco, Azure, anything with a CLI or console to teach):
 
-  1. Scaffold a Remotion project from the remotion-training-graphics template
-     (`/new-path <topic>` in that repo), or copy this repo's `.claude/skills/`
-     and `scripts/` into an existing scaffold.
+  1. In the learning-path-pipeline template repo run `/new-path <topic>`. It
+     copies the toolkit, skills, scripts and the worked example into a sibling
+     folder and inits git.
   2. Replace the title above with the learning path's name.
   3. Fill in the "Platform profile" section below. Everything else in this
      file is platform-neutral and should not need edits.
@@ -17,8 +17,11 @@
 -->
 
 This is a standalone learning-path repo scaffolded from the
-`remotion-training-graphics` template. See that repo for worked examples and
-the complete toolkit documentation.
+`learning-path-pipeline` template. The worked example chapter that came with
+the scaffold (`src/ExampleCh1.tsx`, `src/components/example-ch1/`,
+`public/chapters/example-ch1/`, composition `ExampleCh1`) is the pattern
+reference for every convention below; delete it once the course has chapters
+of its own.
 
 Audio-synced motion graphics for IT-training videos (CBTNuggets/INE style). Each
 "chapter" is built from ElevenLabs narration and rendered as an MP4 (dark
@@ -65,6 +68,8 @@ Keep it short; one line each.
   node` upgrades change it).
 - Always run `npx`/`npm` from this project directory (a stray `npx tsc` outside it
   installs a bogus `tsc` package).
+- `src/index.ts` imports `tailwind.css`; keep it even if no chapter uses
+  Tailwind classes.
 
 ## Commands
 
@@ -150,7 +155,7 @@ there; the folder is gitignored). Overlay .mov files are not delivered.
 promo video (music-synced brand sting, VO slides, WWT end card) — a separate
 workflow from course chapters with its own conventions and asset set
 (`public/labdrop/`); see `.claude/skills/labdrop/SKILL.md`. Worked example:
-`LabDrop` in the template's `src/LabDrop.tsx`.
+`LabDrop` in the Linux Intermediate course repo's `src/LabDrop.tsx`.
 
 **Labs:** each module closes with a hands-on lab authored with `/lab` (guide
 draft), `/lab-review` (documentation-only cleanup before the VM exists) and
@@ -172,12 +177,12 @@ drafting and publish to their own GitHub repo each; the course repo ignores
 
 Two chapter patterns coexist:
 
-- **Generic, data-driven** (template's `src/Chapter.tsx` + `timeline.json` per
-  chapter — copy from the template if needed): a `timeline.json` lists cues
+- **Generic, data-driven** (`src/Chapter.tsx` + a `timeline.json` per chapter;
+  `src/chapters/example-generic/timeline.json` is the shape): a `timeline.json` lists cues
   (`title`, `lowerThird`, `bullets`, `principle`) with `start`/`duration` in
   seconds. Good for simple title/bullet chapters.
-- **Bespoke per-chapter** (the usual choice — worked examples: template's
-  `ScriptCh1.tsx`+, `Chapter2.tsx`+): all panels render inside one
+- **Bespoke per-chapter** (the usual choice — worked example: `src/ExampleCh1.tsx`
+  + `src/components/example-ch1/`): all panels render inside one
   `<Sequence from={offset}>` so `useCurrentFrame()` equals the audio frame, and
   each panel self-gates on a beat-timing table `T` (seconds) in the chapter's
   `kit*.ts`. The reusable terminal toolkit lives at
@@ -223,7 +228,7 @@ The reusable plumbing is `src/components/layout.tsx`:
   override. Keep the `DEFAULT_*` constants in the chapter's `kit*.ts` as the single
   source of truth (also spread into `Root.tsx` `defaultProps`).
 
-Pattern (see the template's `Chapter3.tsx` for the worked example): define `ch3Schema = z.object({...})`
+Pattern (see `exampleCh1Schema` in `src/ExampleCh1.tsx`): define `ch3Schema = z.object({...})`
 with `z.number().min().max().step().describe()` for each position (renders a draggable
 number field) and `z.boolean().describe()` for each show/hide toggle; export
 `ch3Defaults`; pass `schema={ch3Schema}` + `defaultProps={{transparent, ...ch3Defaults}}`
@@ -246,7 +251,7 @@ To bake chosen values back in after tweaking in Studio: update the `DEFAULT_*` c
   additionally gets `<TransitionBackdrop durationInFrames={...} fadeInFrames={0} />`
   (dark fluid loop) behind the `TitleCard`. Both sit behind
   `{transparent ? null : ...}` guards — never in the overlay. Follow the
-  template's chapter wiring pattern in every new chapter.
+  `ExampleCh1` wiring pattern in every new chapter.
 - **Never open on bare backdrop:** every beat table sets `titleIn: 0` and the
   title's `TransitionBackdrop` gets `fadeInFrames={0}`, so frame 0 already shows
   the fluid backdrop with the title springing in — no flash of empty paper

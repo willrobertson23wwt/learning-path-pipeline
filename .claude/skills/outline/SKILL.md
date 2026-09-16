@@ -7,7 +7,7 @@ Create the outline for a new IT-training video course. `$ARGUMENTS` is the cours
 topic (e.g. `/outline PowerShell Fundamentals`). If no topic was given, ask for one.
 
 **Guard:** course content never lives in the template repo. If the current
-project is `remotion-training-graphics` (check the `name` in package.json),
+project is `learning-path-pipeline` (check the `name` in package.json),
 stop and tell the user to run `/new-path <topic>` there first, then run
 `/outline` inside the new learning-path folder.
 

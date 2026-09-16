@@ -8,7 +8,7 @@ Write the companion article for one video or an inclusive range of videos.
 `/article powershell-fundamentals 3` or `/article powershell-fundamentals 1-5`).
 
 **Guard:** course content never lives in the template repo
-(`remotion-training-graphics` in package.json).
+(`learning-path-pipeline` in package.json).
 
 ## Purpose
 

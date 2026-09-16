@@ -18,7 +18,7 @@ This is the user's opt-in fast path: it deliberately skips the usual
 listen-to-the-audio stop between `/audio` and `/video`. Everything else about
 those two skills still applies — read both and follow them.
 
-**Guard:** never run in the template repo (`remotion-training-graphics` in
+**Guard:** never run in the template repo (`learning-path-pipeline` in
 package.json). And the input gate stays: the outline must be
 `status: approved` and the video's chapter scripts must already exist in
 `courses/<slug>/scripts/NN-*/`. If scripts are missing, stop and point at

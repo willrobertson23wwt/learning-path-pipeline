@@ -27,8 +27,8 @@ pipeline inputs into that workflow:
    `narration.transcript.json` (folder from each script's frontmatter). If a
    transcript is missing, run `/audio` first — do not proceed without timings.
 3. For each chapter: map narration cues from the transcript to a beat table,
-   build it using the bespoke schema-driven pattern (see `ScriptCh1`+ for
-   worked examples), register composition IDs `<Prefix>V<N>Ch<M>` /
+   build it using the bespoke schema-driven pattern (see `src/ExampleCh1.tsx` +
+   `src/components/example-ch1/` for the worked example), register composition IDs `<Prefix>V<N>Ch<M>` /
    `<Prefix>V<N>Ch<M>-Overlay` in `src/Root.tsx` (prefix from the outline
    frontmatter, PascalCased).
 4. Keep visual continuity across the video's chapters (shared palette, reused
