@@ -62,10 +62,12 @@ Keep it short; one line each.
 
 ## Environment / gotchas
 
-- **Node is installed via nvm and is NOT on PATH in non-interactive shells.** Prefix
+- **macOS with nvm: Node is NOT on PATH in non-interactive shells.** Prefix
   every command: `export PATH="$HOME/.nvm/versions/node/<version>/bin:$PATH"`
   (check `ls ~/.nvm/versions/node/` for the installed version; `nvm install
-  node` upgrades change it).
+  node` upgrades change it). Windows installs (winget/nvm-windows) put `node`
+  on PATH; no prefix needed there. Delete whichever line doesn't apply to
+  your machine.
 - Always run `npx`/`npm` from this project directory (a stray `npx tsc` outside it
   installs a bogus `tsc` package).
 - `src/index.ts` imports `tailwind.css`; keep it even if no chapter uses
@@ -74,7 +76,7 @@ Keep it short; one line each.
 ## Commands
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/<version>/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/<version>/bin:$PATH"   # macOS + nvm only
 npm run studio                       # live preview editor in the browser
 npx tsc --noEmit                     # typecheck (do this before rendering)
 npx remotion still <Id> out/x.png --frame=N    # fast single-frame verification
@@ -150,6 +152,13 @@ spellings). `/video` and `/produce` write it as part of delivering a video.
 
 **Deliverables go to** `deliverables/` in this repo (copy each chapter's .mp4
 there; the folder is gitignored). Overlay .mov files are not delivered.
+
+**Closing out:** when a course (or a range of its videos) is finished and
+handed to the editor, `/closeout <slug> [N-M]` runs `scripts/closeout.mjs` to
+bundle the deliverable MP4s, source narration and transcripts, scripts and
+articles into one dated zip under `archives/` (gitignored) with a manifest,
+verifies it, and only then, on explicit confirmation, deletes the multi-GB
+`out/` renders for those videos. See `.claude/skills/closeout/SKILL.md`.
 
 **Marketing one-offs:** `/labdrop <learning path>` builds an ATC Lab Drop
 promo video (music-synced brand sting, VO slides, WWT end card) — a separate

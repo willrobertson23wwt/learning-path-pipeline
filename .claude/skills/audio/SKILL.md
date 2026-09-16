@@ -12,9 +12,10 @@ Each chapter script file becomes one ElevenLabs request and one
 
 ## Steps
 
-1. Node is installed via nvm and NOT on PATH in non-interactive shells — prefix
+1. On macOS with nvm, Node is NOT on PATH in non-interactive shells — prefix
    every command per CLAUDE.md:
    `export PATH="$HOME/.nvm/versions/node/<version>/bin:$PATH"`
+   (Windows installs put `node` on PATH; skip this.)
 
 2. Dry-run first and show the user the plan (which files, char counts, rough
    durations): `node scripts/generate-audio.mjs <slug> [video|first-last] --dry-run`
@@ -36,8 +37,9 @@ Each chapter script file becomes one ElevenLabs request and one
 
 5. Report each file's duration (`npx remotion ffmpeg -i <file>` or read the
    transcript JSON) and STOP. The user listens to every track before any video
-   work starts. Suggest `afplay public/chapters/<folder>/narration.mp3` or
-   Remotion Studio for review. Do not start building chapters.
+   work starts. Suggest playing the file (`afplay <file>` on macOS,
+   `Start-Process <file>` on Windows) or Remotion Studio for review. Do not
+   start building chapters.
 
 If the API returns an error, show the response body — quota and voice-ID
 problems are self-explanatory there. The key and voice ID live in `.env`

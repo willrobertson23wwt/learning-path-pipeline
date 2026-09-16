@@ -5,25 +5,191 @@ Claude Code: the Remotion motion-graphics toolkit, the ElevenLabs and
 whisper.cpp helper scripts, the `CLAUDE.md` instruction set, and the
 slash-command skills that take a topic from outline to rendered chapters,
 companion articles, and hands-on lab guides. Built on a Linux course; written
-here so the same pipeline produces a Windows Server, PowerShell, Cisco, or
-cloud learning path without changing the skills.
+so the same pipeline produces a Windows Server, PowerShell, Cisco, or cloud
+learning path without changing the skills.
 
-## Quick start
+Works on macOS and Windows. Setup is about 20 minutes plus download time.
+
+## 1. Install the tools
+
+You need Git, Node.js 22 or newer, Python 3, Google Chrome, and Claude Code.
+Everything else (Remotion, its headless browser, ffmpeg, whisper.cpp)
+installs itself on first use.
+
+### macOS
+
+Open Terminal and run these one at a time.
 
 ```bash
-git clone <this repo> learning-path-pipeline
-cd learning-path-pipeline
-export PATH="$HOME/.nvm/versions/node/$(ls ~/.nvm/versions/node | tail -1)/bin:$PATH"
-npm ci
-cp .env.example .env            # add your ElevenLabs key + voice ID
-npx tsc --noEmit
-npx remotion still ExampleCh1 out/smoke.png --frame=300
+xcode-select --install
 ```
 
-If the still renders, the toolkit works on your machine. Then open a Claude
-Code session here and run `/new-path <topic>`. It copies everything into a
-sibling folder for the new course, sets the package name, and inits git. All
-course work happens in that folder, never in this one.
+That gives you `git`, `make` and `python3` (whisper.cpp compiles from source
+on macOS and needs `make`). If a dialog appears, accept it and wait for it to
+finish before continuing.
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+```
+
+Close and reopen Terminal, then:
+
+```bash
+nvm install 22
+```
+
+```bash
+node -v
+```
+
+Expect `v22.x.x` or newer. Install Chrome if you don't have it (download
+from google.com/chrome, or `brew install --cask google-chrome` if you use
+Homebrew). Then Claude Code:
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Or install the Claude desktop app and use its Code tab. Either way, run
+`claude` once from any folder and sign in.
+
+**The one macOS gotcha:** nvm adds Node to your interactive shell only.
+Claude Code runs commands in a non-interactive shell, so `node` and `npx`
+are not found there. `CLAUDE.md` tells Claude to prefix every command with
+the PATH export shown below; you only need to do it yourself when you run
+commands by hand.
+
+```bash
+export PATH="$HOME/.nvm/versions/node/$(ls ~/.nvm/versions/node | tail -1)/bin:$PATH"
+```
+
+### Windows
+
+Open PowerShell (not as administrator) and run these one at a time.
+
+```powershell
+winget install --id Git.Git -e
+```
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS -e
+```
+
+```powershell
+winget install --id Python.Python.3.12 -e
+```
+
+```powershell
+winget install --id Google.Chrome -e
+```
+
+Close and reopen PowerShell so PATH picks up the new tools, then check:
+
+```powershell
+node -v; git --version; python --version
+```
+
+Expect Node `v22.x.x` or newer. Then Claude Code:
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Or install the Claude desktop app and use its Code tab. Run `claude` once
+from any folder and sign in.
+
+Windows notes: Node installed this way is on PATH everywhere, so ignore the
+nvm PATH line in `CLAUDE.md` (delete it in your course's copy). whisper.cpp
+downloads a prebuilt binary on Windows, no compiler needed. The scripts use
+`tar`, which Windows 10 and 11 ship with.
+
+## 2. Get the repo and check it works
+
+Pick a folder for your learning paths (each course becomes a sibling folder
+next to this one). Then:
+
+macOS:
+
+```bash
+git clone https://github.com/willrobertson23wwt/learning-path-pipeline.git
+```
+
+```bash
+cd learning-path-pipeline && export PATH="$HOME/.nvm/versions/node/$(ls ~/.nvm/versions/node | tail -1)/bin:$PATH" && npm ci
+```
+
+```bash
+cp .env.example .env
+```
+
+```bash
+npx tsc --noEmit && npx remotion still ExampleCh1 out/smoke.png --frame=300
+```
+
+Windows:
+
+```powershell
+git clone https://github.com/willrobertson23wwt/learning-path-pipeline.git
+```
+
+```powershell
+cd learning-path-pipeline; npm ci
+```
+
+```powershell
+Copy-Item .env.example .env
+```
+
+```powershell
+npx tsc --noEmit; npx remotion still ExampleCh1 out/smoke.png --frame=300
+```
+
+The first `remotion` command downloads a headless browser (about 150 MB) and
+takes a minute. If `out/smoke.png` appears and shows a dark editor panel with
+a `cleanup.sh` script in it, the toolkit works on your machine.
+
+Now open `.env` and paste in your ElevenLabs API key and voice ID. The voice
+ID is on the voice's page in ElevenLabs (Voices, then the voice, then ID).
+`.env` is gitignored; every team member uses their own.
+
+Optional but recommended: preview the example in Remotion Studio to see what
+a finished chapter looks like and how the props panel works.
+
+```bash
+npm run studio
+```
+
+## 3. Start a learning path
+
+Open Claude Code in this folder (`claude` in the terminal, or open the folder
+in the desktop app's Code tab) and type:
+
+```
+/new-path PowerShell Fundamentals
+```
+
+Claude copies the toolkit, skills, scripts and worked example into a sibling
+folder (`../powershell-fundamentals/`), sets the package name, asks you for
+the platform details it can't infer (shell and prompt, elevation model, lab
+environment), fills in the Platform profile in that folder's `CLAUDE.md`,
+installs, typechecks, renders the smoke still, and inits git. All course work
+happens in that folder, never in this one.
+
+Then open Claude Code in the new folder and work through the stages. Each
+one writes plain files and stops for your review before the next:
+
+| Stage | Command | Writes | You review |
+|---|---|---|---|
+| 1. Outline | `/outline <topic>` | `courses/<slug>/outline.md` | structure; set `status: approved` when happy |
+| 2. Scripts | `/scripts <slug>` | `courses/<slug>/scripts/NN-<video>/MM-<chapter>.md` | narration text + visual briefs |
+| 3. Audio | `/audio <slug> N` | `public/chapters/<prefix>-vN-chM/narration.mp3` + transcript | listen to every track |
+| 4. Video | `/video <slug> N` | Remotion chapters, `deliverables/*.mp4`, the companion article | watch the MP4s |
+| 3+4 | `/produce <slug> N` | both of the above in one shot | once you trust the scripts |
+| Labs | `/lab <slug> M`, `/lab-review <lab>`, `/lab-topology <lab>` | `labs/<lab-slug>/` guide, internal SETUP/SUPPORT, topology SVG | the guide, then the diagram |
+| Done | `/closeout <slug> [A-B]` | `archives/<slug>-<date>.zip` + manifest; optional render purge | the dry-run plan, then the purge question |
+
+Edit any file and rerun just that stage for one video (`/scripts <slug> 3`,
+`/audio <slug> 3`). Nothing advances automatically.
 
 ## What is in this repo
 
@@ -42,38 +208,25 @@ course work happens in that folder, never in this one.
 | `.claude/skills/lab-review` | `/lab-review <lab-slug>` documentation-only cleanup of a drafted lab before the VM exists. |
 | `.claude/skills/lab-topology` | `/lab-topology <lab-slug>` draws the lab's environment SVG. Includes a single-VM template. |
 | `.claude/skills/labdrop` | `/labdrop <learning path>` builds the ATC Lab Drop promo video. |
+| `.claude/skills/closeout` | `/closeout <slug> [A-B]` zips a finished course's deliverables, narration, scripts and articles with a sha256 manifest, verifies the zip, and on your say-so deletes the multi-GB renders in `out/`. |
 | `src/components/` | The shared toolkit: `theme.ts`, `layout.tsx` (Studio props schema plumbing), `TitleCard`, `ThankYouCard`, `Backdrop` (paper + fluid loop), `HudIcon` (Lottie badges), `terminal/kit.tsx` (`TermWindow`, type-on, pills, easing helpers), `BulletList`, `LowerThird`, `PrinciplePanel`, `Waveform`, `icons/`. |
 | `src/ExampleCh1.tsx`, `src/components/example-ch1/`, `public/chapters/example-ch1/` | One complete worked chapter (bespoke, schema-driven, with its narration and transcript). Renders as `ExampleCh1`. Every convention in `CLAUDE.md` points at it. |
 | `src/Chapter.tsx`, `src/types.ts`, `src/chapters/example-generic/` | The generic data-driven chapter pattern (`timeline.json` of cues) for simple title/bullet chapters. |
 | `src/Root.tsx`, `src/constants.ts`, `src/index.ts` | Composition registry with the `audioMetadata` helper, `FPS` and buffer constants, entry point. |
 | `public/backgrounds/` | The paper texture and dark fluid loop `Backdrop` uses. |
-| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `lab-terminal-shot.py` (portal-look terminal screenshots), `prepare-hud.mjs` (Lottie icon prep). |
+| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `prepare-hud.mjs` (Lottie icon prep). |
 | `package.json`, `package-lock.json`, `tsconfig.json`, `remotion.config.ts`, `.env.example` | Pinned toolchain. zod must stay at 4.3.6 for `@remotion/zod-types`. |
 
-## Prerequisites
+## Also needed, not in the repo
 
-- Node via nvm (the skills spell out the PATH export).
-- An ElevenLabs API key and voice ID in `.env`.
-- whisper.cpp installs itself on the first `transcribe.mjs` run.
-- Google Chrome for `lab-terminal-shot.py` and the topology render check.
-- Adobe Premiere on the editing side; the pipeline delivers MP4s for it.
-- A licensed stock-asset library (Envato or similar) for icons, backdrops,
-  and Lab Drop music; its path goes in `CLAUDE.md`. Not included here.
-
-## How a course starts
-
-1. Here: `/new-path <topic>`. The skill copies the repo (minus `.git`,
-   `node_modules`, `out`, and itself) to `../<slug>/`, sets the package name,
-   fills in the `CLAUDE.md` title and Platform profile from what you tell it,
-   installs, typechecks, renders the smoke still, and inits git.
-2. In the new folder: `/outline <topic>`, review, set `status: approved`.
-3. `/scripts <slug>`, review the narration and visual briefs.
-4. `/audio <slug> N`, listen. `/video <slug> N`, review the MP4s. Or
-   `/produce <slug> N` for both in one shot once you trust the scripts.
-5. `/lab <slug> M` for each module's lab, then `/lab-review` and
-   `/lab-topology`.
-
-Nothing advances automatically. Each stage stops for review.
+- **An ElevenLabs account** with a cloned or chosen voice. Narration is one
+  API request per chapter; a 27-video course is roughly 80 requests.
+- **Adobe Premiere** (or any NLE) on the editing side. The pipeline delivers
+  one MP4 per chapter with the narration baked in; the editor cuts screencast
+  footage between them.
+- **A licensed stock-asset library** (Envato or similar) for extra icons,
+  backdrops, and Lab Drop music. Put its path in `CLAUDE.md`. The prepared
+  Lottie badges the toolkit ships with are enough to start.
 
 ## How vendor-neutrality works
 
@@ -101,6 +254,25 @@ gives one example per family (bash, PowerShell, device CLI):
 What stays WWT-specific on purpose: the ATC Lab Portal access model (one
 browser tab per device), the WWT logo and mkdocs format in labs, the
 `SETUP.md`/`SUPPORT.md` internal files, and the Lab Drop branding.
+
+## Troubleshooting
+
+- **`node: command not found` inside Claude Code on macOS.** The nvm PATH
+  gotcha above. Make sure the export line in `CLAUDE.md` names the Node
+  version you actually have (`ls ~/.nvm/versions/node`).
+- **`npx tsc` installed something and printed nonsense.** You ran it outside
+  the project folder. `cd` in and rerun.
+- **zod version warning on every render.** Something changed `zod` away from
+  `4.3.6`. Run `npm ci` to restore the lockfile's versions.
+- **whisper.cpp build fails on macOS.** Xcode Command Line Tools are missing
+  or half-installed. Rerun `xcode-select --install`.
+- **Chrome not found by `lab-terminal-shot.py` or the topology check.** Set
+  `CHROME` to the browser's full path (the script checks the usual macOS and
+  Windows locations first).
+- **ElevenLabs errors.** The script prints the API's response body; quota and
+  voice-ID mistakes are self-explanatory there. Check `.env`.
+- **Studio props panel shows nothing.** The composition has no `schema`; see
+  `exampleCh1Schema` in `src/ExampleCh1.tsx` for the pattern.
 
 ## Where this came from
 

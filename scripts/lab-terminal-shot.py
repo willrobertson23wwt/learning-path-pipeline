@@ -3,7 +3,7 @@
 
 Matches the look of the hand-taken portal screenshots in labs/*/media:
 787px wide, pure black background, #548b41 text, 16px Menlo at 21.6px line
-height, block cursor after the final prompt. Uses headless Google Chrome.
+height, block cursor after the final prompt. Uses headless Google Chrome (macOS, Windows, Linux; override with $CHROME).
 
 usage:
   scripts/lab-terminal-shot.py OUT.png < lines.txt
@@ -12,9 +12,27 @@ usage:
 Every argument (or stdin line) is one terminal line, printed verbatim. End with
 a bare prompt line (e.g. "labuser@client01:~$ ") to get the cursor after it.
 """
-import html, pathlib, subprocess, sys, tempfile
+import html, os, pathlib, shutil, subprocess, sys, tempfile
 
-CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+def find_chrome():
+    """Google Chrome binary: $CHROME wins, then the platform's usual locations."""
+    if os.environ.get("CHROME"):
+        return os.environ["CHROME"]
+    candidates = [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    for name in ("google-chrome", "google-chrome-stable", "chrome", "chromium"):
+        if shutil.which(name):
+            return shutil.which(name)
+    sys.exit("Google Chrome not found. Install it or set CHROME=/path/to/chrome.")
+
+CHROME = find_chrome()
 WIDTH, LINE_H, FONT_PX = 787, 21.6, 16
 FG, BG = "#548b41", "#000"
 

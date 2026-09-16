@@ -92,13 +92,17 @@ strokes and leaves a clean 1.5px outline.
 Chrome at 2x and READ the PNG:
 
 ```bash
+# macOS (Windows: "C:\Program Files\Google\Chrome\Application\chrome.exe";
+# or whatever $CHROME points at — same flags on both)
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
   --disable-gpu --hide-scrollbars --force-device-scale-factor=2 \
   --window-size=<W>,<H> --screenshot=<scratchpad>/topology.png \
   "file://$PWD/labs/<lab-slug>/media/environment/lab-topology.svg"
 ```
 
-(`<W>,<H>` = the SVG's `width`/`height`.) Also `xmllint --noout` the file.
+(`<W>,<H>` = the SVG's `width`/`height`.) Also check the file is well-formed
+XML (`xmllint --noout` on macOS/Linux, or `python3 -c "import
+xml.dom.minidom,sys; xml.dom.minidom.parse(sys.argv[1])" <file>` anywhere).
 Look for: text spilling out of an icon or card, a label crossing a line, rows
 off-center, one-sided dead space. Fix and re-render until clean, then show the
 user the render and STOP for review. Iterate on their feedback the same way.

@@ -2,9 +2,10 @@
 node_modules/
 whisper.cpp/
 
-# Rendered output and the copies handed to the editor
+# Rendered output, the copies handed to the editor, and close-out zips
 out/
 deliverables/
+archives/
 
 # Secrets — every team member uses their own .env (see .env.example)
 .env
