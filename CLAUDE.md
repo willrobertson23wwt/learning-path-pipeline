@@ -171,6 +171,9 @@ draft), `/lab-review` (documentation-only cleanup before the VM exists) and
 `/lab-topology` (the environment diagram). Labs live in `labs/<slug>/` while
 drafting and publish to their own GitHub repo each; the course repo ignores
 `labs/`.
+Once a lab is reviewed, `/lab-build <lab-slug>` plans the vCloud Director vApp for it
+in Lab Builder (a separate repo: golden images, networks, gateway VM, edge firewall from
+SETUP.md's table) and stops at `terraform plan`; the user builds from there.
 
 ## Per-chapter workflow
 

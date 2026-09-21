@@ -186,6 +186,7 @@ one writes plain files and stops for your review before the next:
 | 4. Video | `/video <slug> N` | Remotion chapters, `deliverables/*.mp4`, the companion article | watch the MP4s |
 | 3+4 | `/produce <slug> N` | both of the above in one shot | once you trust the scripts |
 | Labs | `/lab <slug> M`, `/lab-review <lab>`, `/lab-topology <lab>` | `labs/<lab-slug>/` guide, internal SETUP/SUPPORT, topology SVG | the guide, then the diagram |
+| Lab build | `/lab-build <lab>` | `lab.yaml` + `PLAN.md` in [Lab Builder](https://github.com/willrobertson23wwt/Lab-Builder) and a `terraform plan` of the vApp | the plan; you run the build |
 | Done | `/closeout <slug> [A-B]` | `archives/<slug>-<date>.zip` + manifest; optional render purge | the dry-run plan, then the purge question |
 
 Edit any file and rerun just that stage for one video (`/scripts <slug> 3`,

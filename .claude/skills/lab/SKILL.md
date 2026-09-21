@@ -71,7 +71,8 @@ the `labdocs/docs/` folder of the WWT lab repo scaffold):
   All are empty except `media/index/`, which always holds the WWT logo above.
 
 Then STOP for user review. Do not create terraform/ansible provisioning — the
-guide only. Screenshots are captured by the user later: reference them as
+guide only; the vApp is planned later with `/lab-build <lab-slug>` (Lab Builder)
+after `/lab-review`. Screenshots are captured by the user later: reference them as
 `![name](./media/module-N/name.png)` (or `./media/environment/name.png`,
 `./media/index/name.png`) placeholders at each point where a command result
 deserves one.
