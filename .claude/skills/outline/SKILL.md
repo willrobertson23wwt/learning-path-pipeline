@@ -6,7 +6,9 @@ argument-hint: <course topic>
 
 Plan a lab-first learning path together with the user. `$ARGUMENTS` is the
 topic (e.g. `/outline PowerShell Fundamentals`). If none was given, ask.
-Follow `.claude/house-style.md`, including the repo check.
+Follow `.claude/house-style.md`, including the repo check, and write the
+outline copy (goals, steps, predict prompts, the capstone scenario) to
+`.claude/style-guide.md`.
 
 In a lab-first path the labs are the course, and short media sits inside
 the lab steps. Read `.claude/house-style.md` "Lab-first design" before
@@ -107,6 +109,12 @@ rules and fix what fails:
   tasks in a goal-plus-hint lab; exact commands and expected output in a
   fully guided one).
 - Every lab and capstone problem ends in a check.
+- Every goal uses an observable verb (P9): explain, create, find, fix,
+  predict, compare, restore. Never "understand", "know", or "learn".
+- Every goal-only step (goal plus hint onward, and every capstone problem)
+  has one defensible end state (P10): it names the object (the exact path or
+  host), the end state, any constraint, and how the learner confirms it,
+  in words that match its check.
 - The capstone adds no new videos and links back to earlier ones.
 - Every pre-check question names the lab it unlocks.
 - Total video time stays at or under about 20% of the path's time.
@@ -164,16 +172,16 @@ status: draft     # the user flips this to approved after review
 
 | # | Lab | Guidance level | Time | Media |
 |---|---|---|---|---|
-| 0 | Pre-check + Briefing | none | 5 min | Briefing video (2:30), fhs-map card |
+| 0 | Pre-check and Briefing | None | 5 min | Briefing video (2:30), Filesystem Map card |
 | 1 | <title> | Full commands and expected output | 15 min | 2 GIFs, 1 video |
 | C | Capstone: "<scenario>" | Goals only, auto-checks | 20 min | links back only |
 
-## Module 0: Pre-check + Briefing
+## Module 0: Pre-check and Briefing
 
 **Pre-check (skip-ahead gate).**
 1. <question> (unlocks: skip to Lab N)
 
-**Briefing video `lf-briefing` (2:30, standalone): "<title>".** Supportive
+**Briefing video `lf-briefing` (2:30, standalone): <title>.** Supportive
 information, the only video before hands-on work.
 - **Description:** <under 30 words, for the platform catalog and the article>
 - <mental model>
@@ -183,19 +191,20 @@ path.
 
 ## Lab 1: <Title> (<guidance level>)
 
-> **Goal:** <what the learner can do and understand by the end>
+> **Goal:** <what the learner can do by the end, as an observable verb:
+> "Explain why a hard link survives deletion and a symlink doesn't.">
 
 **Time:** <N min>
 
 1. <step, with commands and expected output as the guidance level allows>
-2. **GIF `lf-l1-g1` (8s): <title>.** <what it shows>.
+2. **GIF `lf-l1-g1` (8 s): <title>.** <what it shows>.
    <the step it precedes>
 3. **Predict:** <question> (<options, if multiple choice>)
    <the command that tests it>
    <details><summary>Reveal</summary> <the answer> </details>
-4. **Video `lf-l1-v1` (60s): <title>.** <the one idea, and which surprise
+4. **Video `lf-l1-v1` (60 s): <title>.** <the one idea, and which surprise
    it explains> (mark `optional` or `standalone` in the parentheses when
-   they apply: `(45s, optional)`)
+   they apply: `(45 s, optional)`)
 
 **Check:** <auto-check command and expected result, or a question>
 
@@ -207,8 +216,8 @@ path.
 |---|---|---|
 | <1> | <what's broken on the box> | <command and passing result> |
 
-Rewatch links: <media IDs>. Hints sit behind a "Stuck?" button that is
-logged.
+Rewatch links: <media IDs>. Hints sit behind "Stuck?" buttons, a Hint and
+then the Answer, and opening them is logged.
 
 ## Production inventory
 
@@ -230,7 +239,14 @@ A/B test if the platform allows one>
 
 ## Style
 
-Keep titles short, skill-shaped, and in Title Case ("Inodes and Links", not
-"Understanding How Filenames Point to Inodes"). Predict prompts are real
-questions with one defensible answer. Placeholders follow the platform
-profile.
+Keep titles short, skill-shaped, and in Title Case per the style guide's
+M8 ("Inodes and Links", "Absolute vs. Relative Paths", not "Understanding
+How Filenames Point to Inodes"). A title keeps one form everywhere it
+appears. Durations take a space before the unit (M5): "(8 s)", "(60 s)",
+and m:ss for the briefing. Ranges read "30 to 90 seconds" in sentences and
+"30-90 s" in labels and tables (M3). Predict prompts are real questions
+with one defensible answer. A goal-only step or capstone problem names the
+object, the end state, and any constraint, in the words of its check:
+"Point the `/opt/app/current` symlink at the newest release in `/opt/app`,
+and leave the release directories unchanged." Placeholders follow the
+platform profile.

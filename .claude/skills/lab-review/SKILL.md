@@ -26,8 +26,8 @@ Three agents, so the review isn't done by whoever drafted the lab:
 1. **`lab-walker`** carries out steps 1-6 below in a fresh context and
    returns the step 6 report. Keep its agent ID.
 2. When it returns, launch in parallel:
-   - **`prose-checker`** on `description.md`, `environment.md`, and every
-     `module-*.md`.
+   - **`prose-checker`** on `description.md`, `environment.md`, every
+     `module-*.md`, and `reference.md` if the lab has one.
    - **`lab-learner`** with the lab slug, plus the course slug and the lab's
      number in the outline (or `capstone`). Find them from the
      `**Lab repo:** <lab-slug>` line in `courses/*/outline.md`; if none
@@ -50,7 +50,8 @@ If the agents are unavailable, do steps 1-6 here yourself.
 - `.claude/skills/lab/references/guide-format.md` (page shapes and house
   rules) and `.claude/skills/lab/references/internal-docs.md` (SETUP and
   SUPPORT formats). This review checks against them.
-- `.claude/skills/unslop/SKILL.md` for the prose pass.
+- `.claude/style-guide.md`, whose rule IDs (V, G, M, F, P) the findings
+  cite, and `.claude/skills/unslop/SKILL.md` for the prose pass.
 - CLAUDE.md's platform profile. The command walk is checked against that
   platform.
 - The lab's section of `courses/<course-slug>/outline.md` (found by its
@@ -184,20 +185,55 @@ page endings (What You Have Learned, the final summary and Congratulations,
 - Media references use the media IDs from the outline, at the paths the
   format gives, and every item the outline places in this lab appears.
 - Reference cards are on the Reference Cards page and named at the step
-  that first needs them.
+  that first needs them. Each has a text version under its image (a table
+  or list) that matches the card spec's `## Card layout` row for row.
+- Each GIF is the guide format's `<video autoplay loop muted playsinline
+  controls preload="auto" poster=... aria-label=...>` embed pointing at
+  `<media-id>.mp4` and its `<media-id>.png` poster, never a `.gif` image.
+  Its `aria-label` names every key pressed and the visible result, and
+  every string the loop shows is in the `aria-label` or the step text right
+  after it (F9).
+- Alt text says what the image shows and never starts with "Image of",
+  "Screenshot of", or "GIF of" (F9). The topology alt names each device, its
+  hostname, and its network, with the Device Access Information table as
+  the long description. An output screenshot already on a page quotes,
+  verbatim, the lines the learner compares against.
+- Predict options are bullets with the letter in the text (`- a. It gets
+  deleted`, M11). Bare `a.` lines render as one paragraph.
+- Hints follow the guide format's two levels, Hint then Answer (`Stuck?
+  Hint` and `Stuck? Answer` in the capstone), at the levels the
+  guidance-level table gives. A Hint that doesn't name the tool or where to
+  look is too vague to act on.
+- Each goal step has one defensible end state in the words of its portal
+  check's pass condition (P10), and each check row in SETUP.md has a fail
+  message.
 - Callbacks to other labs name the concept, never a lab number.
 
-Fix them without asking.
+Then the style guide's procedure and formatting rules at each step: purpose
+and place before the command (P1), one action and one block per step with
+no prompt in the block (P2, F5), the result in the same step with "The
+output is similar to the following:" where values vary (P4), a recovery
+line at each error-prone step (P5), deliberate failures announced (P6),
+`**Optional:**` steps nothing later depends on (P7), and no sub-steps (P8).
+A note never holds a step; a gotcha that makes a step fail belongs in the
+step or a `!!! warning` before it. Task headings start with an imperative
+verb and run 3 to 11 words, with no gerunds and no code. UI labels and keys
+are bold (F2, F3), and placeholders follow F4.
+
+Fix them without asking, and cite the rule ID (P4, F9, M11) with each fix in
+the report.
 
 ## 4. Unslop
 
-Run the unslop pass over `description.md`, `environment.md`, and every
-module, respecting its "Course content" exceptions. The tells that show up
+Run the unslop pass over `description.md`, `environment.md`, every module,
+and the text versions on `reference.md`, respecting its "Course content" exceptions. The tells that show up
 most in lab drafts: em dashes, colon-as-connector ("This is the problem:
-..."), "not X, but Y", "exactly / actually / genuinely / simply", piled-up
-contractions in teaching prose, and closing flourishes ("the exact skills you
-will lean on ..."). Keep a concrete failure story or a deliberate repeat when
-it's the lesson.
+..."), "not X, but Y", "exactly / actually / genuinely / simply", and closing
+flourishes ("the exact skills you will lean on ..."). Contractions are a
+density judgment, not a tell (V3): don't, isn't, and it's are fine; fix
+noun-plus-verb forms ("the file's ready"), 'd and 'll, and a sentence
+stacked with several. Keep a concrete failure story or a deliberate repeat
+when it's the lesson.
 
 ## 5. Sync SETUP.md and SUPPORT.md
 
@@ -210,16 +246,40 @@ lab isn't built or dry-run.
 
 ```bash
 cd labs/<slug>
-grep -n '—\|[“”‘’]' description.md environment.md module-*.md          # em dashes, curly quotes
-grep -n 'environment\.md\|module-[0-9]\.md' description.md environment.md module-*.md
-grep -n -i 'exactly\|actually\|genuinely\|simply\|precisely\|in order to\|leverage\|crucial\|ensure' description.md environment.md module-*.md
+P=(description.md environment.md module-*.md); [ -f reference.md ] && P+=(reference.md)
+prose() { awk 'FNR==1{f=0} /^[[:space:]]*```/{f=!f; next} !f{print FILENAME":"FNR": "$0}' "${P[@]}"; }   # prose only, fenced blocks dropped
+perl -CSD -ne 'print "$ARGV:$.: $_" if /[\x{2013}\x{2014}\x{2026}\x{2018}\x{2019}\x{201C}\x{201D}]/; close ARGV if eof' "${P[@]}"   # em and en dashes, ellipsis, curly quotes (M2, M10, M13)
+grep -n 'environment\.md\|module-[0-9]\.md' "${P[@]}"
+prose | grep -i 'exactly\|actually\|genuinely\|precisely\|in order to\|leverage\|crucial\|ensure'   # unslop tells
+prose | grep -iwE 'just|simply|easy|easily|obviously|of course|quickly|straightforward|please'   # minimizers (V4)
+prose | grep -iwE "we|us|let's|our"                                  # first person plural (V1)
+prose | grep -iE "[a-z]'(ll|d)([^[:alnum:]]|$)"                      # 'll and 'd contractions (V3)
+prose | grep -iwE 'e\.g\.|i\.e\.|etc\.|via|since'                   # ambiguous words (G2)
+prose | grep -iwE 'above|below|here|on the (right|left)'             # position words, bare link text (F6)
+prose | grep -iwE 'master|slave|whitelist|blacklist|sanity|dummy|hangs?|hung|cripple[sd]?|guys|blind to'   # inclusive terms
+prose | grep -E '[0-9]s([^[:alnum:]_]|$)'                            # unspaced durations such as "(8s)" (M5)
+grep -nE '^[a-z]\. ' module-*.md                                     # predict options not in list syntax (M11)
+grep -n '\.gif' "${P[@]}"                                            # GIFs ship as .mp4 plus a .png poster
+grep -n '<video autoplay' module-*.md | grep -vE 'loop muted playsinline controls .*poster=.*aria-label="[^"]+"'   # GIF embed shape
+grep -niE '!\[(image|screenshot|gif|picture)|!\[environment\]|!\[\]|aria-label="(gif|video|animation) of' "${P[@]}"   # weak alt text (F9)
 ```
 
-All three should print nothing; judge the hits (a literal "exactly one word
-per element" is fine). Then report, grouped by file: what moved, each command
-fix with a one-line reason, the hostname you chose, and a separate
-**anticipated, confirm at dry run** list of every output block you adjusted
-from knowledge instead of capture. Stop for review.
+Every line should print nothing; judge the hits. A literal "exactly one word
+per element" is fine, and so is "since" meaning "from that time", "here" in
+a sentence that doesn't point by position, a duration inside a code span
+(`sleep 5s`), or an old term inside inline code that the platform prints
+(the vendor-literal exception in the style guide's "Inclusive language").
+The grep can't tell those apart, so read each hit.
+
+Then report, grouped by file: what moved, each command fix with a one-line
+reason, each rule fix with its style-guide ID, the hostname you chose, and a
+separate **anticipated, confirm at dry run** list of every output block you
+adjusted from knowledge instead of capture. End with **Open items**, which
+always includes this one until the user settles it: test whether the ATC
+site renders Material for MkDocs `{ .text .no-copy }` output blocks (the
+`attr_list` extension) without a copy button. If it does, propose to the
+user switching command output from screenshots to text blocks; don't switch
+it in this pass. Stop for review.
 
 ## Editing mechanics
 

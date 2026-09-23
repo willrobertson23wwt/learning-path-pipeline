@@ -36,12 +36,16 @@ ascending order, so a failure leaves finished labs behind instead of
 half-done ones.
 
 1. `/audio` steps 2-3: generate MP3s (skip existing, never a blanket
-   `--force`), transcribe, and build captions.
+   `--force`), transcribe, and build captions with `--script`. Since no one
+   listens before the build, measure each take's wpm now (`/audio` step 4)
+   and put any take above 165 or below 120 wpm at the top of the report as
+   a retake candidate.
 2. `/video`'s per-lab steps: articles for standalone videos, continuity and
    scaffold, parallel media builds, stills review, render, caption check,
    deliver, Course Status.
-3. **Report per lab:** each item's duration and deliverable paths, anything
-   flagged in review, and caption fixes. The user reviews the deliverables.
+3. **Report per lab:** each item's duration, measured wpm, and deliverable
+   paths (a GIF delivers an MP4 and its PNG poster), anything flagged in
+   review, and caption warnings and fixes. The user reviews the deliverables.
    For a narration retake they edit the spec, delete that video's MP3, rerun
    `/audio <slug> <lab>`, and re-render.
 

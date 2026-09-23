@@ -28,8 +28,8 @@ npx remotion still <Id> out/stills-review/<Id>-f<N>.png --frame=<N>
 ```
 
 Always check frame 0 and, for videos, a frame inside the end hold (the last
-~2 s); for a GIF, the last frame (`durationInFrames - 1`). Render them if the
-caller didn't send them.
+2 s or so); for a GIF, the poster frame (the finished state) and the last
+frame (`durationInFrames - 1`). Render them if the caller didn't send them.
 
 ## Read first
 
@@ -81,6 +81,16 @@ defect you report should name the rule or lesson it breaks when one applies.
 11. **Mechanics vs explanation.** A GIF shows keystrokes, clicks, or how to
     read a line, with a badge for silent keys (Tab, Enter). Flag any
     explanatory text on a GIF; that belongs in a video or the lab page.
+12. **Caption safe area (videos).** No essential text, output, or label in
+    the bottom 15% of the frame (below y = 918 at 1080p), where the player
+    draws captions. A backdrop or decoration there is fine.
+13. **No flashing.** Nothing flashes more than three times in any one second
+    (WCAG 2.3.1). Where a highlight, badge, or cursor toggles, render
+    consecutive frames across one second and count the on-off cycles. A
+    cursor blinking about once a second is fine.
+14. **GIF poster.** The poster frame shows the finished state fully settled
+    and reads as a meaningful still on its own, since it is what a paused
+    or not-yet-played viewer sees.
 
 ## Report
 

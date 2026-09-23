@@ -15,7 +15,7 @@ lab's scripts folder becomes one deliverable:
 |---|---|---|
 | `video` | `<id>.mp4` (dark background, audio baked in) + `<id>.vtt` captions | narration transcript + visual brief |
 | `briefing` | `<id>.mp4` + `<id>.vtt` | same, as a standalone video |
-| `gif` | `<id>.gif`, silent, loops | the loop spec's beat table |
+| `gif` | `<id>.mp4` (muted H.264 loop) + `<id>.png` poster of the finished state | the loop spec's beat table |
 | `card` | `<id>.png`, static | the card layout |
 
 CLAUDE.md fully specifies how media is built: read its "Per-media workflow",
@@ -81,19 +81,26 @@ so plainly and carry on with the rest.
    parallel renders fight over CPU and finish no sooner:
    - video and briefing: `npx remotion render <Id> out/<id>.mp4` (no overlay
      `.mov` unless asked);
-   - GIF: `npx remotion render <Id> out/<id>.gif --codec=gif
-     --every-nth-frame=2` (15 fps, loops forever). Over about 5 MB, also
-     render a silent loop, `npx remotion render <Id> out/<id>-loop.mp4
-     --muted`, and tell the user which one the lab page should embed;
+   - GIF: `npx remotion render <Id> out/<id>.mp4 --muted`, then the poster,
+     `npx remotion still <Id> out/<id>.png --frame=<N>`, where N is the
+     finished state: the loop spec's hold beat start x `FPS`, after
+     everything has settled. The lab page embeds the MP4 as an autoplaying,
+     muted loop with controls (so it can be paused) and the PNG as its
+     poster;
    - card: `npx remotion still <Id> out/<id>.png --frame=0`.
-7. **Check captions.** Read each `public/chapters/<id>/narration.vtt`
-   against the spec's narration. Whisper mishears technical words, and any
+7. **Check captions.** `/audio` built each `public/chapters/<id>/narration.vtt`
+   with `--script`, so cue text comes from the spec's narration and only the
+   timings from whisper. Rerun `node scripts/captions.mjs <transcript>
+   --map courses/<slug>/caption-map.json --script <spec>` if the VTT is
+   missing or older than the spec, and read its warnings: a cue above 20
+   characters per second, the file's average wpm, and any place the script
+   and transcript didn't align (check that cue's timing in the VTT). Any
    phonetic spelling left in a cue means `caption-map.json` is missing an
-   entry: add it and rerun `node scripts/captions.mjs` for that item. Fix
-   one-off mishearings in the VTT itself. Captions show real syntax, never
-   the narration's phonetic forms.
-8. **Deliver.** Copy each deliverable to `deliverables/` as `<id>.mp4`,
-   `<id>.vtt`, `<id>.gif`, or `<id>.png`. If the outline names this lab's
+   entry: add it and rerun. Captions show real syntax, never the
+   narration's phonetic forms. List the remaining warnings in the report.
+8. **Deliver.** Copy each deliverable to `deliverables/`: `<id>.mp4` and
+   `<id>.vtt` for a video, `<id>.mp4` and `<id>.png` for a GIF, `<id>.png`
+   for a card. If the outline names this lab's
    repo (`**Lab repo:** <lab-slug>`) and `labs/<lab-slug>/` exists, also copy
    each file to the media path the guide references, and list any guide
    reference with no file and any file the guide doesn't reference.

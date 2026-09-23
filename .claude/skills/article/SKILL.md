@@ -7,7 +7,9 @@ argument-hint: <course-slug> <media-id ... | all>
 Write the companion article for one or more standalone videos
 (`/article linux-filesystem lf-briefing`, or `all` for every standalone
 video in the outline). Follow `.claude/house-style.md`, including the repo
-check.
+check, and write to `.claude/style-guide.md`: its voice, global English,
+mechanics, and formatting rules apply in full, and its procedure rules
+apply wherever the article walks through commands.
 
 **Only standalone videos get an article.** A standalone video is watched on
 its own, away from any lab: the briefing, and any video the outline marks
@@ -53,7 +55,7 @@ article's writer with `SendMessage`, or fix them yourself if you wrote it.
 ```markdown
 ---
 id: lf-briefing
-title: One Tree, Everything Hangs Off It
+title: One Tree, Everything Hangs off It
 description: <the outline's under-30-word description, verbatim>
 ---
 ```
@@ -71,15 +73,24 @@ that belongs to the video.
   syntax: `$1`, `cleanup.sh`, `ss`, `Get-ChildItem`. Never carry a phonetic
   spelling over.
 - **Visuals become markdown.** Motion graphics turn into fenced code blocks,
-  terminal transcripts with real output, small tables, or before-and-after
-  pairs labeled in words. Every command the visual brief shows appears in
-  the article, copy-accurate. A reference card the video introduces becomes
-  a table or links to the card image.
+  real output, small tables, or before-and-after pairs labeled in words.
+  Every command the visual brief shows appears in the article,
+  copy-accurate. A command and its output go in separate blocks: the
+  command alone (no prompt) in a block tagged with the platform's shell,
+  then the output in a `text` block, introduced with "The output is similar
+  to the following:" when values vary (PIDs, timestamps, inode numbers).
+  A reference card the video introduces becomes a table or links to the
+  card image.
+- **Lead with the point.** The first sentence under each H2 states that
+  section's idea, and the rest of the section supports it. Headings start
+  with their information-carrying words, so a reader who sees only the
+  first two still gets the gist: "Names point to inodes", not "A closer
+  look at what a filename is".
 - **Length:** about as long to read as the video is to watch (the briefing,
   at about 2-3 minutes, is roughly 400-600 words). Don't pad.
-- **Voice:** the same teacher as the narration: second person, direct, one
-  idea per paragraph, concrete failures over abstract warnings. Drop
-  beat-level stage directions.
+- **Voice:** the same teacher as the narration: second person, never "we"
+  (V1), direct, one idea per paragraph, concrete failures over abstract
+  warnings. Drop beat-level stage directions.
 - **Before saving,** run the unslop pass with every rule applied in full (real
   syntax, whole sentences, no arrows in prose). Keep the Title Case H1 and
   sentence-case H2s.

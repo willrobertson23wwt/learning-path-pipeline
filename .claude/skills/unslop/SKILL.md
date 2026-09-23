@@ -98,8 +98,9 @@ Exceptions, because the house rules for these already decide the matter:
   "Congratulations. You have completed the ... lab" paragraph.
 - **Rule 33 yields to the TTS rules in `/scripts`.** Narration is written for
   the ear on purpose: spoken command forms ("run chmod plus x"), phonetic
-  spellings ("ess ess", "et cetera slash resolv dot conf"), digits spelled the
-  way the voice should say them. Those stay. In articles the opposite holds
+  spellings ("ess ess", "et cetera slash resolv dot conf"), numbers written
+  as words the way the voice should say them, and spoken symbol and flag
+  names ("pipe", "dash L"). Those stay. In articles the opposite holds
   and rule 33 applies in full: real syntax, whole sentences, no arrows.
 - **Rule 17 applies to section headings, not titles.** Video, lab, card, and
   article H1 titles keep their established Title Case (they are names, and
@@ -118,8 +119,20 @@ Exceptions, because the house rules for these already decide the matter:
 - **Rule 33 relaxes on reference cards.** A card is lookup material: short
   labels and table fragments ("owner, group, other") are the point. The other
   rules still apply to its text.
-- **Rule 13 is already house style.** No em dashes anywhere. Fix any that slip
-  in, in prose and in on-screen text alike.
+- **Rule 13 is already house style.** No em dashes or en dashes anywhere.
+  Fix any that slip in, in prose and in on-screen text alike. Its "no
+  parentheses" means no parentheses wrapped around a clause an em dash used
+  to set off; parentheses for asides, abbreviations, lengths, and labels
+  ("Video (75 s, optional)") are fine (style guide M2).
+- **Rule 24 rewrites hedges to "might" or "can", not "may".** "may" means
+  permission (style guide V7).
+- **Rule 32 also covers software that perceives or wants.** The kernel doesn't
+  "see" a device and the shell doesn't "want" a path (style guide V6). Plain
+  function verbs are fine: returns, prints, shows, detects, rejects.
+
+This pass is for AI tells. Mechanics (numbers, units, ranges, capitalization,
+lists), formatting, word choice for global readers, and inclusive terms are
+in `.claude/style-guide.md`; `prose-checker` checks both.
 
 When `/scripts`, `/article`, `/lab` or `/outline` run this pass, do it as the
 last step on each file before saving, and do not report the pass unless it

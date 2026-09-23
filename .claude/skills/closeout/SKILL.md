@@ -47,7 +47,7 @@ Lab repos (`labs/`) are not archived; each publishes to its own GitHub repo.
      briefs committed). If not, tell the user what is uncommitted and stop.
 2. Dry run and show the plan:
    `node scripts/closeout.mjs <slug> [A-B] --dry-run`
-   (Node PATH setup per `.claude/house-style.md`). Sanity-check the count against
+   (Node PATH setup per `.claude/house-style.md`). Check the count against
    the outline's production inventory for the labs in scope: two files per
    video (MP4 and VTT), one per GIF, one per card. Flag gaps.
 3. Build and verify the zip: `node scripts/closeout.mjs <slug> [A-B]`.
@@ -69,6 +69,6 @@ Lab repos (`labs/`) are not archived; each publishes to its own GitHub repo.
 
 - Zipping uses the `tar` bundled with macOS and Windows 10+ (bsdtar, zip64),
   so no extra tools and no 4 GB limit. `Compress-Archive` on Windows
-  PowerShell 5 caps at 2 GB — that is why the script does not use it.
+  PowerShell 5 caps at 2 GB, which is why the script does not use it.
 - `archives/` is gitignored; never commit a zip.
 - Re-running on the same day overwrites that day's zip for the same range.

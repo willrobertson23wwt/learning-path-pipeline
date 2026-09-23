@@ -46,8 +46,8 @@ the `labdocs/docs/` folder of the WWT lab repo scaffold.
 |---|---|
 | `index.md` | The WWT logo line, `# <Path>: <Lab Title>`, and a Version History table |
 | `environment.md` | The learner's Environment page |
-| `module-1.md` … `module-N.md` | The lab's steps, split at natural checkpoints (each page about 10-20 minutes) |
-| `reference.md` | The reference cards this lab uses, one heading and image each (omit if none) |
+| `module-1.md` to `module-N.md` | The lab's steps, split at natural checkpoints (each page about 10-20 minutes) |
+| `reference.md` | The reference cards this lab uses, each with its heading, image, and text version (omit if none) |
 | `description.md` | The 2-4 sentence lab-listing blurb |
 | `SETUP.md` | Internal build checklist, including the **portal checks** table (gitignored) |
 | `SUPPORT.md` | Internal notes for the ATC support team (never pushed) |
@@ -56,6 +56,16 @@ the `labdocs/docs/` folder of the WWT lab repo scaffold.
 - **Learner pages:** follow `references/guide-format.md`, including its
   "Lab-first pages" section: how GIFs, videos, cards, predict prompts,
   hints, and checks appear on a page, and how each guidance level reads.
+  Write the prose to `.claude/style-guide.md`: its voice (V), global
+  English (G), mechanics (M), formatting (F), and procedure (P) rules cover
+  sentence-level choices the guide format leaves out, such as purpose
+  before each command, a result line after it, and recovery lines at
+  error-prone steps.
+- **Reference card text versions:** under each card image on
+  `reference.md`, the card's content as a Markdown table or list, taken
+  from the card spec's `## Card layout`. If the spec isn't written yet,
+  draft it from the outline's card description and list it in the report
+  so `/scripts` and the page end up with the same rows.
 - **Internal files:** follow `references/internal-docs.md`. Exact pre-seeded
   file contents go in SETUP.md from the start, and so does every portal
   check.
@@ -63,8 +73,13 @@ the `labdocs/docs/` folder of the WWT lab repo scaffold.
   into `media/index/` while scaffolding. Every WWT lab repo uses that exact
   filename.
 - **Media files** don't exist yet. Reference each at the path the guide
-  format gives (`./media/module-N/<media-id>.gif`), and list them in the
-  report; `/video` copies the rendered files into place.
+  format gives, and list them in the report; `/video` copies the rendered
+  files into place. A GIF is two files, `./media/module-N/<media-id>.mp4`
+  (the muted loop) and `<media-id>.png` (its poster), embedded as the guide
+  format's `<video autoplay loop muted playsinline controls>` with an
+  `aria-label`. A video is `<media-id>.mp4` plus `<media-id>.vtt`, and a
+  card is `./media/reference/<media-id>.png`. Write each GIF's
+  `aria-label` from its loop spec, naming every key and the visible result.
 
 ## The capstone
 
@@ -76,8 +91,12 @@ capstone section:
 - Every seeded problem is in SETUP.md's pre-seeded section, precise enough
   to build, and has a portal check that fails on the seeded state and passes
   once fixed.
-- Hints sit in collapsed "Stuck?" blocks. The platform logs opening them, so
-  say so in SUPPORT.md.
+- Hints sit in collapsed "Stuck?" blocks at the guide format's two levels:
+  `Stuck? Hint` names the tool or where to look, and `Stuck? Answer` gives
+  the exact command or end state. The platform logs opening them, so say so
+  in SUPPORT.md.
+- Each problem's goal has one defensible end state (style guide P10), in
+  the words of its portal check's pass condition.
 - No new videos. "Rewatch" links go to the earlier videos the outline
   names; copy those media files into this repo's `media/` so it stands on
   its own.
@@ -99,11 +118,12 @@ learning path's page on the platform (not a lab repo):
 No VM exists yet, so output can't be captured. Put each command's expected
 output in a `text` block directly under it, and list those blocks in the
 report as anticipated output. After the dry run, each block is replaced by a
-rendered terminal screenshot (see "Command output" in the guide format).
-Mark GUI steps with a screenshot placeholder per dialog:
+rendered terminal screenshot whose alt text quotes the lines the learner
+compares against (see "Command output" in the guide format). Mark GUI steps
+with a screenshot placeholder per dialog:
 `![<what it shows>](./media/module-N/<name>.png)`. In goal-only steps there
-is no command to show, so the expected result goes in the collapsed reveal
-or hint instead.
+is no command to show, so the expected result goes in the collapsed Answer
+or reveal instead.
 
 ## Then stop
 

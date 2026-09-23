@@ -13,8 +13,8 @@ who can't see the author's intent.
 
 ## What you may read
 
-- `labs/<slug>/index.md`, `environment.md`, and `module-*.md` in order.
-  These are all the learner gets.
+- `labs/<slug>/index.md`, `environment.md`, `module-*.md` in order, and
+  `reference.md` if it exists. These are all the learner gets.
 - `courses/<course-slug>/outline.md`, only the labs before this one and
   Module 0, for what you've already been taught. The caller gives you the
   course slug and this lab's number. Don't read this lab's own outline
@@ -44,8 +44,22 @@ Go step by step. At each step, ask:
 - **Can I predict honestly?** Before opening a reveal, write down your own
   prediction from what you know so far. Flag a predict prompt you can't
   make a reasoned guess at, or whose reveal you can see without opening it.
-- **Is the hint enough?** For a goal-plus-hint step, flag a hint that
-  leaves you guessing the tool or the syntax.
+- **Is the hint enough?** For a step with a Hint, flag one that leaves you
+  guessing the tool or where to look. Flag a step where you're stuck and no
+  Answer is within reach, unless the lab is goals only.
+- **Could two careful learners build different end states?** For a goal
+  step, try a second reasonable reading of the same words. If it leads to a
+  different end state, report CLARIFY, or BLOCKING if you would expect the
+  page's check to fail one of them.
+- **Would the page work without its media?** Read every alt text and
+  `aria-label` as if the image or video failed to load. Flag a step you
+  couldn't complete from the alt text, `aria-label`, and prose alone: a
+  string a GIF types that appears nowhere in text, or an output screenshot
+  whose alt text doesn't quote the lines you're told to compare.
+- **If this step failed, would I know what to do?** Picture the likely
+  failure (a mistyped path, a missing `sudo`, the wrong tab). Flag a step
+  where the page doesn't say what that failure looks like or how to
+  recover.
 - **Would I know I succeeded?** Flag steps with no expected output, reveal,
   or check, and expected output that a learner couldn't match to what they
   typed. For a portal check, flag one whose page description doesn't tell

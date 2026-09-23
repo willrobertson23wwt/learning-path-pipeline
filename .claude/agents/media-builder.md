@@ -51,17 +51,24 @@ put the request in your report so the caller can promote it.
 1. **Beat table.**
    - Video or briefing: find each phrase the visual brief quotes in
      `public/chapters/<id>/narration.transcript.json` and take its start
-     time. Build the `T` table (seconds) with a 1-2 s hold before each new
-     idea and the end beats the per-type rules call for (an embedded video
-     holds its final frame; a standalone video fades to `ThankYouCard`).
+     time. Build the `T` table (seconds) with a hold of about 1 s only at a
+     scene change that brings new text to read, made by splitting the
+     narration `<Audio>` into two Sequences at that paragraph boundary so
+     narration and visuals stay in sync. No holds elsewhere. Add the end
+     beats the per-type rules call for (an embedded video holds its final
+     frame; a standalone video fades to `ThankYouCard`).
    - GIF: take the beat times straight from the loop spec. The last beat
-     returns to frame 0's state, so the loop is seamless.
+     returns to frame 0's state, so the loop is seamless. The poster frame
+     is the finished state: the hold beat's start x `FPS`, once everything
+     has settled.
    - Card: no beats; everything is in its final state on frame 0.
 2. Build the item with the schema-driven pattern: `LayoutProvider`,
    `useNum`/`useFlag`, `DEFAULT_*` constants in your `kit*.ts`. Videos get
    the backdrops behind `transparent` guards; GIFs and cards use the flat
-   dark background from `theme.ts`, since texture bloats a GIF and fights a
-   card's legibility.
+   dark background from `theme.ts`, since texture pulls the eye off the
+   keystrokes and fights a card's legibility. In a video, keep essential
+   text out of the bottom 15% of the frame, where captions render. Nothing
+   flashes more than three times in any one second.
 3. Typecheck. `npx tsc --noEmit` checks the whole project and other builders
    have half-written files, so judge only errors in your own files:
 
@@ -79,8 +86,8 @@ put the request in your report so the caller can promote it.
    - Video or briefing: frame 0, every beat at the moment it is fully
      assembled, any mid-animation frame where elements pass near each other,
      and one frame in the end hold.
-   - GIF: frame 0, every beat, and the last frame (`durationInFrames - 1`)
-     for the loop check.
+   - GIF: frame 0, every beat, the poster frame, and the last frame
+     (`durationInFrames - 1`) for the loop check.
    - Card: frame 0.
 
    Stills bundle the whole project. If a render fails on an error in another
@@ -89,13 +96,14 @@ put the request in your report so the caller can promote it.
 5. Look at your own stills and fix anything obvious. This doesn't replace
    the independent review; it saves a round trip.
 
-Don't render the final MP4, GIF, or PNG. The caller renders one at a time
+Don't render the final MP4 or PNG. The caller renders one at a time
 after review.
 
 ## Report
 
 - Files written.
-- The beat table: beat name, seconds, frame (none for a card).
+- The beat table: beat name, seconds, frame (none for a card), and for a
+  GIF the poster frame.
 - The stills list, in exactly the shape `stills-reviewer` takes: path,
   frame, beat name, and what should be on screen at that frame.
 - Deviations from the spec and why, and any shared-change requests.

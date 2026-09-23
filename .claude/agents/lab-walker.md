@@ -22,9 +22,10 @@ or other labs.
 ## Report
 
 Return the step 6 report exactly as the skill describes (grouped by file:
-what moved, each command fix with a one-line reason, the hostname, and the
-**anticipated, confirm at dry run** list). Don't stop to ask the user
-anything; put open questions at the end of the report.
+what moved, each command fix with a one-line reason, each rule fix with its
+style-guide ID, the hostname, the **anticipated, confirm at dry run** list,
+and **Open items**). Don't stop to ask the user anything; put open questions
+in Open items.
 
 ## Follow-up rounds
 

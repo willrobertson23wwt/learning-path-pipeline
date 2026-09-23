@@ -15,9 +15,11 @@
 // file's frontmatter. Existing MP3s are skipped unless --force.
 //
 // After each generation, unusually long pauses between sentences are shortened
-// (never fully removed — see trimExcessSilence) unless --no-trim is passed.
+// (never fully removed; see trimExcessSilence) unless --no-trim is passed.
 //
 // Requires .env with ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID (see .env.example).
+// ELEVENLABS_MODEL_ID defaults to eleven_v3; ELEVENLABS_STABILITY and
+// ELEVENLABS_SEED are optional.
 
 import {execFileSync, execSync} from 'node:child_process';
 import {existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync} from 'node:fs';
@@ -26,14 +28,22 @@ import path from 'node:path';
 try {
   process.loadEnvFile(path.join(process.cwd(), '.env'));
 } catch {
-  // no .env — fall through to plain environment variables
+  // no .env: fall through to plain environment variables
 }
 
 const API_KEY = process.env.ELEVENLABS_API_KEY;
 const VOICE_ID = process.env.ELEVENLABS_VOICE_ID;
-const MODEL_ID = process.env.ELEVENLABS_MODEL_ID || 'eleven_multilingual_v2';
-// Per-request character limits: eleven_v3 allows 3k, multilingual v2 allows 10k.
-const MAX_CHARS = MODEL_ID.startsWith('eleven_v3') ? 2900 : 9500;
+const MODEL_ID = process.env.ELEVENLABS_MODEL_ID || 'eleven_v3';
+// Per-request character limits: eleven_v3 allows 5,000 and multilingual v2
+// allows 10,000. Each cap leaves a small margin under the documented limit.
+const MAX_CHARS = MODEL_ID.startsWith('eleven_v3') ? 4900 : 9500;
+// Optional, sent only when set in .env. A fixed seed gives best-effort
+// determinism, so a retake after a one-word edit sounds like the approved take.
+// On eleven_v3, stability accepts only 0.0 (Creative), 0.5 (Natural), or
+// 1.0 (Robust). Use 1.0 for the most consistent narration, or 0.5; Creative is
+// prone to hallucinations. Older models take any value from 0 to 1.
+const SEED = process.env.ELEVENLABS_SEED ? Number(process.env.ELEVENLABS_SEED) : undefined;
+const STABILITY = process.env.ELEVENLABS_STABILITY ? Number(process.env.ELEVENLABS_STABILITY) : undefined;
 
 const flags = process.argv.slice(2);
 const force = flags.includes('--force');
@@ -46,7 +56,7 @@ let videoRange = null;
 if (args[1]) {
   const m = args[1].match(/^(\d+)(?:-(\d+))?$/);
   if (!m) {
-    console.error(`Bad lab argument "${args[1]}" — use a number (3) or a range (1-4).`);
+    console.error(`Bad lab argument "${args[1]}". Use a number (3) or a range (1-4).`);
     process.exit(1);
   }
   videoRange = [Number(m[1]), Number(m[2] ?? m[1])];
@@ -64,7 +74,7 @@ if (!dryRun && (!API_KEY || !VOICE_ID)) {
 
 const scriptsDir = path.join(process.cwd(), 'courses', slug, 'scripts');
 if (!existsSync(scriptsDir)) {
-  console.error(`No scripts found at ${scriptsDir} — run /scripts ${slug} first.`);
+  console.error(`No scripts found at ${scriptsDir}. Run /scripts ${slug} first.`);
   process.exit(1);
 }
 
@@ -94,7 +104,12 @@ async function tts(text) {
     {
       method: 'POST',
       headers: {'xi-api-key': API_KEY, 'Content-Type': 'application/json'},
-      body: JSON.stringify({text, model_id: MODEL_ID}),
+      body: JSON.stringify({
+        text,
+        model_id: MODEL_ID,
+        ...(SEED !== undefined && {seed: SEED}),
+        ...(STABILITY !== undefined && {voice_settings: {stability: STABILITY}}),
+      }),
     },
   );
   if (!res.ok) throw new Error(`ElevenLabs API ${res.status}: ${await res.text()}`);
@@ -179,7 +194,7 @@ for (const file of files) {
   }
 
   if (!meta.folder) {
-    console.error(`✗ ${file}: no "folder:" in frontmatter — add the media ID, e.g. folder: ${meta.id || '<prefix>-l<N>-v<K>'}`);
+    console.error(`Error: ${file} has no "folder:" in frontmatter. Add the media ID, for example folder: ${meta.id || '<prefix>-l<N>-v<K>'}`);
     failed++;
     continue;
   }
@@ -187,12 +202,12 @@ for (const file of files) {
   const outFile = path.join(outDir, 'narration.mp3');
 
   if (!narration) {
-    console.error(`✗ ${file}: no narration text found`);
+    console.error(`Error: ${file} has no narration text.`);
     failed++;
     continue;
   }
   if (narration.length > MAX_CHARS) {
-    console.error(`✗ ${file}: narration is ${narration.length} chars but ${MODEL_ID} allows ${MAX_CHARS}/request — trim it or use eleven_multilingual_v2`);
+    console.error(`${file}: narration is ${narration.length} characters, over the ${MAX_CHARS} per request allowed for ${MODEL_ID}. Trim the narration or split the item into two specs.`);
     failed++;
     continue;
   }
@@ -201,7 +216,7 @@ for (const file of files) {
     continue;
   }
   if (dryRun) {
-    console.log(`○ ${file} → ${meta.folder}/narration.mp3 (${narration.length} chars, ~${Math.round((narration.split(/\s+/).length / 140) * 60)}s)`);
+    console.log(`Dry run: ${file} to ${meta.folder}/narration.mp3 (${narration.length} chars, ~${Math.round((narration.split(/\s+/).length / 140) * 60)} s)`);
     continue;
   }
 
@@ -223,7 +238,7 @@ for (const file of files) {
     const finalSize = statSync(outFile).size;
     console.log(`done (${(finalSize / 1024 / 1024).toFixed(1)} MB${trimNote})`);
     generated++;
-    done.push(outFile);
+    done.push({outFile, spec: path.join('courses', slug, 'scripts', file)});
   } catch (err) {
     console.log('FAILED');
     console.error(`  ${err.message}`);
@@ -234,9 +249,9 @@ for (const file of files) {
 console.log(`\n${generated} generated, ${failed} failed.`);
 if (done.length) {
   console.log('\nNext: listen to each file, then transcribe for word timings and build captions:');
-  for (const f of done) {
+  for (const {outFile: f, spec} of done) {
     const rel = path.relative(process.cwd(), f);
-    console.log(`  node scripts/transcribe.mjs ${rel} && node scripts/captions.mjs ${rel.replace(/\.mp3$/, '.transcript.json')} --map courses/${slug}/caption-map.json`);
+    console.log(`  node scripts/transcribe.mjs ${rel} && node scripts/captions.mjs ${rel.replace(/\.mp3$/, '.transcript.json')} --map courses/${slug}/caption-map.json --script ${spec}`);
   }
 }
 if (failed) process.exit(1);

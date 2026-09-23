@@ -26,17 +26,19 @@ many labs, videos, GIFs, or cards a path has; the outline decides that.
 - **Practice first (doer effect, Koedinger).** Practice teaches about six
   times as much as watching. At least 80% of a learner's time is at the
   terminal or console, and there are no standalone lecture modules.
-- **Supportive vs procedural information (4C/ID).** Mental models ("one
+- **Supportive versus procedural information (4C/ID).** Mental models ("one
   tree", "names point to inodes") go in the briefing and on reference cards.
   How-to help (a GIF, a command hint) sits at the step that needs it.
 - **Predict, then try, then watch (productive failure, Sinha & Kapur).** At
   a conceptual moment, the learner commits to a prediction, runs the command,
   and only then gets the explainer video. The video never comes before the
   attempt.
-- **Short, single-purpose media (Höffler & Leutner; Guo).** GIFs run 5-15 s,
-  loop, and have no audio. Micro-videos run 30-90 s, cover one idea, and
-  have pause, scrub, and captions. The briefing is the one longer video
-  (about 2-3 minutes) and the only one before hands-on work.
+- **Short, single-purpose media (Höffler & Leutner; Guo).** GIFs run 5 to
+  15 seconds, loop, and have no audio. They're delivered as muted MP4 loops
+  that autoplay with a pause control (WCAG 2.2.2), not as .gif files.
+  Micro-videos run 30 to 90 seconds, cover one idea, and have pause, scrub,
+  and captions. The briefing is the one longer video (about 2 to 3
+  minutes) and the only one before hands-on work.
 - **No transient reference (transient information effect).** Anything
   learners look up repeatedly (a directory map, a permission-bits table) is
   a static reference card, pinned and one click away, never a video.
@@ -50,18 +52,19 @@ many labs, videos, GIFs, or cards a path has; the outline decides that.
   length.
 - **Capstone for transfer.** The capstone is goals only, on a pre-seeded
   broken system, with auto-checks. It adds no new videos; it links back to
-  earlier ones ("Rewatch: inodes (90s)").
+  earlier ones ("Rewatch: inodes (90 s)").
 - **Every lab ends in a check.** A portal check (a command the lab portal
   runs, whose result proves the state) or a short question, stated in the
   outline.
 
 **Media types.** Outlines and lab drafts label each item with a bold word
-at the start of its step (`**GIF (8s): Tab completion.**`,
-`**Predict:**`), never with an emoji or symbol.
+at the start of its step (`**GIF (8 s): Tab Completion.**`,
+`**Predict:**`), never with an emoji or symbol. The title after the colon is the item's
+Title Case title from the outline, and the label ends with a period.
 
 | Label | Item | Placement |
 |---|---|---|
-| GIF | 5-15 s, silent, loops; shows where to click or what to type | Before the step that needs it |
+| GIF | 5-15 s, silent loop (muted MP4 with a pause control); shows where to click or what to type | Before the step that needs it |
 | Video | 30-90 s, narrated, one idea; explains why | After a predict or try step |
 | Briefing video | The one longer video, about 2-3 minutes | Before the first lab |
 | Reference card | Static reference for lookup | Pinned for the whole path, or from its lab on |
@@ -72,10 +75,21 @@ at the start of its step (`**GIF (8s): Tab completion.**`,
 
 This covers outline copy, narration, articles, and lab guides.
 
+- **Style guide.** Write to `.claude/style-guide.md`: the Google developer
+  documentation style guide as the base manual, with house departures and
+  rule IDs for voice (V), global English (G), mechanics (M), formatting
+  (F), procedures (P), inclusive language, and brief citations. Narration
+  follows its voice rules and the ear-writing rules in `/scripts`.
+- **Text alternatives for every medium.** A GIF's `aria-label` names the
+  keys pressed and the visible result. An output screenshot's alt text
+  quotes the lines the learner compares against. Each reference card has a
+  text version under its image on the Reference Cards page. Narration names,
+  by meaning, every on-screen fact the explanation depends on, so a video
+  needs no separate audio description (WCAG 1.2.5).
 - **No emojis, anywhere.** Not in learner content, on-screen text, outlines,
   lab guides, research briefs, agent reports, or replies to the user. Label
-  things with words. The user strips them on sight, as with em-dashes.
-- **No em-dashes.** Use commas, periods, or separate sentences. They are the
+  things with words. The user strips them on sight, as with em dashes.
+- **No em dashes or en dashes.** Use commas, periods, or separate sentences. They are the
   most visible AI tell and the user strips them on sight.
 - **Placeholders are reserved or fictional:** IPs, hostnames, CVEs, tenant
   IDs, serial numbers. Real ones in training material either point learners at
@@ -94,8 +108,8 @@ This covers outline copy, narration, articles, and lab guides.
   (`.claude/skills/unslop/SKILL.md`) over the prose, respecting its "Course
   content" exceptions.
 - **Then have it checked:** after saving, run the `prose-checker` agent on
-  the saved files and fix each FIX it returns (NOTEs at your judgment).
-  Authors miss their own tells; a fresh reader catches them. A subagent
+  the saved files and fix each FIX it returns (NOTEs at your judgment). It
+  cites unslop rule numbers and style-guide IDs. Authors miss their own tells; a fresh reader catches them. A subagent
   can't launch agents, so when an agent wrote the prose, whoever launched it
   runs the checker and sends the findings back.
 
@@ -115,6 +129,9 @@ and git-tracked, so a later skill can see what a fact was checked against.
   defaults, output shape, a deprecation) without asking. Anything that
   changes scope (a topic to add or drop, a reordering) is a proposal for the
   user, never a silent change to an approved outline.
+- **Sources use the style guide's citation format** (a compact APA 7 entry
+  with an access date, cited by numeric key), so a later reader can tell
+  current vendor docs from an old blog post.
 - **Nothing from a brief is cited in learner content.** No provider names,
   no "according to", no links unless the lesson itself needs one.
 

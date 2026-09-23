@@ -18,8 +18,10 @@ is Module 0). Read:
 - `courses/<slug>/outline.md`: frontmatter `prefix`, every media ID with its
   type, length, placement, and `optional`/`standalone` marks.
 - Every `courses/<slug>/scripts/NN-*/*.md` in range.
-- CLAUDE.md "Platform profile", especially the **TTS phonetic list**, and
-  `courses/<slug>/caption-map.json` if it exists.
+- CLAUDE.md "Platform profile", especially the **TTS phonetic list** (with
+  its acronym list and any platform words with two readings) and the
+  **Measured narration rate**, and `courses/<slug>/caption-map.json` if it
+  exists.
 - `.claude/house-style.md` "Lab-first design" and
   `.claude/skills/scripts/SKILL.md`. These are the rules; the checks below
   are the ones that matter most.
@@ -48,11 +50,23 @@ file. Don't repeat those, except where a length is out of range below.
 - Syntax the voice will mangle: backticks, flags (`-Name`, `-la`), `$`,
   slashes, dotted filenames, URLs, registry keys, paths. A path is allowed
   only when the path is the lesson, and then spelled phonetically.
-- Markdown, list markers, headings, bracketed stage directions, emojis, or
-  arrows. Em dashes or curly quotes.
+- Markdown, list markers, headings, emojis, or arrows. Em dashes or curly
+  quotes.
+- Anything a TTS model reads aloud or handles differently by model, each a
+  FIX: any digit (numbers are written as words, the way the voice should
+  say them), `...` or the ellipsis character, `<break` or any SSML tag, a
+  bracketed tag such as `[pause]` or `[slows down]`, inline IPA between
+  slashes, and any all-caps word of two or more letters not on the path's
+  acronym list (spaced letters such as "D N S" are fine).
 - Runs of three or more short, comma-fragmented sentences. Quote the run.
-- Word count against `length` at about 140 words per minute (a 90 s video
-  near 210 words); flag anything more than 20% off.
+- Sentences over 25 words. NOTE; quote the sentence and suggest the split.
+- Heteronyms the voice can misread: read, live, lead, record, object,
+  content, close, minute, invalid, wind, tear, and any platform word the
+  profile lists with two readings. NOTE; suggest a rewrite around the word.
+- Effective rate: words divided by speaking time, where speaking time is
+  `length` minus the 2 s end buffer minus 1 s per scene change in the
+  brief. Above 160 wpm is FIX; below 115 wpm is NOTE. The budget itself is
+  140 wpm (150 for the briefing), or the profile's measured rate.
 - Every phonetic spelling used has an entry in `caption-map.json` (spoken
   form to real syntax), or captions will show the phonetic form. FIX.
 
@@ -63,6 +77,16 @@ file. Don't repeat those, except where a length is out of range below.
   a sentence of setup to make sense to a learner who skipped the step.
 - It explains one idea, the one the outline gives it. Flag a second idea, or
   content a GIF or card in the same lab already covers.
+- It follows the five beats in `/scripts` (observe, name the expectation,
+  model, payoff, hand back). A missing expectation or payoff beat is a NOTE.
+- It never answers a later predict prompt. Read every predict prompt the
+  outline places after this video's `follows` step in the same lab; a
+  narration sentence that states or implies one's outcome is FIX. Quote
+  both.
+- The briefing opens on a scenario, names its models once in one outlining
+  sentence, gives each model a scene that opens with a heading sentence,
+  points to the reference card, and hands off to the first lab's first
+  action. NOTE for a missing part.
 - A standalone video ends with exactly `Hope you found this helpful and I'd
   like to thank you for watching.` (straight apostrophe, final period). No
   teaser for another video.
@@ -78,11 +102,22 @@ file. Don't repeat those, except where a length is out of range below.
 - An embedded video's brief opens on content at frame 0, not a title card;
   a standalone video's opens on its title card and ends on the Thank You
   card.
+- A beat that introduces a label, value, or verdict (a highlighted field, a
+  check or cross, a number the explanation depends on) with no spoken
+  mention of its meaning in the narration. NOTE; the narration carries the
+  integrated description.
 
 **GIF loop spec**
-- Has `Shows`, `Length`, `Canvas`, `Beats`, `Text on screen`, `Loop point`.
-- Beat times add up to `length`; the finished state holds at least 1.5 s; the
-  last beat returns to frame 0's state.
+- Has `Shows`, `Length`, `Canvas`, `Beats`, `Text on screen`, `Alt text`,
+  `Loop point`. A missing `Alt text` is FIX.
+- Every `Text on screen` string except the prompt appears in `Alt text`,
+  unless it is marked `(step text)`. The alt text names each key pressed,
+  stays under about 155 characters, and doesn't start with "GIF of" or
+  "Video of". FIX.
+- Beat times add up to `length`; the last beat returns to frame 0's state.
+- The finished state holds at least 1.5 s plus 0.3 s per word of new text on
+  screen, and at least 3 s for a dense-line read. FIX when shorter.
+- Nothing flashes more than three times in any one second. FIX.
 - Mechanics only: flag any beat that explains rather than shows.
 - Keystrokes and output are copy-accurate for the platform baseline, with
   the platform prompt; silent keys (Tab, Enter, Ctrl+C) get a badge.
@@ -113,4 +148,5 @@ credits or render time (bare phonetic-list word, mangled syntax, wrong
 closing line, a brief quote that isn't in the narration, a wrong `folder` or
 `id`, a GIF with no loop point). FIX is a house-style or placement miss that
 should be fixed first. NOTE is a judgment call. End with narration word
-counts per file against their `length`. No preamble and no praise.
+counts per file against their `length`, with each file's effective wpm. No
+preamble and no praise.

@@ -158,6 +158,7 @@ a `cleanup.sh` script in it, the toolkit works on your machine.
 
 Now open `.env` and paste in your ElevenLabs API key and voice ID. The voice
 ID is on the voice's page in ElevenLabs (Voices, then the voice, then ID).
+The model defaults to `eleven_v3`; stability and seed are optional.
 `.env` is gitignored; every team member uses their own.
 
 Optional but recommended: preview the example in Remotion Studio to see what
@@ -191,7 +192,7 @@ one writes plain files and stops for your review before the next:
 | 1. Outline | `/outline <topic>` | `courses/<slug>/outline.md`: labs, guidance levels, steps, and a media inventory | an interactive plan: scope questions, research findings and suggested shapes, a skeleton, then the draft; set `status: approved` when happy |
 | 2. Scripts | `/scripts <slug> [lab]` | `courses/<slug>/scripts/NN-<lab>/<media-id>.md` | narration + visual briefs for videos, loop specs for GIFs, layouts for cards |
 | 3. Audio | `/audio <slug> [lab]` | `public/chapters/<media-id>/narration.mp3`, transcript, and captions | listen to every track |
-| 4. Video | `/video <slug> <lab>` | `deliverables/<media-id>.mp4` + `.vtt`, `.gif`, `.png`, and articles for standalone videos | the MP4s, GIFs, cards, and captions |
+| 4. Video | `/video <slug> <lab>` | `deliverables/<media-id>.mp4` + `.vtt` for videos, `.mp4` + `.png` poster for GIF loops, `.png` for cards, and articles for standalone videos | the MP4s, GIFs, cards, and captions |
 | 3+4 | `/produce <slug> <lab>` | both of the above in one shot | once you trust the scripts |
 | Labs | `/lab <slug> <lab \| capstone \| 0>`, `/lab-review <lab>`, `/lab-topology <lab>` | one WWT repo draft per lab in `labs/<lab-slug>/` (guide, internal SETUP with portal checks, SUPPORT), the capstone repo, the path page for `0`, topology SVG | the guide, then the diagram |
 | Lab build | `/lab-build <lab>` | `lab.yaml` + `PLAN.md` in [Lab Builder](https://github.com/willrobertson23wwt/Lab-Builder) and a `terraform plan` of the vApp | the plan; you run the build |
@@ -215,6 +216,8 @@ for AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
 |---|---|
 | `CLAUDE.md` | Project instructions Claude Code loads. Platform-neutral except the **Platform profile** section, which each course fills in. |
 | `.claude/house-style.md` | Rules the skills share: the template guard, the lab-first design rules and media types, learner-prose rules, and research-brief reuse. |
+| `.claude/style-guide.md` | The writing style guide: the Google developer documentation style guide as the base manual, with house departures and numbered rules for voice, global English, mechanics, formatting, procedures, inclusive language, and brief citations. Review agents cite its rule IDs. |
+| `.claude/references/writing/` | The cited research behind the style guide and the script rules (technical writing, style manuals, and writing for technical video). |
 | `linux-filesystem-path.md` | A complete worked lab-first path (Linux filesystem). `/outline` matches its shape. |
 | `.claude/skills/new-path` | `/new-path <topic>` scaffolds a new course folder from this repo. The only skill that runs here. |
 | `.claude/skills/outline` | `/outline <topic>` plans a lab-first path with you, from a research survey, into `courses/<slug>/outline.md`. |
@@ -235,7 +238,7 @@ for AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
 | `src/Chapter.tsx`, `src/types.ts`, `src/chapters/example-generic/` | The generic data-driven chapter pattern (`timeline.json` of cues) for simple title/bullet chapters. |
 | `src/Root.tsx`, `src/constants.ts`, `src/index.ts` | Composition registry with the `audioMetadata` helper, `FPS` and buffer constants, entry point. |
 | `public/backgrounds/` | The paper texture and dark fluid loop `Backdrop` uses. |
-| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `captions.mjs` (WebVTT captions from a transcript, with phonetic spellings mapped back to real syntax), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `prepare-hud.mjs` (Lottie icon prep). |
+| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `captions.mjs` (WebVTT captions with text from the script and timings from whisper, phonetic spellings mapped back to real syntax, and reading-rate checks), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `prepare-hud.mjs` (Lottie icon prep). |
 | `package.json`, `package-lock.json`, `tsconfig.json`, `remotion.config.ts`, `.env.example` | Pinned toolchain. zod must stay at 4.3.6 for `@remotion/zod-types`. |
 
 ## Also needed, not in the repo
@@ -269,8 +272,11 @@ gives one example per family (bash, PowerShell, device CLI):
 - **Lab review** keeps its Linux-derived checklist as the example set and
   adds a "Platform equivalents" section (PowerShell, Cisco IOS, web
   consoles) as the starting point for translating each check.
-- **Captions** show real syntax: `courses/<slug>/caption-map.json` maps the
-  narration's phonetic spellings back (`"ess ess"` to `ss`).
+- **Captions** show real syntax: the text comes from the script, and
+  `courses/<slug>/caption-map.json` maps the narration's phonetic spellings
+  back (`"ess ess"` to `ss`).
+- **GIF loops** ship as muted MP4s that autoplay with a pause control
+  (WCAG 2.2.2), with a PNG poster, not as `.gif` files.
 - **Callbacks** describe the concept ("the inodes model from the links
   lab"), never a video or lab number.
 

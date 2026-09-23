@@ -34,15 +34,19 @@ For whoever builds the ATC VM. A plain checkbox punch list, not a script.
 8. `## Portal checks`: one row per check the guide names, for whoever wires
    the checks into the lab portal:
 
-   | ID | Page | Runs on | Command (as root) | Passes when | On the starting state |
-   |---|---|---|---|---|---|
-   | `l4-run-sh` | Module 1 | lab VM | `stat -c %a /home/labuser/permlab/run.sh` | output is `770` or `750` | prints `644`, fails |
+   | ID | Page | Runs on | Command (as root) | Passes when | On the starting state | Fail message |
+   |---|---|---|---|---|---|---|
+   | `l4-run-sh` | Module 1 | lab VM | `stat -c %a /home/labuser/permlab/run.sh` | output is `770` or `750` | prints `644`, fails | `run.sh` is not yet executable by you and your group, with no access for others. |
 
    Every check is non-interactive, safe to run repeatedly, and changes
    nothing. Prefer a command whose exit code is the verdict (`test`,
    `grep -q`, `readlink -e`); otherwise state the exact passing output. Each
    check must fail on the starting state and pass on the finished one; the
-   last column proves the first half.
+   "On the starting state" column proves the first half. The fail message is
+   for the portal to show the learner when the check fails, and for
+   SUPPORT.md's troubleshooting paragraph: one sentence, in the page's words,
+   naming the condition that isn't met, never the check command or blame
+   (style guide V5).
 
 ## SUPPORT.md: notes for the support team
 
