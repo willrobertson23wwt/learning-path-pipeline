@@ -1,135 +1,195 @@
 ---
 name: scripts
-description: Generate narration scripts + visual briefs from an approved course outline
+description: Write the spec for every media item in an approved lab-first outline: narration and a visual brief for each micro-video and the briefing, a loop spec for each GIF, and a layout for each reference card, under courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md. Use whenever the user wants narration, voiceover text, GIF specs, card layouts, or media scripts written or rewritten for a path or one lab, e.g. "/scripts linux-filesystem 3" or "redo the scripts for Lab 2". Stage 2 of the pipeline; it never generates audio.
+argument-hint: <course-slug> [lab | first-last]
 ---
 
-Generate the per-chapter narration scripts for a course. `$ARGUMENTS` is the
-course slug (e.g. `/scripts powershell-fundamentals`). Optionally a video number
-follows the slug to (re)generate just that video's chapters
-(e.g. `/scripts powershell-fundamentals 3`).
+Write the media specs for a lab-first path. `$ARGUMENTS` is the course slug,
+optionally followed by a lab number or inclusive range (`0` is Module 0: the
+briefing and any cards introduced there). Follow `.claude/house-style.md`,
+including the repo check, and its "Lab-first design" section: each item's
+job depends on where it sits in the lab.
 
-**Guard:** course content never lives in the template repo. If the current
-project is `learning-path-pipeline` (check the `name` in package.json),
-stop and point the user at `/new-path`.
+Read `courses/<slug>/outline.md` first. If its frontmatter still says
+`status: draft`, point that out and ask the user to confirm it's approved
+before writing anything. Every media item in the outline has an ID
+(`lf-l3-v1`, `lf-l1-g1`, `lf-card-fhs-map`, `lf-briefing`); write one file
+per ID in range, and nothing the outline doesn't list.
 
-## Input
+**Research first.** Each lab has one brief at
+`courses/<slug>/research/NN-<lab-slug>.md` (see "Research briefs" in
+`.claude/house-style.md`), shared with `/lab`. For each lab that needs one,
+launch the `researcher` agent in `lab` mode, all in one message when there
+are several. Verified syntax, defaults, and output shapes go into the visual
+briefs, loop specs, and cards; the brief's misconceptions sharpen what each
+micro-video explains. If the brief contradicts the approved outline on
+scope, write the spec as outlined and raise the conflict in your report.
 
-Read `courses/<slug>/outline.md`. If its frontmatter still says `status: draft`,
-point that out and ask the user to confirm the outline is approved before writing
-anything.
+When the specs are written, run the `script-linter` agent on the slug and
+range and, in parallel, `prose-checker` on the video and card files. Fix
+their BLOCKING and FIX findings and include any remaining NOTEs in your
+report. Then stop. The user reviews the specs before `/audio`, because every
+generated minute of narration costs ElevenLabs credits.
 
-## Output
-
-A course is videos (4-6 min each); a video is 2-4 chapters; **each chapter is
-one script file and becomes one ElevenLabs request / one narration MP3 / one
-overlay composition**. Write:
+## Files
 
 ```
-courses/<slug>/scripts/NN-<video-slug>/MM-<chapter-slug>.md
+courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md
 ```
 
-(NN = video number zero-padded, MM = chapter number within the video, e.g.
-`01-first-script/01-hello-world.md`.) Every video ALSO gets a chapter 0:
-`00-intro.md`, the narration for the video's intro segment (the user supplies
-custom intro footage, so this chapter gets audio but NO Remotion work — its
-"Visual brief" section just says the custom intro video covers it). Then STOP —
-do not generate audio. The user reviews and edits the scripts first.
+NN is the zero-padded lab number (`00-briefing/` for Module 0). A card lives
+in the folder of the lab that introduces it. The capstone has no media of its
+own, so it gets no folder.
 
-Use this exact structure (the frontmatter drives `scripts/generate-audio.mjs`):
+Frontmatter, shared by every type:
 
 ```markdown
 ---
-video: 1
-chapter: 1
-title: Hello World
-folder: ps-v1-ch1     # audio lands in public/chapters/<folder>/narration.mp3
+id: lf-l3-v1
+type: video          # video | briefing | gif | card
+lab: 3
+title: Names, Inodes, and Data
+folder: lf-l3-v1     # audio lands in public/chapters/<folder>/; same as id
+length: 90           # target seconds (video, briefing, gif); omit for a card
+optional: false      # the lab labels optional videos as such
+standalone: false    # true: published on its own; gets an article and the video close
+follows: "Step 2, the predict step: which cat works after rm original.txt?"
 ---
+```
 
-<The narration, as plain prose paragraphs. This exact text is sent to
-ElevenLabs, so it must contain ONLY words to be spoken aloud.>
+`follows` names the step the item sits beside, in the learner's words, so
+the narration can start from what the learner just did. `standalone` is true
+for the briefing and for any video the outline marks as published on its
+own; everything else is embedded in a lab.
+
+The body depends on the type.
+
+## Video and briefing
+
+Narration above `## Visual brief`, exactly as for the voice to read, then the
+brief. `scripts/generate-audio.mjs` sends everything above the heading to
+ElevenLabs.
+
+```markdown
+<Narration as plain prose paragraphs, only words to be spoken.>
 
 ## Visual brief
 
-<Everything below this heading is stripped before text-to-speech. Describe the
-motion graphics per narration beat: what appears, when, contrasts, terminal
-content. Quote the narration phrase each visual should sync to.>
+<The motion-graphics spec, per beat.>
 ```
 
-Folder naming: `<prefix>-vN-chM` (prefix from the outline frontmatter); a
-video's intro chapter uses `<prefix>-vN-intro`. A course-level marketing intro
-video is a single chapter with `folder: <prefix>-intro`; the review video is a
-single chapter with `folder: <prefix>-review`.
+**Length.** About 140 words per minute. A micro-video (30-90 s) is roughly
+70-210 words; aim at the `length` the outline gives. The briefing (about 2-3
+minutes) is roughly 280-420 words. Each file stays under 2,900 characters,
+the eleven_v3 per-request limit. Count before saving.
 
-## Narration rules (the text is spoken by a cloned voice — write for the ear)
+**An embedded micro-video explains one surprise.** The learner has just
+predicted and run something, and the result didn't match what they expected.
+The video:
 
-- A chapter is 60-120 seconds at ~140 words per minute, so **150-300 words**.
-  A full video's chapters should total 550-850 words. The intro video is ~150
-  words. Count and stay in range — each chapter must also stay under 2,900
-  characters (the eleven_v3 per-request limit).
-- **The chapter 0 intro** is what plays over the user's custom intro footage:
-  60-100 words (~30-45s) saying what the video covers and why it matters,
-  ending on a hand-off into the lesson ("let's get into it"). Because the
-  intro does that job, chapter 1 starts teaching immediately: no welcome, no
-  "in this video we'll", no topic preamble — dive into the first beat. Later
-  chapters pick up mid-thought (no re-introductions).
-- **Every video's last chapter ends with exactly:** "Hope you found this helpful
-  and I'd like to thank you for watching." — and its visual brief ends with a
-  big centered "Thank You for Watching!" closing the video. Do NOT close with a
-  teaser for the next video ("next up …") — videos must end self-contained.
-  Forward references WITHIN a video's chapters are fine.
-- Between chapters the user typically inserts screencast demo footage — end a
-  chapter at a natural hand-off ("let's try that") where it fits.
-- Conversational, direct, second person. Short sentences. Contractions are fine.
-- Never use em-dashes. Use commas, periods, or separate sentences.
-- No stage directions, no "[pause]", no markdown formatting, no bullet lists
-  in the narration body — prose paragraphs only.
-- Write commands the way they should be SPOKEN, then show the exact syntax in
-  the visual brief. E.g. narration says "run chmod plus x on the file" while
-  the visual brief shows `chmod +x hello.sh`; "run Get Service with the Name
-  parameter" while the brief shows `Get-Service -Name spooler`; "show I P
-  route" while the brief shows `show ip route`. Avoid narrating
-  punctuation-heavy strings that a TTS voice will mangle.
-- **Check the TTS phonetic list** in CLAUDE.md's platform profile (bare short
-  names the voice mangles, e.g. `ss` → "ess ess", `sh` → "S H") and write every
-  mention that way. When a retake exposes a new one, add it to the list.
-- **Filesystem paths, registry keys, URLs and long identifiers almost never
-  belong in narration** — TTS reads `/home/labuser/scripts`,
-  `HKLM\SYSTEM\CurrentControlSet` and `GigabitEthernet0/0/1` badly. Describe
-  the location instead ("the lab user's scripts folder", "your home
-  directory", "the system log directory", "the first gigabit interface") and
-  put the exact string in the visual brief so it appears on screen. A spoken
-  path is allowed only when the path itself IS the lesson (e.g. teaching
-  `/etc/resolv.conf`), and then keep it short, say it once, and write it out
-  phonetically ("et cetera slash resolv dot conf") so the voice lands it.
-- **Sentence rhythm for eleven_v3:** short, comma-fragmented sentences read
-  choppy (word, word, pause). Write flowing sentences of normal length.
-- Teach one idea per paragraph. Prefer a concrete failure ("here's what happens
-  if you skip the quotes") over an abstract warning.
-- **Write like an expert teacher explaining to someone with little to no
-  experience** with the concept at hand — this holds even in intermediate/advanced
-  learning paths, since a learner can be experienced overall but new to the specific
-  idea a chapter is teaching. For genuinely complex topics, ground the explanation
-  with a real-world scenario showing why the concept matters in practice, not just
-  its mechanics. Don't force this on every concept — reserve it for the ones that
-  are actually hard to grasp from the mechanics alone.
-- **Callbacks describe the concept, never the video number.** Learners skip
-  around and the platform doesn't number videos the way the outline does:
-  "the PATH lesson from the scheduling video", not "back in video 5".
-- **Unslop pass before saving:** run
-  `.claude/skills/unslop/SKILL.md` over each chapter's narration body as the
-  last step. Its "Course content" section lists the exceptions that matter
-  here: the mandated closing line stays, and the spoken/phonetic command forms
-  above win over its over-compression rule. Visual briefs are not in scope.
+- opens on what they just saw ("That `ls -l` said zero bytes, but `wc`
+  counted thousands"), never on a welcome, a title, or "in this video";
+- explains the one idea behind it, with the mental model the lab needs next;
+- ends by handing back to the lab ("head back and recreate the original"),
+  with no closing line and no Thank You card;
+- works for a learner who skipped the predict step, since every video is
+  optional: one sentence of setup is enough;
+- never re-teaches what a GIF or card already covers.
 
-## Visual-brief rules
+**Standalone videos** (the briefing, and any video marked `standalone`) are
+watched on their own. The briefing gives the path's mental models, the
+supportive information from the outline's Module 0, and hands off to Lab 1.
+A standalone video ends with exactly: "Hope you found this helpful and I'd
+like to thank you for watching." Its visual brief ends on the "Thank You for
+Watching!" card. No teaser for another video.
 
-- Every visual beat must quote the narration phrase it syncs to, in order.
-- Favor the patterns the repo already renders well: terminal/console type-on
-  (any prompt: bash, PowerShell, device CLI), line-by-line code or config
-  builds, before/after contrasts, ✓/✗ comparisons, reference-card grids,
-  stacked-layer diagrams, closing checklists. See CLAUDE.md "Style & motion
-  conventions". GUI-heavy topics still get a motion-graphics chapter: diagram
-  the concept (a settings hierarchy, a policy flow, a topology) rather than
-  redrawing dialogs — the screencast footage between chapters shows the real
-  UI.
-- 1-2 scenes per chapter, one focal element at a time, centered.
+**Writing for TTS.**
+- Prose paragraphs only: no markdown, lists, stage directions, or "[pause]".
+- Write flowing sentences of normal length. Runs of short, comma-fragmented
+  sentences come out choppy on eleven_v3 (word, word, pause).
+- Say commands the way they're spoken and put the exact syntax in the visual
+  brief: "run chmod plus x on the file" with `chmod +x hello.sh` on screen;
+  "run Get Service with the Name parameter" for `Get-Service -Name spooler`;
+  "show I P route" for `show ip route`. Punctuation-heavy strings get mangled.
+- Use the TTS phonetic list in CLAUDE.md's platform profile for every
+  mention (`ss` becomes "ess ess", `sh` becomes "S H"). When a retake exposes
+  a new one, add it to the list.
+- Keep `courses/<slug>/caption-map.json` in step with the phonetic list: an
+  object of spoken form to real syntax (`{"ess ess": "ss"}`). Captions are
+  built from the audio, and the map puts the real syntax back on screen.
+- Leave paths, registry keys, URLs, and long identifiers out of narration;
+  describe the location ("the system log directory") and show the string on
+  screen. Speak a path only when the path is the lesson, and then say it
+  once, phonetically ("et cetera slash resolv dot conf").
+
+**Teaching voice.** Conversational, direct, second person. One idea per
+paragraph. Explain like an expert teacher talking to someone new to this
+concept. For a hard concept, a real-world scenario that shows why it matters
+beats an abstract warning.
+
+**Visual briefs.**
+- Quote the narration phrase each visual beat syncs to, in order. `/video`
+  times the beats from those phrases.
+- An embedded video opens on content at frame 0 (the output the learner just
+  saw, redrawn), not on a title card; the lab page already shows the title.
+  A standalone video opens on its title card.
+- Use patterns the repo already renders well: terminal or console type-on
+  (any prompt), line-by-line code or config builds, before/after contrasts,
+  check and cross comparisons, stacked-layer diagrams (directory entry,
+  inode, data blocks). See CLAUDE.md "Style & motion conventions".
+- GUI-heavy topics still get motion graphics: diagram the concept instead of
+  redrawing dialogs.
+- One or two scenes, one focal element at a time, centered.
+
+**Before saving,** run the unslop pass over each narration body. Its "Course
+content" exceptions matter: the standalone closing line stays, and the
+spoken command forms above win over its compression rule. Visual briefs are
+out of scope.
+
+## GIF
+
+No narration and no audio. The body is one `## Loop spec` section that
+`/video` builds from directly:
+
+```markdown
+## Loop spec
+
+- **Shows:** <the mechanic, in one sentence: typing `cd /us` and pressing Tab>
+- **Length:** <5-15 s total, including the hold>
+- **Canvas:** 1280x720, flat dark background (no texture; it bloats the file)
+- **Beats (seconds):**
+  - 0.0 empty prompt `labuser@lab:~$ ` with cursor
+  - 0.5 type `cd /us` (about 12 characters per second)
+  - 1.4 key badge "Tab" appears under the cursor
+  - 1.6 line completes to `cd /usr/`
+  - 2.0-5.5 hold the finished line so it can be read
+  - 5.5-6.0 fade back to the empty prompt (frame 0 again)
+- **Text on screen:** <every string, copy-accurate, with the platform prompt>
+- **Loop point:** the last frame matches frame 0
+```
+
+Rules: show mechanics only (where to click, what to type, how to read one
+dense line), never explanation. Keep keystrokes and output copy-accurate on
+the platform baseline. Hold the finished state long enough to read, at least
+1.5 s. Key presses that print nothing (Tab, Enter, Ctrl+C) get a small
+labeled badge so a silent loop still shows them.
+
+## Reference card
+
+A static image the lab pins for lookup. The body is one `## Card layout`
+section:
+
+```markdown
+## Card layout
+
+- **Title:** <card title as shown>
+- **Canvas:** 1920x1080, flat dark background, readable at half size
+- **Content:** <the exact table, map, or diagram: every label, value, and
+  line of syntax as it appears on the card>
+- **Emphasis:** <what stands out, e.g. the octal column in accent color>
+```
+
+Rules: only what learners look up again and again; no sentences where a
+label will do; every value copy-accurate. The card's text is learner-facing,
+so it follows house style (no em dashes, no emojis), but short labels and
+table fragments are fine.

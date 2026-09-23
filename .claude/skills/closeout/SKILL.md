@@ -1,42 +1,55 @@
 ---
 name: closeout
-description: Close out a finished course or a range of its videos — bundle the deliverable MP4s, narration, scripts and articles into one verified, dated zip and reclaim the render disk space
+description: Close out a finished lab-first path or a range of its labs. Bundles the deliverables (MP4s, captions, GIFs, card PNGs), narration, transcripts, media specs, articles, and research briefs into one verified, dated zip under archives/, then deletes the multi-GB out/ renders only after explicit confirmation. Only when the user explicitly invokes /closeout.
+argument-hint: <course-slug> [first-last]
+disable-model-invocation: true
 ---
 
-Close out a finished learning path (or the videos of it that have shipped).
-`$ARGUMENTS` is the course slug, optionally followed by an inclusive video
-range (e.g. `/closeout powershell-fundamentals`, `/closeout
-powershell-fundamentals 1-5`). The work is done by `scripts/closeout.mjs`;
+First do the repo check in `.claude/house-style.md` ("Where content
+lives"): in a template folder, stop.
+
+Close out a finished learning path (or the labs of it that have shipped).
+`$ARGUMENTS` is the course slug, optionally followed by an inclusive lab
+range (e.g. `/closeout linux-filesystem`, `/closeout linux-filesystem 1-3`).
+Path-level media (the briefing, Module 0 cards) goes in only on a whole-path
+closeout. The work is done by `scripts/closeout.mjs`;
 this skill wraps it with the checks and the one confirmation that matter.
 
 ## What gets archived
 
-Into `archives/<slug>[-vA-B]-<YYYYMMDD>.zip` (gitignored), repo-relative
+Into `archives/<slug>[-vA-B]-<YYYYMMDD>.zip` (gitignored; A-B is the lab range), repo-relative
 paths preserved, plus a `MANIFEST.txt` with sha256 and size per file:
 
-- `deliverables/<prefix>-vN-*.mp4` — the MP4s handed to the editor.
-- `public/chapters/<prefix>-vN-*/narration.mp3` + `narration.transcript.json`
-  — the source narration the editor also syncs against, and the timings
-  the beat tables came from.
-- `courses/<slug>/scripts/NN-*/` and `courses/<slug>/articles/NN-*.md` —
-  small, git-tracked, included so the zip is self-contained.
-- `courses/<slug>/outline.md` on a whole-course closeout.
-- `out/` renders for those videos ONLY with `--renders` (they are the
+- `deliverables/<media-id>.*`: the MP4s, VTT captions, GIFs, and card PNGs.
+- `public/chapters/<media-id>/`: `narration.mp3`, `narration.transcript.json`,
+  and `narration.vtt`, the source narration and the timings the beat tables
+  came from.
+- `courses/<slug>/scripts/NN-*/`, `courses/<slug>/articles/` (standalone
+  videos only; embedded ones have none), and `courses/<slug>/research/`
+  (per-lab briefs in range; the outline and capstone briefs on a whole-path
+  closeout): small, git-tracked, included so the zip is self-contained.
+- `courses/<slug>/outline.md` and `caption-map.json` on a whole-path
+  closeout.
+- `out/` renders for those labs ONLY with `--renders` (they are the
   multi-GB working copies; the deliverable is already in `deliverables/`).
+
+Lab repos (`labs/`) are not archived; each publishes to its own GitHub repo.
 
 ## Steps
 
 1. Preconditions, before touching anything:
-   - Every video in scope has an entry in CLAUDE.md's Course Status and its
-     MP4s in `deliverables/`. If a chapter's MP4 is missing there but present
-     in `out/`, stop and say so — copy first, then close out.
-   - `git status` is clean for `courses/<slug>/` (scripts and articles
-     committed). If not, tell the user what is uncommitted and stop.
+   - Every lab in scope has an entry in CLAUDE.md's Course Status, and every
+     media item the outline lists for it has its deliverables in
+     `deliverables/` (a video's MP4 and VTT, a GIF, a card PNG). If one is
+     missing there but present in `out/`, stop and say so; copy first, then
+     close out.
+   - `git status` is clean for `courses/<slug>/` (specs, articles, and
+     briefs committed). If not, tell the user what is uncommitted and stop.
 2. Dry run and show the plan:
    `node scripts/closeout.mjs <slug> [A-B] --dry-run`
-   (nvm PATH export on macOS per CLAUDE.md). Sanity-check the count against
-   the outline: chapters per video × videos in scope should match the
-   deliverable count. Flag gaps.
+   (Node PATH setup per `.claude/house-style.md`). Sanity-check the count against
+   the outline's production inventory for the labs in scope: two files per
+   video (MP4 and VTT), one per GIF, one per card. Flag gaps.
 3. Build and verify the zip: `node scripts/closeout.mjs <slug> [A-B]`.
    The script lists the archive back and fails if any file is missing.
    Report the zip path, entry count and size.
@@ -45,8 +58,9 @@ paths preserved, plus a `MANIFEST.txt` with sha256 and size per file:
    on a clear yes run
    `node scripts/closeout.mjs <slug> [A-B] --purge-renders --yes`
    (`--yes` skips the script's own prompt because the user just answered it
-   here). Never purge `deliverables/` or `public/chapters/` — the script
-   does not, and neither should you by hand.
+   here). Never delete `deliverables/` or `public/chapters/`, by script or by
+   hand: they are the only copies of the delivered media and source
+   narration.
 5. Suggest where the zip goes (the team share or the course's archive
    bucket) and note the manifest path so the receiver can verify hashes.
    Do not upload anywhere yourself.

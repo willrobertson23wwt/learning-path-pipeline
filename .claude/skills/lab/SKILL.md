@@ -1,170 +1,119 @@
 ---
 name: lab
-description: Draft the hands-on lab guide (WWT mkdocs format) for a module's lab
+description: Draft one lab of a lab-first path as its own WWT mkdocs lab repo (index, environment, module pages, reference cards, description) plus the internal SETUP.md with its portal checks and SUPPORT.md, under labs/<lab-slug>/, with the path's GIFs, micro-videos, predict prompts, hints, and checks embedded at their steps and the guidance level the outline sets. Also drafts the capstone repo, and the path page for Module 0 (pre-check and briefing). Use whenever the user asks to write, draft, or start a lab, the capstone, or the pre-check, e.g. "/lab linux-filesystem 3", "/lab linux-filesystem capstone". Guide only; review, topology, and the VM build are later stages.
+argument-hint: <course-slug> <lab-number | capstone | 0>
 ---
 
-Draft the lab guide for one module's closing lab. `$ARGUMENTS` is the course
-slug and module number (e.g. `/lab powershell-fundamentals 1`). The lab title comes
-from the outline's `**Lab:**` line for that module.
+First do the repo check in `.claude/house-style.md` ("Where content
+lives"): in a template folder, stop.
+
+Draft one lab of a lab-first path. `$ARGUMENTS` is the course slug and one
+of: a lab number (`/lab linux-filesystem 3`), `capstone`, or `0` for the
+path page. Follow `.claude/house-style.md`, including "Lab-first design": in
+a lab-first path the lab *is* the lesson, and the media only supports it.
+
+**One repo per lab.** Every outline lab, and the capstone, is its own WWT lab
+repo with its own environment, SETUP.md, and VM. Module 0 is not a lab: its
+pre-check and briefing live on the learning path's page on the platform.
 
 ## Inputs
 
-- `courses/<slug>/outline.md` — the module's videos and lab title. The lab must
-  exercise the skills that module's videos taught (and only those, plus
-  reasonable prerequisites from earlier modules).
-- The module's scripts in `courses/<slug>/scripts/` if written — reuse their
-  running examples for continuity (e.g. the module's example script becomes the
-  artifact the lab builds on).
+- `courses/<slug>/outline.md`: the lab's section (goal, guidance level,
+  time, steps, media IDs, predict prompts, check), plus the labs before it
+  for what the learner already knows. The lab exercises what the outline
+  gives it, and nothing else.
+- The lab's media specs in `courses/<slug>/scripts/NN-<lab-slug>/`, if
+  written: titles, lengths, `optional` marks, and the exact commands GIFs and
+  videos show, so the page and the media agree.
+- CLAUDE.md's platform profile: shell, prompt, elevation model, lab
+  environment default, output-trimming rule.
+- The lab's research brief, `courses/<slug>/research/NN-<lab-slug>.md` (or
+  `capstone.md`), shared with `/scripts`. If it's missing or stale (see
+  "Research briefs" in `.claude/house-style.md`), launch the `researcher`
+  agent in `lab` mode first. Its verified output shapes, predict outcomes,
+  check commands, and gotchas feed the guide, SETUP.md, and the
+  anticipated-output blocks; say in the report which blocks came from the
+  brief instead of memory.
 
 ## Output
 
-Write to `labs/<lab-slug>/` in this repo (drafting location; each lab folder is
-later uploaded as its own standalone GitHub repo, so name the slug for what the
-lab is, not its module number — no `01-`/`02-` prefix; the files map 1:1 into
-the `labdocs/docs/` folder of the WWT lab repo scaffold):
+Write to `labs/<lab-slug>/`, named for what the lab is (no number prefix),
+and add `**Lab repo:** <lab-slug>` under the lab's heading in the outline the
+first time, so `/video` can deliver media into it. The files map 1:1 into
+the `labdocs/docs/` folder of the WWT lab repo scaffold.
 
-- `index.md` — opens with the WWT logo line exactly as
-  `![WWT Logo](./media/index/wwt-logo-color-stacked-high.png)`, then
-  `# <Course>: <Lab Title>`, and a Version History table (today's date, `1.0`,
-  author, `Initial release`). Copy the logo itself from
-  `.claude/skills/lab/assets/wwt-logo-color-stacked-high.png` into the lab's
-  `media/index/` as part of scaffolding (house rule: the logo must
-  always be present, never hand-copied later; the same filename is used by every
-  WWT lab repo).
-- `environment.md` — see below.
-- `module-1.md` … `module-N.md` — 2-4 modules, each a 10-20 minute exercise.
-- `description.md` — a 2-4 sentence lab-listing blurb. **Never open it with the
-  "<OS> desktop hosted in the WWT ATC" boilerplate** — lead with what the
-  learner will do and why it matters.
-- `SETUP.md` — internal provisioning checklist for whoever builds the ATC VM,
-  never the learner. A plain checkbox punch list (not an executable script):
-  base image/account, a **vApp edge firewall** section (house rule:
-  a rules table for the vCloud Director edge — inbound only the portal SSH
-  ports to the gateway/lab VM, outbound only what the guide's commands need
-  such as ICMP, UDP 33434-33534 for traceroute and 53 for DNS, default deny
-  with logging on, plus a note to open TCP 80/443 out temporarily for package
-  updates (`apt`, Windows Update, `install add`) during image maintenance),
-  packages/features/licenses to verify/install, exact
-  pre-seeded files and directories with ownership/permissions (reference
-  `environment.md` rather than duplicating it), confirming a clean slate (no
-  leftover artifacts from building the checklist itself), and a final
-  dry-run-then-reset-then-snapshot step. `labs/**/SETUP.md` is gitignored — never part of the published guide.
-- `SUPPORT.md` — internal notes for the ATC support team once the lab is live, never pushed to GitHub: the course repo ignores
-  `labs/`, and each lab repo's `.gitignore` lists `SUPPORT.md`, so never copy
-  it into the lab repo. **Plain text, not markdown**: each section pastes into
-  a plain textarea on the ATC lab form, which renders no markdown and no
-  bullets. No backticks, bold, headings or list markers; quote commands with
-  double quotes inline, or one per line for a reset sequence; separate items
-  with blank lines. Three ALL-CAPS section labels: LAB NOTES (the form asks
-  "what needs to happen to run this lab": VMs, sizing, disks, network,
-  credentials, seeded state that must be present, reboot count, portal
-  behavior, learner time, build/test status), LAB PURPOSE (one paragraph),
-  TROUBLESHOOTING (one paragraph per symptom in module order, symptom as the
-  first sentence, then cause, check and fix; end with a reset-to-starting-state
-  command sequence and a verify paragraph). Never put the lab password in it;
-  name the account and point at the guide's Device Access table. The first
-  two can be short. Until the VM has been built and dry-run, say so up front
-  and call the entries anticipated.
-- `media/environment/`, `media/index/`, and `media/module-1/` … `media/module-N/`
-  — one folder per file that can carry screenshots, created up front as a
-  standard part of every lab's structure, even before any screenshots exist.
-  All are empty except `media/index/`, which always holds the WWT logo above.
+| File | What it is |
+|---|---|
+| `index.md` | The WWT logo line, `# <Path>: <Lab Title>`, and a Version History table |
+| `environment.md` | The learner's Environment page |
+| `module-1.md` … `module-N.md` | The lab's steps, split at natural checkpoints (each page about 10-20 minutes) |
+| `reference.md` | The reference cards this lab uses, one heading and image each (omit if none) |
+| `description.md` | The 2-4 sentence lab-listing blurb |
+| `SETUP.md` | Internal build checklist, including the **portal checks** table (gitignored) |
+| `SUPPORT.md` | Internal notes for the ATC support team (never pushed) |
+| `media/index/`, `media/environment/`, `media/module-N/`, `media/reference/` | One folder per page, created up front |
 
-Then STOP for user review. Do not create terraform/ansible provisioning — the
-guide only; the vApp is planned later with `/lab-build <lab-slug>` (Lab Builder)
-after `/lab-review`. Screenshots are captured by the user later: reference them as
-`![name](./media/module-N/name.png)` (or `./media/environment/name.png`,
-`./media/index/name.png`) placeholders at each point where a command result
-deserves one.
+- **Learner pages:** follow `references/guide-format.md`, including its
+  "Lab-first pages" section: how GIFs, videos, cards, predict prompts,
+  hints, and checks appear on a page, and how each guidance level reads.
+- **Internal files:** follow `references/internal-docs.md`. Exact pre-seeded
+  file contents go in SETUP.md from the start, and so does every portal
+  check.
+- **Logo:** copy `.claude/skills/lab/assets/wwt-logo-color-stacked-high.png`
+  into `media/index/` while scaffolding. Every WWT lab repo uses that exact
+  filename.
+- **Media files** don't exist yet. Reference each at the path the guide
+  format gives (`./media/module-N/<media-id>.gif`), and list them in the
+  report; `/video` copies the rendered files into place.
 
-## environment.md format
+## The capstone
 
-1. `# Environment Overview` — two short paragraphs: what the environment is
-   (the default from CLAUDE.md's platform profile, e.g. an Ubuntu VM, a
-   Windows Server VM, or a Cisco device, reached through the WWT ATC Lab
-   Portal) and what state it starts in (pre-seeded files/services/config the lab
-   needs), then `![environment](./media/environment/lab-topology.svg)`. The
-   SVG itself is drawn afterwards with `/lab-topology <lab-slug>` (a separate
-   review stop) — don't hand-draw it here.
-2. `## Accessing Your Lab Environment` — ATC portal access paragraph plus a
-   `!!!note` about on-demand provisioning taking a few minutes.
-3. `## Device Access Information` — credentials table, one row per device
-   (`<Device> | Browser (ATC Portal) | <account> | <password>`, defaults from the
-   platform profile, e.g. `Ubuntu 24.04 VM | Browser (ATC Portal) | labuser |
-   Labpass01!`).
+`/lab <slug> capstone` drafts the capstone as its own repo from the outline's
+capstone section:
 
-State the pre-seeded starting condition precisely (files, sizes, services,
-running-config) —
-it is the spec for whoever builds the environment automation later.
+- One module page per problem or a single page for all of them, goals only,
+  in the scenario's voice ("A teammate reports three issues on this box").
+- Every seeded problem is in SETUP.md's pre-seeded section, precise enough
+  to build, and has a portal check that fails on the seeded state and passes
+  once fixed.
+- Hints sit in collapsed "Stuck?" blocks. The platform logs opening them, so
+  say so in SUPPORT.md.
+- No new videos. "Rewatch" links go to the earlier videos the outline
+  names; copy those media files into this repo's `media/` so it stands on
+  its own.
 
-## Module format (match the existing WWT labs)
+## The path page (`0`)
 
-- `# <Task-shaped title>` then an intro paragraph: why this task matters and
-  what the learner will accomplish. Teach, don't just instruct — every command
-  gets a sentence of purpose before or after it.
-- `## <Step group>` sections containing numbered steps. Each step: one action,
-  a fenced block tagged with the platform's shell (`bash`, `powershell`, or
-  `text` for device CLIs, per CLAUDE.md's platform profile) holding the
-  copy-accurate command, then the output as a **rendered terminal
-  screenshot**, then what to look for in it. Never put command output in a
-  fenced `text` block: the ATC site script puts a copy button on every code
-  block, so output blocks read like commands. Render each output with
-  `scripts/lab-terminal-shot.py` (green-on-black portal look: prompt + command
-  as typed, realistic full output, trailing prompt with cursor; the prompt
-  string from the platform profile, e.g. `labuser@<host>:~$ `,
-  `PS C:\Users\labuser> `, `Router#`; include the elevation prompt, e.g.
-  `[sudo] password for labuser: `, on a session's first elevated command)
-  into `media/module-N/<descriptive-name>.png` and reference it as
-  `![<what it shows>](./media/module-N/<name>.png)`. Keep the spec for all of
-  a lab's shots in `labs/<slug>/shots_spec.py` so they can be re-rendered
-  together (also pushed to the lab repo root). GUI steps (a Windows console,
-  a web UI) get a real screenshot placeholder per dialog instead. Trim shown
-  output per the platform profile's output-trimming rule, see below.
-- `!!!note` admonitions (4-space indented body) for conceptual asides,
-  gotchas, and "what this really means" moments — 1-3 per module.
-- Small tables for reference material (flag meanings, layer models).
-- Module 1 starts from inspection/orientation ("Opening a Terminal" reminder,
-  then survey the starting state); later modules build to the finished
-  artifact; the lab's arc mirrors the module's videos.
-- Each module ends with `## What You Have Learned` — bullets of the concrete
-  findings/skills, plus a sentence bridging to the next module.
-- The FINAL module instead ends with a `## <Workflow> Summary` (the numbered
-  end-to-end procedure they just performed) and a closing paragraph:
-  "Congratulations. You have completed the **<Course>: <Lab Title>** lab…"
-  naming the skills gained and where they apply.
+`/lab <slug> 0` writes `courses/<slug>/path-page.md`, the content for the
+learning path's page on the platform (not a lab repo):
 
-## Style
+- The pre-check: each question, its answer, and the lab a correct answer
+  lets the learner skip to.
+- The briefing video (`<prefix>-briefing.mp4` with its captions), its length,
+  and a link to its article.
+- The reference cards introduced in Module 0.
+- The lab sequence in order, with each lab's guidance level and time.
 
-- Second person, present tense, plain confident prose. No em-dashes.
-- Commands copy-accurate and runnable in order on the stated environment; any
-  placeholder values (IPs, hostnames, serials, tenant IDs) reserved/fictional.
-- Trim shown output to what the lesson needs, per the platform profile's
-  output-trimming rule. Keep the commands as taught, trim only the output. On
-  Linux and Windows networking labs that means no IPv6 or layer-2 detail
-  anywhere in the learner-facing guide: drop `fe80::` link-locals and `::1`,
-  `[::]` listener rows, `(v6)` firewall rows, MAC addresses, and any prose
-  explaining them. On device CLIs drop unrelated interfaces and boilerplate
-  banners. MAC/interface tables belong only in the internal SETUP.md.
-- Standalone within the course: reference this module's videos freely ("as you
-  saw in the videos"), never other courses.
-- The learner should be able to complete the lab with ONLY this guide open.
-- At the lab's FIRST elevated command, add a `!!! note` explaining the
-  platform's elevation model (from the platform profile). For `sudo`: it will
-  prompt for the lab user's password, give the password verbatim (lab
-  credentials are not secret), typing doesn't echo, and sudo caches it for
-  ~15 minutes. For Windows: how to open an elevated PowerShell and what the
-  UAC prompt looks like. For a device CLI: `enable` and the enable password.
-- The ATC portal opens one browser terminal (or console) tab per lab device.
-  Write multi-host steps as tab switches
-  ("In the **web01 tab**, ..."), name the tab in each step, and remind the
-  learner to read the prompt. Never have learners SSH/RDP between lab hosts or
-  use tmux just to get a second shell. Every device the learner touches gets a
-  `Browser (ATC Portal)` row in the Device Access table.
-- Never mention markdown filenames in learner-facing text (`environment.md`,
-  `module-2.md`). Learners see the rendered mkdocs site, so refer to pages by
-  their nav names: "the Environment page", "Module 2".
-- Unslop pass before saving: run
-  `.claude/skills/unslop/SKILL.md` over each module, `environment.md` and
-  `description.md` as the last step. Lab section headings keep the WWT Title
-  Case format and the closing "Congratulations" paragraph stays; `SETUP.md`,
-  commands and shown output are out of scope.
+## Command output in a draft
+
+No VM exists yet, so output can't be captured. Put each command's expected
+output in a `text` block directly under it, and list those blocks in the
+report as anticipated output. After the dry run, each block is replaced by a
+rendered terminal screenshot (see "Command output" in the guide format).
+Mark GUI steps with a screenshot placeholder per dialog:
+`![<what it shows>](./media/module-N/<name>.png)`. In goal-only steps there
+is no command to show, so the expected result goes in the collapsed reveal
+or hint instead.
+
+## Then stop
+
+Before saving, run the unslop pass over each module, `environment.md`,
+`reference.md`, and `description.md`. WWT Title Case headings and the
+closing "Congratulations" paragraph stay; `SETUP.md`, commands, and shown
+output are out of scope. Then run `prose-checker` on those saved files and
+fix its FIX findings.
+
+Report the files written, the media files the guide expects, the portal
+checks, and the anticipated-output list, then stop for review. Don't write
+Terraform or Ansible. The next stages are `/lab-review <lab-slug>`,
+`/lab-topology <lab-slug>`, and then `/lab-build <lab-slug>`.

@@ -1,53 +1,49 @@
 ---
 name: produce
-description: One-shot audio + video — generate narration and build/render the chapters for one video (or a numbered range) without stopping between stages
+description: One-shot fast path that runs /audio then /video for named labs (narration, transcription, captions, media build, render, articles for standalone videos) without the usual listen-first stop. Only when the user explicitly invokes /produce with a lab number or range.
+argument-hint: <course-slug> <lab | first-last>
+disable-model-invocation: true
 ---
 
-Produce videos end to end: ElevenLabs narration, transcription, Remotion
-chapters, rendered MP4s. `$ARGUMENTS` is the course slug and a REQUIRED video
-number or inclusive range (e.g. `/produce powershell-fundamentals 3` or
-`/produce powershell-fundamentals 21-24`). Refuse a whole-course run (a bare slug
-with no numbers); the user must name the videos explicitly.
+Produce a lab's media end to end: narration, transcription, captions, the
+built and rendered videos, GIFs, and cards, and articles for standalone
+videos. `$ARGUMENTS` is the course slug and a required lab number or
+inclusive range (`/produce linux-filesystem 3`, `... 1-4`; `0` is the
+briefing). Refuse a bare slug; the user must name the labs, because a
+whole-path run can burn a lot of credits and render time before anyone
+checks it.
 
-For a range, produce the videos one at a time in ascending order — run the
-full pipeline (audio → chapters → render → deliverables) for one video before
-starting the next, so a failure partway leaves finished videos behind, not
-half-done ones. Report the review checklist per video as each completes.
+This is the user's opt-in fast path. It skips one thing: the stop between
+`/audio` and `/video` where the user listens to the narration. Everything
+else in those two skills still applies, so read both and follow them.
 
-This is the user's opt-in fast path: it deliberately skips the usual
-listen-to-the-audio stop between `/audio` and `/video`. Everything else about
-those two skills still applies — read both and follow them.
+## Gates, before spending anything
 
-**Guard:** never run in the template repo (`learning-path-pipeline` in
-package.json). And the input gate stays: the outline must be
-`status: approved` and the video's chapter scripts must already exist in
-`courses/<slug>/scripts/NN-*/`. If scripts are missing, stop and point at
-`/scripts` — this skill produces from reviewed scripts; it never writes them.
+- Follow `.claude/house-style.md`, including the repo check.
+- The outline is `status: approved` and each requested lab's media specs
+  exist in `courses/<slug>/scripts/NN-*/`. If scripts are missing,
+  stop and point at `/scripts`. This skill produces from reviewed scripts; it
+  never writes them.
+- Run the audio dry run and the `script-linter` agent across all requested
+  labs at once. If anything is off (word counts far out of range, over the
+  character limit, a missing `folder:`, or any BLOCKING linter finding), stop
+  and report. A bad script wastes both credits and a render.
 
-## Steps
+## Run
 
-1. Sanity gate (cheap, before spending API credits): run the audio dry-run
-   (`node scripts/generate-audio.mjs <slug> <video|first-last> --dry-run`, nvm
-   PATH per CLAUDE.md) covering ALL requested videos up front. If anything is
-   off (word counts far out of range, over the model's char limit, missing
-   `folder:`), STOP and report instead of pushing through — a bad script
-   wastes both credits and a render.
-2. Follow the `/audio` skill: generate the video's narration MP3s (skip
-   existing; never blanket `--force`), then transcribe each non-intro chapter.
-3. Follow the `/video` skill for each chapter (skip `00-intro`): beat table
-   from the transcript, build per the visual brief, register in `src/Root.tsx`,
-   typecheck, verify per-beat stills (especially multi-element moments).
-4. Render each chapter's deliverable MP4 and copy to `deliverables/` per
-   CLAUDE.md. Then write the video's companion article per the `/article`
-   skill (a self-contained written alternative to watching the video).
-5. Report a review checklist: each chapter's duration, file path, and anything
-   flagged during stills verification — plus the video's short description
-   (learner-facing, under 30 words, from the `- **Description:**` line under
-   the video's heading in the outline; write and add it there if missing —
-   see `/video`). The user reviews the finished MP4s and
-   the intro MP3; if a narration line needs a retake, they edit the script and
-   rerun `/audio <slug> <video>` for that chapter (delete its MP3 first), then
-   re-render.
+For a range, run the whole pipeline for one lab before starting the next, in
+ascending order, so a failure leaves finished labs behind instead of
+half-done ones.
 
-If audio succeeds but a chapter build fails, say so plainly and finish the
-other chapters — the generated MP3s are kept either way.
+1. `/audio` steps 2-3: generate MP3s (skip existing, never a blanket
+   `--force`), transcribe, and build captions.
+2. `/video`'s per-lab steps: articles for standalone videos, continuity and
+   scaffold, parallel media builds, stills review, render, caption check,
+   deliver, Course Status.
+3. **Report per lab:** each item's duration and deliverable paths, anything
+   flagged in review, and caption fixes. The user reviews the deliverables.
+   For a narration retake they edit the spec, delete that video's MP3, rerun
+   `/audio <slug> <lab>`, and re-render.
+
+If audio succeeds but a build fails, say so plainly and finish the other
+items. The MP3s are kept either way.

@@ -1,7 +1,12 @@
 ---
 name: lab-build
-description: Hand a drafted lab (labs/<slug>/ from /lab) to Lab Builder — plan the vCloud Director vApp (golden images, networks, gateway, edge firewall from SETUP.md), write lab.yaml + PLAN.md there, run terraform plan, and STOP for approval. Never applies.
+description: Plan the vCloud Director vApp for a reviewed lab (labs/<slug>/) in the Lab Builder repo. Picks golden images, lays out networks, the gateway VM and the edge firewall from SETUP.md, writes lab.yaml and PLAN.md, runs terraform plan, and stops for approval. Never applies. Only when the user explicitly invokes /lab-build.
+argument-hint: <lab-slug>
+disable-model-invocation: true
 ---
+
+First do the repo check in `.claude/house-style.md` ("Where content
+lives"): in a template folder, stop.
 
 Plan the vApp that hosts one drafted lab. `$ARGUMENTS` is the lab slug
 (e.g. `/lab-build broken-path`), i.e. `labs/<slug>/` in this learning-path repo
@@ -17,9 +22,11 @@ LB="${LAB_BUILDER_ROOT:-$(dirname "$(dirname "$(readlink "$(command -v lab-build
 [ -f "$LB/.env" ] || echo "Lab Builder not set up"
 ```
 
-If it is not installed: tell the user to clone the repo, run `scripts/setup.sh`,
-fill in `.env`, run `bin/lab-builder install`, and stop. Do not try to build the
-vApp any other way.
+This checks `$LAB_BUILDER_ROOT`, then the installed `lab-builder` command, then
+`~/ClaudeCode/lab-automation`. If none is set up, tell the user to clone the
+repo, run `scripts/setup.sh`, fill in `.env`, run `bin/lab-builder install`, and
+stop. Don't try to build the vApp any other way; Lab Builder holds the state
+that keeps labs from colliding.
 
 ## 1. Read the drafted lab
 
@@ -70,8 +77,9 @@ Schema and examples: `$LB/labs/README.md`.
 "$LB/bin/lab-builder" plan <slug>
 ```
 
-Report the plan summary (a new lab must show 0 to change, 0 to destroy) and
-where `PLAN.md` is. Then stop. Building is the user's call:
+Report the plan summary and where `PLAN.md` is. A new lab must show 0 to
+change and 0 to destroy; anything else means the plan touches existing
+infrastructure, so stop and flag it. Then stop. Building is the user's call:
 `lab-builder build <slug>` in a terminal, or Apply in `lab-builder ui`. After the
 build, `lab-builder status <slug>` shows the vApp; SETUP.md's guest steps are
 applied afterwards with the lab repo's Ansible.

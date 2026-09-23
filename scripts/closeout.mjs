@@ -1,13 +1,18 @@
-// Close out a finished course (or a range of its videos): gather the
-// deliverable MP4s, the source narration + transcripts, the chapter scripts
-// and the companion articles into one dated zip with a manifest, verify the
-// zip, and optionally delete the multi-GB renders in out/ afterwards.
+// Close out a finished course (or a range of its labs): gather the
+// deliverables (MP4s, GIFs, card PNGs, captions), the source narration,
+// transcripts and captions, the media scripts, the articles for standalone
+// videos, the research briefs and the caption map into one dated zip with a
+// manifest, verify the zip, and optionally delete the multi-GB renders in out/
+// afterwards.
 //
 // Usage:
 //   node scripts/closeout.mjs <course-slug> [first-last] [--renders] [--purge-renders] [--dry-run]
 //
-//   first-last       inclusive video range (e.g. 1-5, or a single 7). Default: every video.
-//   --renders        also archive the raw renders in out/ for those videos (large).
+//   first-last       inclusive lab range (e.g. 1-5, or a single 3). Default: the whole path.
+//                    Media IDs carry the lab number (<prefix>-l3-v1, <prefix>-l3-g1).
+//                    Path-level media (<prefix>-briefing, <prefix>-card-*) and legacy
+//                    video-first names (<prefix>-v3-ch1, selected by video) also work.
+//   --renders        also archive the raw renders in out/ for those labs (large).
 //   --purge-renders  after the zip verifies, delete those out/ files. Prompts unless --yes.
 //   --yes            skip the purge confirmation (for the /closeout skill after the user agreed).
 //   --dry-run        list what would be archived, with sizes, and stop.
@@ -34,7 +39,7 @@ let range = null;
 if (args[1]) {
   const m = args[1].match(/^(\d+)(?:-(\d+))?$/);
   if (!m) {
-    console.error(`Bad video argument "${args[1]}" — use a number (3) or a range (1-5).`);
+    console.error(`Bad lab argument "${args[1]}" — use a number (3) or a range (1-5).`);
     process.exit(1);
   }
   range = [Number(m[1]), Number(m[2] ?? m[1])].sort((a, b) => a - b);
@@ -53,10 +58,13 @@ if (!prefix) {
 }
 
 const inRange = (n) => !range || (n >= range[0] && n <= range[1]);
+// Lab number from a media ID (<prefix>-l3-v1) or a legacy chapter name (<prefix>-v3-ch1).
 const videoOf = (name) => {
-  const m = name.match(new RegExp(`^${prefix}-v(\\d+)-`));
+  const m = name.match(new RegExp(`^${prefix}-[lv](\\d+)-`));
   return m ? Number(m[1]) : null;
 };
+// Path-level media: not tied to one lab, so archived only on a whole-path closeout.
+const isPathLevel = (name) => new RegExp(`^${prefix}-(intro|review|briefing|card-)`).test(name);
 const nnOf = (name) => {
   const m = name.match(/^(\d+)-/);
   return m ? Number(m[1]) : null;
@@ -72,14 +80,13 @@ const add = (rel) => {
 
 for (const f of listDir('deliverables')) {
   const v = videoOf(f);
-  if (v !== null && inRange(v) && /\.(mp4|mov)$/i.test(f)) add(path.join('deliverables', f));
+  if (((v !== null && inRange(v)) || (isPathLevel(f) && !range)) && /\.(mp4|mov|gif|png|vtt)$/i.test(f)) add(path.join('deliverables', f));
 }
 for (const d of listDir(path.join('public', 'chapters'))) {
   const v = videoOf(d);
-  const isCourseLevel = d === `${prefix}-intro` || d === `${prefix}-review`;
-  if ((v !== null && inRange(v)) || (isCourseLevel && !range)) {
+  if ((v !== null && inRange(v)) || (isPathLevel(d) && !range)) {
     for (const f of listDir(path.join('public', 'chapters', d))) {
-      if (/\.(mp3|transcript\.json)$/i.test(f)) add(path.join('public', 'chapters', d, f));
+      if (/\.(mp3|transcript\.json|vtt)$/i.test(f)) add(path.join('public', 'chapters', d, f));
     }
   }
 }
@@ -89,16 +96,24 @@ for (const d of listDir(path.join('courses', slug, 'scripts'))) {
     for (const f of listDir(path.join('courses', slug, 'scripts', d))) add(path.join('courses', slug, 'scripts', d, f));
   }
 }
+// Articles exist only for standalone videos, named by media ID (legacy: NN-<video>.md).
 for (const f of listDir(path.join('courses', slug, 'articles'))) {
+  const n = nnOf(f) ?? videoOf(f);
+  if ((n !== null && inRange(n)) || (n === null && !range)) add(path.join('courses', slug, 'articles', f));
+}
+if (!range) add(path.join('courses', slug, 'caption-map.json'));
+// Research briefs: per-video ones (NN-*.md) follow the range; the outline and
+// lab briefs (outline.md, lab-*.md) are course-level, like outline.md itself.
+for (const f of listDir(path.join('courses', slug, 'research'))) {
   const n = nnOf(f);
-  if (n !== null && inRange(n)) add(path.join('courses', slug, 'articles', f));
+  if ((n !== null && inRange(n)) || (n === null && !range)) add(path.join('courses', slug, 'research', f));
 }
 if (!range) add(path.join('courses', slug, 'outline.md'));
 
 const renderFiles = listDir('out')
   .filter((f) => {
     const v = videoOf(f);
-    return v !== null && inRange(v) && /\.(mp4|mov|png)$/i.test(f);
+    return ((v !== null && inRange(v)) || (isPathLevel(f) && !range)) && /\.(mp4|mov|png|gif)$/i.test(f);
   })
   .map((f) => path.join('out', f));
 if (opt('--renders')) files.push(...renderFiles);
@@ -112,8 +127,8 @@ const fmt = (b) => (b >= 1e9 ? `${(b / 1e9).toFixed(2)} GB` : b >= 1e6 ? `${(b /
 const total = files.reduce((s, f) => s + statSync(path.join(root, f)).size, 0);
 const deliverableCount = files.filter((f) => f.startsWith('deliverables')).length;
 
-console.log(`Course ${slug} (prefix ${prefix})${range ? `, videos ${range[0]}-${range[1]}` : ''}`);
-console.log(`${files.length} files, ${fmt(total)} (${deliverableCount} deliverable MP4s)`);
+console.log(`Course ${slug} (prefix ${prefix})${range ? `, labs ${range[0]}-${range[1]}` : ''}`);
+console.log(`${files.length} files, ${fmt(total)} (${deliverableCount} deliverables)`);
 for (const f of files) console.log(`  ${fmt(statSync(path.join(root, f)).size).padStart(10)}  ${f}`);
 if (!opt('--renders') && renderFiles.length) {
   const rsz = renderFiles.reduce((s, f) => s + statSync(path.join(root, f)).size, 0);
@@ -131,7 +146,7 @@ if (existsSync(zipPath)) unlinkSync(zipPath);
 const manifestRel = path.join('archives', `${name}.MANIFEST.txt`);
 const lines = [
   `Course: ${slug} (prefix ${prefix})`,
-  `Videos: ${range ? `${range[0]}-${range[1]}` : 'all'}`,
+  `Labs: ${range ? `${range[0]}-${range[1]}` : 'all'}`,
   `Created: ${new Date().toISOString()}`,
   `Files: ${files.length}, ${fmt(total)}`,
   '',
@@ -166,7 +181,7 @@ console.log(`Manifest: ${manifestRel}`);
 // --- optional purge --------------------------------------------------------
 if (opt('--purge-renders')) {
   if (renderFiles.length === 0) {
-    console.log('\nNo renders in out/ for these videos — nothing to purge.');
+    console.log('\nNo renders in out/ for these labs — nothing to purge.');
     process.exit(0);
   }
   const rsz = renderFiles.reduce((s, f) => s + statSync(path.join(root, f)).size, 0);

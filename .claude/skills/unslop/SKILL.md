@@ -75,28 +75,33 @@ arguments, apply the pass to the prose you are about to save.
 
 The pass runs on prose a learner reads or hears. Apply it to:
 
-- the narration body of every chapter script (`courses/<slug>/scripts/**/*.md`,
-  above `## Visual brief`),
-- companion articles (`courses/<slug>/articles/*.md`),
-- lab guides (`labs/<slug>/module-*.md`, `environment.md`, `description.md`),
-- outline descriptions and goals (`courses/<slug>/outline.md`).
+- the narration body of every video and briefing spec
+  (`courses/<slug>/scripts/**/*.md`, above `## Visual brief`),
+- the text on reference cards (the `## Card layout` content),
+- articles for standalone videos (`courses/<slug>/articles/*.md`),
+- lab guides (`labs/<slug>/module-*.md`, `environment.md`, `reference.md`,
+  `description.md`), including predict prompts, reveals, and hints,
+- the path page (`courses/<slug>/path-page.md`),
+- outline goals, steps, predict prompts, and descriptions
+  (`courses/<slug>/outline.md`).
 
-Do not apply it to visual briefs, `SETUP.md`, beat tables, code, commands, or
-command output. Those are specs and literal text, and a symbol like `✓/✗` or an
-arrow in a visual brief is a rendering instruction, not a tell.
+Do not apply it to visual briefs, GIF loop specs, `SETUP.md`, beat tables,
+code, commands, or command output. Those are specs and literal text, and a
+check or cross mark or an arrow in a visual brief is a rendering instruction,
+not a tell.
 
 Exceptions, because the house rules for these already decide the matter:
 
-- **Rule 20 does not touch the mandated video close.** Every video's last
-  chapter ends with exactly "Hope you found this helpful and I'd like to thank
-  you for watching." Keep it. Likewise keep the lab's closing
+- **Rule 20 does not touch the mandated video close.** Every standalone
+  video ends with exactly "Hope you found this helpful and I'd like to thank
+  you for watching." Keep it. (Embedded micro-videos have no close.) Likewise keep the lab's closing
   "Congratulations. You have completed the ... lab" paragraph.
 - **Rule 33 yields to the TTS rules in `/scripts`.** Narration is written for
   the ear on purpose: spoken command forms ("run chmod plus x"), phonetic
   spellings ("ess ess", "et cetera slash resolv dot conf"), digits spelled the
   way the voice should say them. Those stay. In articles the opposite holds
   and rule 33 applies in full: real syntax, whole sentences, no arrows.
-- **Rule 17 applies to section headings, not titles.** Video, chapter, and
+- **Rule 17 applies to section headings, not titles.** Video, lab, card, and
   article H1 titles keep their established Title Case (they are names, and
   they match the outline and Root.tsx). Article H2/H3 headings use sentence
   case, as the existing articles already do. Lab guides are exempt entirely:
@@ -108,6 +113,11 @@ Exceptions, because the house rules for these already decide the matter:
   the key phrase is the lesson, not decoration. Cut flourish that only sounds
   good; keep the beat that makes the concept land. When in doubt, restate the
   sentence as a fact the learner can act on, and keep it if it survives.
+- **Rule 18 is stricter here.** No emojis anywhere, not only in headings
+  and bullets: learner prose, on-screen text, and outlines alike.
+- **Rule 33 relaxes on reference cards.** A card is lookup material: short
+  labels and table fragments ("owner, group, other") are the point. The other
+  rules still apply to its text.
 - **Rule 13 is already house style.** No em dashes anywhere. Fix any that slip
   in, in prose and in on-screen text alike.
 

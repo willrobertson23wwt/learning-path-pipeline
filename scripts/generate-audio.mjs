@@ -1,10 +1,14 @@
 // Generate ElevenLabs narration MP3s for a course's approved scripts.
-// One script file = one chapter = one TTS request = one narration.mp3.
+// One narrated script file (a micro-video, the briefing, or a legacy chapter)
+// = one TTS request = one narration.mp3. GIF and reference-card specs
+// (frontmatter `type: gif` or `type: card`) have no narration and are skipped.
 //
 // Usage:
-//   node scripts/generate-audio.mjs <course-slug> [video|first-last] [--force] [--dry-run] [--no-trim]
+//   node scripts/generate-audio.mjs <course-slug> [lab|first-last] [--force] [--dry-run] [--no-trim]
 //
-// Reads courses/<course-slug>/scripts/NN-<video>/MM-<chapter>.md (recursively).
+// Reads courses/<course-slug>/scripts/NN-<lab-slug>/<media-id>.md (recursively;
+// NN is the lab number, 00 for the briefing). Legacy video-first courses use
+// NN-<video>/MM-<chapter>.md, and the number then selects videos.
 // The narration is everything above the "## Visual brief" heading, minus
 // frontmatter, headings, and HTML comments. Output goes to
 // public/chapters/<folder>/narration.mp3 where <folder> comes from the script
@@ -37,12 +41,12 @@ const dryRun = flags.includes('--dry-run');
 const noTrim = flags.includes('--no-trim');
 const args = flags.filter((a) => !a.startsWith('--'));
 const slug = args[0];
-// [video] accepts a single number ("3") or an inclusive range ("21-24").
+// [lab] accepts a single number ("3") or an inclusive range ("1-4").
 let videoRange = null;
 if (args[1]) {
   const m = args[1].match(/^(\d+)(?:-(\d+))?$/);
   if (!m) {
-    console.error(`Bad video argument "${args[1]}" — use a number (3) or a range (21-24).`);
+    console.error(`Bad lab argument "${args[1]}" — use a number (3) or a range (1-4).`);
     process.exit(1);
   }
   videoRange = [Number(m[1]), Number(m[2] ?? m[1])];
@@ -50,7 +54,7 @@ if (args[1]) {
 }
 
 if (!slug) {
-  console.error('Usage: node scripts/generate-audio.mjs <course-slug> [video|first-last] [--force] [--dry-run] [--no-trim]');
+  console.error('Usage: node scripts/generate-audio.mjs <course-slug> [lab|first-last] [--force] [--dry-run] [--no-trim]');
   process.exit(1);
 }
 if (!dryRun && (!API_KEY || !VOICE_ID)) {
@@ -166,12 +170,16 @@ const done = [];
 
 for (const file of files) {
   const {meta, narration} = parseScript(readFileSync(path.join(scriptsDir, file), 'utf8'));
-  const video = meta.video ? Number(meta.video) : Number(path.dirname(file).match(/^(\d+)/)?.[1]);
-  const chapter = meta.chapter ? Number(meta.chapter) : Number(path.basename(file).match(/^(\d+)/)?.[1]);
-  if (videoRange !== null && (video < videoRange[0] || video > videoRange[1])) continue;
+  const unitRaw = meta.lab ?? meta.video;
+  const unit = unitRaw !== undefined && /^\d+$/.test(unitRaw) ? Number(unitRaw) : Number(path.dirname(file).match(/^(\d+)/)?.[1]);
+  if (videoRange !== null && (unit < videoRange[0] || unit > videoRange[1])) continue;
+  if (meta.type === 'gif' || meta.type === 'card') {
+    if (dryRun) console.log(`- ${file}: ${meta.type} spec, no narration (skipped)`);
+    continue;
+  }
 
   if (!meta.folder) {
-    console.error(`✗ ${file}: no "folder:" in frontmatter — add e.g. folder: <prefix>-v${video || 'N'}-ch${chapter || 'M'}`);
+    console.error(`✗ ${file}: no "folder:" in frontmatter — add the media ID, e.g. folder: ${meta.id || '<prefix>-l<N>-v<K>'}`);
     failed++;
     continue;
   }
@@ -225,7 +233,10 @@ for (const file of files) {
 
 console.log(`\n${generated} generated, ${failed} failed.`);
 if (done.length) {
-  console.log('\nNext: listen to each file, then transcribe for word timings:');
-  for (const f of done) console.log(`  node scripts/transcribe.mjs ${path.relative(process.cwd(), f)}`);
+  console.log('\nNext: listen to each file, then transcribe for word timings and build captions:');
+  for (const f of done) {
+    const rel = path.relative(process.cwd(), f);
+    console.log(`  node scripts/transcribe.mjs ${rel} && node scripts/captions.mjs ${rel.replace(/\.mp3$/, '.transcript.json')} --map courses/${slug}/caption-map.json`);
+  }
 }
 if (failed) process.exit(1);

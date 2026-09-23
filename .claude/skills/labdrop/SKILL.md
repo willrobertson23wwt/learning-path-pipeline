@@ -1,14 +1,18 @@
 ---
 name: labdrop
-description: Build an ATC Lab Drop marketing video — music-synced brand sting, voiceover slides, and end card for promoting a learning path (not a course chapter)
+description: Build an ATC Lab Drop marketing video, a ~50-60 s promo for a learning path with a music-synced brand sting, voiceover slides and a WWT end card, rendered as one MP4. Use when the user asks for a Lab Drop, promo, teaser, or marketing video for a learning path. Not for course chapters; those go through /video.
+argument-hint: <learning path name> [source video or description]
 ---
+
+First do the repo check in `.claude/house-style.md` ("Where content
+lives"): in a template folder, stop.
 
 Build a "Lab Drop" marketing one-off: a short (~50-60s) promo video for a
 learning path, in the style of `LabDrop` (`src/LabDrop.tsx` in the template repo — the
 worked example, built for a Linux learning path). `$ARGUMENTS` names the learning path
 being promoted (and optionally a source video/description to mirror).
 
-These are NOT course chapters — they don't use the course pipeline
+These are NOT path media items — they don't use the course pipeline
 (`/outline → /scripts → /audio → /video`), the paper/fluid backdrops, or the
 chapter composition conventions. One composition, one deliverable MP4 with
 music + SFX + voiceover baked in.
@@ -27,7 +31,7 @@ music + SFX + voiceover baked in.
 4. **3-6 numbered slides** (`01 / 05` mono indicator + progress dots) — one
    headline per slide summarizing a course/skill area, each with a small
    animated visual (terminal, stack diagram, chips + bars). Slide beats come
-   from the narration transcript, same as course chapters.
+   from the narration transcript, same as path videos.
 5. **Outro** — bare `$` prompt → pixel-mosaic wipe → end card: learning-path
    wordmark + accent bar + the WWT mark (`public/labdrop/wwt-logo.png`)
    floating gently (±5px, ~6s period). No CTA unless asked.
@@ -70,25 +74,23 @@ music + SFX + voiceover baked in.
   beat table) and shift downstream beats. Check exact word start/end times;
   the TTS often leaves zero gap between sentences.
 
-## Conventions that differ from course chapters
+## Conventions that differ from path media
 
 - Backdrops: Envato assets only — never `PaperBackdrop`/`TransitionBackdrop`.
 - No `-Overlay` composition, no `deliverables/` copy (deliver from `out/`),
   no companion article.
 - Fixed-duration composition (no `calculateMetadata`); duration =
   `TL.end * FPS`. Keep the ~2s foreground-fade end buffer (backdrop holds).
-- Big wordmarks need `whiteSpace: 'nowrap'` — an absolutely-positioned
-  centered element only gets half the canvas to shrink-wrap into and will
-  wrap otherwise.
 - Everything else from CLAUDE.md still applies: springs, hold-don't-pulse,
   per-beat stills at multi-element moments, explicit light text colors,
-  typecheck before rendering.
+  `whiteSpace: 'nowrap'` on big wordmarks, typecheck before rendering.
 
 ## Steps
 
 1. Confirm the learning path name, slide content (course/skill areas), and
    any source video to mirror. Draft the VO script (no "Lab Drop" wording)
-   and stop for review if the user hasn't already approved copy.
+   and stop for review if the user hasn't already approved copy. Narration
+   costs credits, so don't generate it from unapproved copy.
 2. Generate + transcribe narration; dump word timings; beat-detect the music.
 3. Build/retime the composition (clone the `LabDrop` pattern: `kitLD.ts`
    beat table, scenes file, composition in `src/Root.tsx`).
