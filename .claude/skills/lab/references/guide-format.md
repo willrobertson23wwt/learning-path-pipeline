@@ -294,6 +294,29 @@ learner types, and with whole-file writes there are almost none.
   capture replaces them (see `internal-docs.md`).
 - A step that shows no screenshot still says what the learner should see
   ("You should see the same five-line shape three times").
+
+**Desktop and GUI screenshots.** A lab on a Linux or Windows desktop, or in
+a web console, shows windows and dialogs, not terminal output, and the user
+captures those by hand after the lab is built. Write the guide as if the
+image were there:
+
+- Reference the image at its step the same way,
+  `![<short alt>](./media/module-N/<name>.png)`, with a descriptive
+  filename (`server-manager-add-roles.png`) and short alt text naming the
+  window or result ("Add Roles and Features wizard").
+- On the next line, an HTML comment saying what the capture should show, so
+  whoever takes it knows the window, the state, and what to highlight:
+  `<!-- desktop screenshot: Server Manager, Manage menu open, Add Roles and Features highlighted -->`.
+  The comment doesn't render, so the published page is unaffected, and it
+  can stay after the image is added.
+- No `shots_spec.py` entry; that file is only for rendered terminal shots.
+- The step text carries everything the learner needs without the image:
+  the exact labels to select (bold, as the UI shows them) and what the
+  window shows afterward, so the lab reads correctly before the captures
+  exist.
+
+A lab can mix both kinds: terminal shots rendered from `shots_spec.py` and
+desktop shots captured by hand.
 - **Trim shown output** per the platform profile's output-trimming rule.
   Keep commands as taught and trim only the output. On Linux and Windows
   networking labs, no IPv6 or layer-2 detail anywhere a learner sees it:

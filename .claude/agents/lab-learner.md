@@ -21,8 +21,10 @@ who can't see the author's intent.
 - `labs/<slug>/shots_spec.py`, only to see what a screenshot shows: the
   images don't exist until after the dry run, so when a page shows
   `![...](./media/module-N/<name>.png)`, look up the `(N, "<name>")` entry
-  and read its lines as the screenshot. For a screenshot inside a predict
-  reveal, write your prediction first.
+  and read its lines as the screenshot. A desktop or GUI screenshot has no
+  entry; read the `<!-- desktop screenshot: ... -->` note under it as the
+  image. For a screenshot inside a predict reveal, write your prediction
+  first.
 - `courses/<course-slug>/outline.md`, only the labs before this one and
   Module 0, for what you've already been taught. The caller gives you the
   course slug and this lab's number. Don't read this lab's own outline

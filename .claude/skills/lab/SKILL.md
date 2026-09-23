@@ -108,7 +108,12 @@ since each folder becomes its own GitHub repo), and add `**Lab repo:**
 - **Screenshots** are rendered later, after the dry run. Reference each at
   `![<short alt>](./media/module-N/<name>.png)` where a result deserves one
   and put its anticipated lines in `shots_spec.py`. Never put output in a
-  fenced `text` block, not even in a draft.
+  fenced `text` block, not even in a draft. Desktop and GUI screenshots
+  (a Linux or Windows desktop, a web console) are captured by hand later:
+  reference them the same way with a `<!-- desktop screenshot: ... -->`
+  capture note under each and no `shots_spec.py` entry (guide-format.md
+  "Desktop and GUI screenshots"), and list them in the report as shots to
+  capture.
 
 Then stop for review. Don't write Terraform or Ansible: the guide and its
 internal files only.

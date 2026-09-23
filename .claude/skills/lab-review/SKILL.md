@@ -181,7 +181,8 @@ translate each class and add these:
   `copy run start` before any reload. `show ip interface brief` and `show ip
   route` output depends on the IOS version in SETUP.md.
 - **Web consoles and GUIs:** every click path is a numbered step with a
-  screenshot reference per dialog, wording matches the console's current
+  screenshot reference per dialog (a desktop screenshot with its capture
+  note), wording matches the console's current
   labels, and the learner's tenant or subscription scope is stated up front.
 
 ## 3. House rules
@@ -204,10 +205,12 @@ Check each of these and fix silently:
 - **Interactive prompts** are a "how to read the prompt" list plus a
   per-prompt table of keys and the harmless fallback, not prose.
 - **Output:** no fenced `text` block holding output, and no output shown
-  both as a block and a shot. Every screenshot reference has an entry in
-  `shots_spec.py`, and every entry is referenced. Alt text is short (the
-  command or the result), and the sentence after the image says what to
-  notice.
+  both as a block and a shot. Every terminal screenshot reference has an
+  entry in `shots_spec.py`, and every entry is referenced. A desktop or GUI
+  screenshot instead has a `<!-- desktop screenshot: ... -->` capture note
+  on the next line and no `shots_spec.py` entry; its missing image file is
+  expected, not a defect. Alt text is short (the command or the result),
+  and the sentence after the image says what to notice.
 - **Trimmed output** per the platform profile: no IPv6 or layer-2 detail in
   shown output on Linux and Windows networking labs.
 - **Portal language:** one browser terminal tab per VM ("In the **web01
@@ -337,7 +340,9 @@ same file in an editor"); only an instruction to edit is a defect. `TBD` is expe
 Then report, grouped by file: what moved, each command fix with the one-line
 reason, each rule fix, the hostname you chose, and a separate **anticipated,
 confirm at dry run** list of every shot you adjusted on knowledge rather
-than capture (and which the research brief confirmed). End with **Open
+than capture (and which the research brief confirmed), and a **Shots to
+capture** list of every desktop or GUI screenshot with its filename and
+capture note, for the user to take after the lab is built. End with **Open
 items**: any `TBD` management IPs, and, until a lab has been published and
 checked on the ATC site, confirming that `<details markdown="1">`, a
 `<video>` indented inside a numbered step, and one-line paragraphs under
