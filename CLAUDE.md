@@ -71,7 +71,9 @@ Keep it short; one line each.
   with a password prompt · "Run as administrator" / UAC · `enable` mode>.
 - **Lab environment default:** <e.g. one Ubuntu 24.04 VM, browser terminal via
   the WWT ATC Lab Portal, `labuser` / `Labpass01!`>.
-- **TTS model:** eleven_v3, stability <x>, seed <n> (matches `.env`).
+- **TTS model:** eleven_v3, stability 0.5 (Natural), seed <n or none>,
+  output MP3 44.1 kHz 128 kbps (matches `.env` and the ElevenLabs website
+  settings).
 - **Measured narration rate:** <N> wpm on <model>/<voice> (from the first
   approved take).
 - **TTS phonetic list:** command and tool names ElevenLabs mangles when read
