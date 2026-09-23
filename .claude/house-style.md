@@ -41,7 +41,9 @@ many labs, videos, GIFs, or cards a path has; the outline decides that.
   minutes) and the only one before hands-on work.
 - **No transient reference (transient information effect).** Anything
   learners look up repeatedly (a directory map, a permission-bits table) is
-  a static reference card, pinned and one click away, never a video.
+  a static reference card, never a video. The card sits inline in the
+  module step where it's first needed, as its image plus a text version
+  from the card layout. There is no separate reference page.
 - **Guided for novices (Kirschner et al.).** Early labs give exact commands
   and expected output.
 - **Fade the guidance (Kalyuga, expertise reversal).** Guidance drops lab by
@@ -50,12 +52,23 @@ many labs, videos, GIFs, or cards a path has; the outline decides that.
   hint; goal plus collapsed hint; goals only. A pre-check lets experienced
   learners skip ahead, and every video is optional and labeled with its
   length.
-- **Capstone for transfer.** The capstone is goals only, on a pre-seeded
-  broken system, with auto-checks. It adds no new videos; it links back to
-  earlier ones ("Rewatch: inodes (90 s)").
-- **Every lab ends in a check.** A portal check (a command the lab portal
-  runs, whose result proves the state) or a short question, stated in the
-  outline.
+- **Labs are split into module pages.** Only the number of module pages
+  varies between labs, and the outline sets it per lab from the
+  researcher's suggestion. Each module is one layer or one fault, about 10
+  to 20 minutes, titled in the imperative ("Fix the Address"), and ends on
+  a working state. The final module closes the lab with its Workflow
+  Summary and Congratulations; there is no conclusion page. A lab with more
+  than one device adds a `_quickref_passwords.md` page (Device, Management
+  IP, Method(s), Username, Password).
+- **Capstone for transfer.** The capstone is its own lab repo in the
+  standard file set: goals only, on a pre-seeded broken system, with one
+  collapsed hint per problem inline and a `solutions.md` page after the
+  last module holding the full solutions. No other lab has a solutions
+  page. It adds no new videos; it links back to earlier ones ("Rewatch:
+  inodes (90 s)").
+- **No automated checks yet.** The ATC lab portal can't run automated
+  checks, so labs have none: a lab ends on its last step and its summary.
+  Revisit this when the portal can.
 
 **Media types.** Outlines and lab drafts label each item with a bold word
 at the start of its step (`**GIF (8 s): Tab Completion.**`,
@@ -67,9 +80,8 @@ Title Case title from the outline, and the label ends with a period.
 | GIF | 5-15 s, silent loop (muted MP4 with a pause control); shows where to click or what to type | Before the step that needs it |
 | Video | 30-90 s, narrated, one idea; explains why | After a predict or try step |
 | Briefing video | The one longer video, about 2-3 minutes | Before the first lab |
-| Reference card | Static reference for lookup | Pinned for the whole path, or from its lab on |
+| Reference card | Static reference for lookup | Inline at the module step that first needs it, image plus text version |
 | Predict | Learner commits (multiple choice or free text) before running | Before the command it tests, with a collapsed reveal |
-| Check | Auto-check or question | End of each lab and each capstone problem |
 
 ## Learner-facing prose
 
@@ -79,11 +91,13 @@ This covers outline copy, narration, articles, and lab guides.
   documentation style guide as the base manual, with house departures and
   rule IDs for voice (V), global English (G), mechanics (M), formatting
   (F), procedures (P), inclusive language, and brief citations. Narration
-  follows its voice rules and the ear-writing rules in `/scripts`.
+  follows its voice rules and the ear-writing rules in `/scripts`. Lab
+  pages follow the linux-intermediate lab conventions, and the style
+  guide's "Lab pages" section lists the rules they set aside.
 - **Text alternatives for every medium.** A GIF's `aria-label` names the
-  keys pressed and the visible result. An output screenshot's alt text
-  quotes the lines the learner compares against. Each reference card has a
-  text version under its image on the Reference Cards page. Narration names,
+  keys pressed and the visible result. A screenshot's alt text on a lab
+  page is short: the command or the result. Each reference card has a text
+  version under its image, inline at the step that uses it. Narration names,
   by meaning, every on-screen fact the explanation depends on, so a video
   needs no separate audio description (WCAG 1.2.5).
 - **No emojis, anywhere.** Not in learner content, on-screen text, outlines,
@@ -98,9 +112,10 @@ This covers outline copy, narration, articles, and lab guides.
   you saw in the intro course"). Learners may skip prerequisites, and a
   dangling callback confuses them.
 - **Callbacks name the concept, never a video or lab number:** "the inodes
-  model from the links lab", not "Lab 3" or "video 5". Learners skip around,
-  each lab is its own repo, and the platform doesn't number things the way
-  the outline does.
+  model from the links lab", not "Lab 3" or "video 5". On lab pages a video
+  can be named by its topic ("the addressing video showed you"). Learners
+  skip around, each lab is its own repo, and the platform doesn't number
+  things the way the outline does.
 - **Code-block language tags and shown prompts** come from the platform
   profile in CLAUDE.md (`bash`, `powershell`, or `text` for device CLIs;
   `yaml`/`json`/`ini` for config files).

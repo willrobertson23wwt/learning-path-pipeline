@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Deep web research for course writing. Three modes. "outline" surveys lab platforms, other learning paths, certification objectives, and vendor docs for a topic and reports coverage, gaps, surprise moments for predict steps, card, GIF, and capstone candidates, and suggested lab-first path shapes for the user to choose from. "lab" fact-checks one lab's steps, predict prompts, checks, and media against current primary sources on the lab's platform image. Writes one cited brief to courses/<slug>/research/ and returns its findings. Launched by /outline, /scripts, and /lab before they write.
+description: Deep web research for course writing. Three modes. "outline" surveys lab platforms, other learning paths, certification objectives, and vendor docs for a topic and reports coverage, gaps, surprise moments for predict steps, card, GIF, and capstone candidates, module pages per lab, and suggested lab-first path shapes for the user to choose from. "lab" fact-checks one lab's steps, predict prompts, and media against current primary sources on the lab's platform image. Writes one cited brief to courses/<slug>/research/ and returns its findings. Launched by /outline, /scripts, and /lab before they write.
 tools: WebSearch, WebFetch, Read, Glob, Grep, Write
 model: opus
 ---
@@ -86,17 +86,25 @@ model. Then survey how this topic is taught and practiced elsewhere:
   (tables, maps, syntax summaries).
 - **GIF candidates:** mechanics that are faster to show than describe
   (keystrokes, a click path, reading a dense output line).
+- **Module pages per lab:** for each lab theme, how many module pages it
+  splits into and the scope of each, based on its natural checkpoints (a
+  layer fixed, a fault cleared, a working state reached) and on how
+  comparable labs are split. Each module is one layer or one fault, about
+  10 to 20 minutes, and ends on a working state. Suggest titles in the
+  imperative ("Fix the Address"). Only the module count varies between
+  labs.
 - **Capstone scenario ideas:** realistic breakages from the job, each with
-  the seeded state and a command that proves the fix.
+  the seeded state, what the fixed state looks like, and the one hint that
+  would unstick a learner.
 - **Pre-check ideas:** one quick question per skill a lab teaches, for the
   skip-ahead gate.
 - **Gap analysis** (only if an outline already exists): topics it leaves out
   that are core or common elsewhere, topics it covers that look outdated,
   and ordering others use that it doesn't.
 - **Suggested shapes:** two or three options (e.g. focused, standard,
-  comprehensive). For each: the labs and their themes, how the guidance
-  ladder maps onto them, total time, the media inventory (GIFs,
-  micro-videos, cards, auto-checks), total video time as a share of the
+  comprehensive). For each: the labs and their themes, module pages per
+  lab, how the guidance ladder maps onto them, total time, the media
+  inventory (GIFs, micro-videos, cards), total video time as a share of the
   path (the design rule keeps it at or under about 20%), and which surveyed
   offerings are sized like it. There is no house size; derive each option
   from the survey and the audience. Say which one you'd pick and why.
@@ -110,8 +118,8 @@ Write `courses/<slug>/research/outline.md`.
 ## Mode: lab
 
 One brief per lab (or the capstone), shared by `/scripts` (its media specs)
-and `/lab` (its guide). For the lab's steps, predict prompts, checks, and
-media in the outline, on the platform image from the platform profile's lab
+and `/lab` (its guide). For the lab's steps, predict prompts, and media in
+the outline, on the platform image from the platform profile's lab
 environment default:
 
 - **Verified facts per step:** exact current syntax, defaults, flags, file
@@ -122,8 +130,6 @@ environment default:
 - **Predict prompts:** confirm each "surprise" really happens on the
   baseline, and what the output shows. A predict step whose answer is wrong
   on the real image is the worst bug a lab-first path can have.
-- **Checks:** for each check, a command whose result proves the end state,
-  and confirm it gives a different result on the starting state.
 - **Environment:** package names and install commands, service and unit
   names, default config and log paths, default users and permissions.
 - **Known gotchas:** elevation prompts, interactive first-run choices,
@@ -132,8 +138,9 @@ environment default:
   outdated, or version-dependent, with the fix.
 - **Misconceptions and common mistakes** learners make here, with sources,
   for the micro-videos to address.
-- **For the capstone:** how each seeded problem is created on the image, and
-  what a learner will see when they hit it.
+- **For the capstone:** how each seeded problem is created on the image,
+  what a learner will see when they hit it, and the verified fix for its
+  `solutions.md` entry.
 - **Open questions** you couldn't settle.
 
 Write `courses/<slug>/research/NN-<lab-slug>.md` (NN the zero-padded lab

@@ -52,7 +52,7 @@ defect you report should name the rule or lesson it breaks when one applies.
    a second line, or a caption spilling past its segment border.
 5. **Legibility.** Terminal and body text large enough to read at 1080p
    (at 1280x720 for a GIF, and at half size for a card, since cards are
-   glanced at in a sidebar). Flag anything you have to zoom in on to read.
+   glanced at inline on a lab page). Flag anything you have to zoom in on to read.
 6. **Composition.** Single elements centered; pairs centered as a balanced
    pair; nothing drifting off-center after a slide-in.
 7. **Content accuracy.** Commands, paths, and output on screen match the

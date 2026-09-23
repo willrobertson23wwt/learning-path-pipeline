@@ -11,8 +11,9 @@ lives"): in a template folder, stop.
 Close out a finished learning path (or the labs of it that have shipped).
 `$ARGUMENTS` is the course slug, optionally followed by an inclusive lab
 range (e.g. `/closeout linux-filesystem`, `/closeout linux-filesystem 1-3`).
-Path-level media (the briefing, Module 0 cards) goes in only on a whole-path
-closeout. The work is done by `scripts/closeout.mjs`;
+Path-level media (the briefing) goes in only on a whole-path closeout. A
+card goes with the lab whose scripts folder holds its spec, the lab that
+first shows it. The work is done by `scripts/closeout.mjs`;
 this skill wraps it with the checks and the one confirmation that matter.
 
 ## What gets archived

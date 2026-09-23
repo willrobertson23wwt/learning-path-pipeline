@@ -5,8 +5,8 @@ argument-hint: <course-slug> [lab | first-last]
 ---
 
 Write the media specs for a lab-first path. `$ARGUMENTS` is the course slug,
-optionally followed by a lab number or inclusive range (`0` is Module 0: the
-briefing and any cards introduced there). Follow `.claude/house-style.md`,
+optionally followed by a lab number or inclusive range (`0` is Module 0:
+the briefing). Follow `.claude/house-style.md`,
 including the repo check, and its "Lab-first design" section: each item's
 job depends on where it sits in the lab.
 
@@ -38,7 +38,8 @@ courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md
 ```
 
 NN is the zero-padded lab number (`00-briefing/` for Module 0). A card lives
-in the folder of the lab that introduces it. The capstone has no media of its
+in the folder of the lab whose module step first uses it, since that's
+where it's shown inline. The capstone has no media of its
 own, so it gets no folder.
 
 Frontmatter, shared by every type:
@@ -140,7 +141,8 @@ supportive information from the outline's Module 0, in this order:
 3. One scene per model. Each opens with a heading sentence that names the
    model and runs about 60 to 90 words, with the model's key term on screen
    as a keyword label.
-4. A pointer to the reference card that holds the lookup material.
+4. A pointer to the reference card that holds the lookup material, which
+   the labs show inline at the step that first needs it.
 5. A hand-off naming the first thing the learner does in the first lab
    (the concept, not a lab number), then the close.
 
@@ -290,8 +292,9 @@ get a small labeled badge so a silent loop still shows them.
 
 ## Reference card
 
-A static image the lab pins for lookup. The body is one `## Card layout`
-section:
+A static image for lookup, shown inline at the module step that first
+needs it, with a text version under it built from this layout. The body is
+one `## Card layout` section:
 
 ```markdown
 ## Card layout

@@ -14,6 +14,13 @@ as written by `/lab` and cleaned by `/lab-review`. The build itself happens in
 the **Lab Builder** repo (https://github.com/willrobertson23wwt/Lab-Builder),
 which owns the Terraform module, the designer UI and the per-lab state.
 
+**Where this sits.** `/lab-build` plans the vApp: VMs, images, networks, the
+gateway VM and the edge firewall. It stops at `terraform plan`, and the user
+builds. `/lab-setup <slug> <address>` then builds the guests inside that vApp
+over SSH from SETUP.md (OS upgrade, sudo drop-in, packages, pre-seeded files,
+clean slate). When the ATC team delivers a stock vApp instead, skip this
+skill and go straight to `/lab-setup`.
+
 ## 0. Find Lab Builder
 
 ```bash
@@ -30,10 +37,13 @@ that keeps labs from colliding.
 
 ## 1. Read the drafted lab
 
-- `labs/<slug>/environment.md`: device table (hosts, OS, lab and management
-  addresses, roles), who the learner logs into.
-- `labs/<slug>/SETUP.md`: the **vApp edge firewall** table, interface map,
-  port forwards (2210/2211 style), gateway VM duties, sizing hints.
+- `labs/<slug>/environment.md`: the Device Access Information table (hosts,
+  OS, who the learner logs into) and, in a multi-host lab, "The Network as
+  Designed" (lab and management addresses, roles).
+- `labs/<slug>/SETUP.md`: the `## vApp edge firewall` table, the management
+  network section (or, multi-host, "Network fabric" and "Interface map (as
+  built)"), the gateway VM section and its port forwards (2210/2211 style),
+  disks and sizing from the base-image section.
 - `labs/<slug>/index.md` title -> `description`.
 - CLAUDE.md's **Platform profile** for the default OS when the guide is silent.
 
@@ -50,7 +60,11 @@ nearest name from `--list`; never invent a template name.
   `Management`, ...) with `gateway` = the gateway VM's address there.
 - `gateway` VM: `kind: gateway`, latest Ubuntu server image, NIC0 `Gateway`
   `mode: POOL`, then one `mode: DHCP` NIC per isolated network. It does all
-  NAT, DNS and port forwarding for the lab (Ansible, later).
+  NAT, DNS and port forwarding for the lab, configured inside the guest by
+  `/lab-setup` from SETUP.md's gateway section. When SETUP.md says a lab
+  segment must have no DHCP (Broken Path does: a DHCP offer could silently
+  fix a seeded fault), give the gateway a MANUAL NIC there at SETUP.md's
+  address instead, and say so in PLAN.md.
 - Every other VM: MANUAL NICs with the guide's addresses (`ip:`), in the
   guide's interface order (eth0 = lab, eth1 = management).
 - `edge_nat: {mode: ip_translation, vm: gateway}`.
@@ -80,6 +94,11 @@ Schema and examples: `$LB/labs/README.md`.
 Report the plan summary and where `PLAN.md` is. A new lab must show 0 to
 change and 0 to destroy; anything else means the plan touches existing
 infrastructure, so stop and flag it. Then stop. Building is the user's call:
-`lab-builder build <slug>` in a terminal, or Apply in `lab-builder ui`. After the
-build, `lab-builder status <slug>` shows the vApp; SETUP.md's guest steps are
-applied afterwards with the lab repo's Ansible.
+`lab-builder build <slug>` in a terminal, or Apply in `lab-builder ui`.
+
+After the build, `lab-builder status <slug>` shows the vApp and its external
+address. That address is the argument to `/lab-setup <slug> <address>`, which
+builds the guests from SETUP.md and records the as-built management IPs in
+SETUP.md and `_quickref_passwords.md`. If the plan assigned addresses the guide
+didn't fix (management IPs, the gateway's), add them to SETUP.md's interface
+map now so `/lab-setup` and the quickref page use the same ones.

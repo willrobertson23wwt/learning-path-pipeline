@@ -6,7 +6,7 @@ spend most of their time at the terminal, and each lab step embeds the help
 it needs, such as a short silent GIF before a step, a 30-90 second narrated
 micro-video after a predict step, or a static reference card for lookup.
 Guidance fades lab by lab, a pre-check lets experienced learners skip ahead,
-and a capstone with portal-run checks closes the path.
+and a goals-only capstone closes the path.
 
 The repo holds the Remotion motion-graphics toolkit, the ElevenLabs,
 whisper.cpp, and caption helper scripts, the `CLAUDE.md` instruction set, the
@@ -194,8 +194,9 @@ one writes plain files and stops for your review before the next:
 | 3. Audio | `/audio <slug> [lab]` | `public/chapters/<media-id>/narration.mp3`, transcript, and captions | listen to every track |
 | 4. Video | `/video <slug> <lab>` | `deliverables/<media-id>.mp4` + `.vtt` for videos, `.mp4` + `.png` poster for GIF loops, `.png` for cards, and articles for standalone videos | the MP4s, GIFs, cards, and captions |
 | 3+4 | `/produce <slug> <lab>` | both of the above in one shot | once you trust the scripts |
-| Labs | `/lab <slug> <lab \| capstone \| 0>`, `/lab-review <lab>`, `/lab-topology <lab>` | one WWT repo draft per lab in `labs/<lab-slug>/` (guide, internal SETUP with portal checks, SUPPORT), the capstone repo, the path page for `0`, topology SVG | the guide, then the diagram |
+| Labs | `/lab <slug> <lab \| capstone \| 0>`, `/lab-review <lab>`, `/lab-topology <lab>` | one WWT repo draft per lab in `labs/<lab-slug>/`, in the shape of the linux-intermediate labs (index, environment, the outline's module pages, a quickref login page when there's more than one device, internal SETUP, SUPPORT, LISTING, `shots_spec.py`, dryrun states), the capstone repo with its Solutions page, the path page for `0`, topology SVG | the guide, then the diagram |
 | Lab build | `/lab-build <lab>` | `lab.yaml` + `PLAN.md` in [Lab Builder](https://github.com/willrobertson23wwt/Lab-Builder) and a `terraform plan` of the vApp | the plan; you run the build |
+| Lab setup | `/lab-setup <lab> <vapp-address>` | the guests built over SSH from SETUP.md (audit, upgrade, idempotent `dryrun/setup.sh`), as-found notes, and the quickref page's management IPs | the audit and the setup log; then the dry run and screenshots |
 | Done | `/closeout <slug> [A-B]` | `archives/<slug>-<date>.zip` + manifest; optional render purge | the dry-run plan, then the purge question |
 
 Media IDs from the outline tie each stage together: `<prefix>-briefing`,
@@ -227,9 +228,10 @@ for AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
 | `.claude/skills/produce` | `/produce <slug> <lab>` runs audio + video for named labs in one shot. |
 | `.claude/skills/article` | `/article <slug> <media-id>` writes the written alternative to a standalone video (the briefing). Embedded media gets captions instead. |
 | `.claude/skills/unslop` | `/unslop <path>` strips AI tells from learner-facing prose. Other skills call it. |
-| `.claude/skills/lab` | `/lab <slug> <lab>` drafts one lab as its own WWT mkdocs repo, with media, predict prompts, hints, and portal checks, plus internal SETUP.md and SUPPORT.md. Also the capstone and the path page. |
+| `.claude/skills/lab` | `/lab <slug> <lab>` drafts one lab as its own WWT mkdocs repo in the linux-intermediate shape, with one page per outline module, media and reference cards at their steps, predict prompts, and hints, plus internal SETUP.md, SUPPORT.md, LISTING.md, `shots_spec.py`, and dryrun states. Also the capstone (with `solutions.md`) and the path page. |
 | `.claude/skills/lab-review` | `/lab-review <lab-slug>` documentation-only cleanup of a drafted lab before the VM exists. |
-| `.claude/skills/lab-topology` | `/lab-topology <lab-slug>` draws the lab's environment SVG. Includes a single-VM template. |
+| `.claude/skills/lab-topology` | `/lab-topology <lab-slug>` draws the lab's environment SVG and writes its alt text into LISTING.md. Includes a single-VM template. |
+| `.claude/skills/lab-setup` | `/lab-setup <lab-slug> <vapp-address>` builds a delivered vApp's guests over SSH from SETUP.md and records the as-found state. |
 | `.claude/skills/labdrop` | `/labdrop <learning path>` builds the ATC Lab Drop promo video. |
 | `.claude/skills/closeout` | `/closeout <slug> [A-B]` zips a finished path's deliverables, narration, captions, specs, articles, and research briefs with a sha256 manifest, verifies the zip, and on your say-so deletes the multi-GB renders in `out/`. |
 | `.claude/agents/` | The review and build agents the skills launch (listed above). |
@@ -238,16 +240,16 @@ for AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
 | `src/Chapter.tsx`, `src/types.ts`, `src/chapters/example-generic/` | The generic data-driven chapter pattern (`timeline.json` of cues) for simple title/bullet chapters. |
 | `src/Root.tsx`, `src/constants.ts`, `src/index.ts` | Composition registry with the `audioMetadata` helper, `FPS` and buffer constants, entry point. |
 | `public/backgrounds/` | The paper texture and dark fluid loop `Backdrop` uses. |
-| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `captions.mjs` (WebVTT captions with text from the script and timings from whisper, phonetic spellings mapped back to real syntax, and reading-rate checks), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `prepare-hud.mjs` (Lottie icon prep). |
+| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `captions.mjs` (WebVTT captions with text from the script and timings from whisper, phonetic spellings mapped back to real syntax, and reading-rate checks), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `lab-ssh` and `lab-scp` (password SSH for `/lab-setup`, password from `LAB_PASS`), `prepare-hud.mjs` (Lottie icon prep). |
 | `package.json`, `package-lock.json`, `tsconfig.json`, `remotion.config.ts`, `.env.example` | Pinned toolchain. zod must stay at 4.3.6 for `@remotion/zod-types`. |
 
 ## Also needed, not in the repo
 
 - **An ElevenLabs account** with a cloned or chosen voice. Narration is one
   API request per micro-video or briefing; the worked example path has nine.
-- **The WWT ATC lab portal** to host each lab repo and run its checks. The
-  pipeline writes each check as a command and passing condition in the lab's
-  SETUP.md for whoever wires up the portal.
+- **The WWT ATC lab portal** to host each lab repo, with the guide beside a
+  browser terminal to the lab VM. The portal can't run automated checks yet,
+  so labs have none.
 - **A licensed stock-asset library** (Envato or similar) for extra icons,
   backdrops, and Lab Drop music. Put its path in `CLAUDE.md`. The prepared
   Lottie badges the toolkit ships with are enough to start.

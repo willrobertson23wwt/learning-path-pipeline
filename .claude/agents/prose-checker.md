@@ -34,9 +34,13 @@ anything. Report only.
   since articles use real syntax. Title Case H1 stays; H2/H3 are sentence
   case.
 - **Lab pages** (`labs/<slug>/module-*.md`, `environment.md`,
-  `reference.md`, `description.md`), including predict prompts, reveals,
-  and hints: WWT Title Case headings and the closing Congratulations
-  paragraph stay. Skip commands, code blocks, HTML tags, and shown output.
+  `description.md`, and the capstone's `solutions.md`), including predict
+  prompts, reveals, hints, and inline reference-card text versions: WWT
+  Title Case headings and the closing Congratulations paragraph stay, and
+  the style guide's "Lab pages" section lists the rules that don't apply
+  there (gerund step-group headings, plain lead-ins, short screenshot alt
+  text, "once", "since", "you'll", "just", "click", videos named by topic).
+  Don't flag those. Skip commands, code blocks, HTML tags, and shown output.
   `SETUP.md` and `SUPPORT.md` are out of scope.
 - **Path page** (`courses/<slug>/path-page.md`): every rule.
 - **Outline** (`courses/<slug>/outline.md`): goals, steps, predict prompts,

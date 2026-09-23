@@ -24,7 +24,7 @@ of their time at the terminal or console, and each lab step embeds the help
 it needs: a looping GIF before a step, a 30-90 s narrated micro-video after a
 predict step, a static reference card for lookup, and a briefing video before
 the first lab. Guidance fades lab by lab, a pre-check lets experienced
-learners skip ahead, and a capstone with auto-checks closes the path. The
+learners skip ahead, and a goals-only capstone closes the path. The
 rules and the research behind them are in `.claude/house-style.md`
 "Lab-first design"; `linux-filesystem-path.md` is the worked example of a
 whole path.
@@ -38,6 +38,18 @@ worked example chapter (`src/ExampleCh1.tsx`, `src/components/example-ch1/`,
 conventions below until the path has media of its own. Every chapter still
 registers a `-Overlay` composition (transparent ProRes 4444, alpha channel),
 but overlay renders are **not produced by default**, only if the user asks.
+
+## Ask when unsure
+
+If anything is unclear, ask the user before acting on a guess. This covers
+how labs are presented on the WWT ATC lab portal, what a word in a
+request means, and which of two reasonable readings they want. Say what you
+would otherwise assume, so they can confirm or correct it. A wrong assumption
+about the lab platform spreads through every skill that builds on it.
+
+Explain pipeline terms the first time you use one with the user, such as
+"guidance level" or "predict prompt", in a plain sentence. Don't assume they
+share vocabulary the skills made up.
 
 ## Platform profile (fill in per learning path)
 
@@ -140,13 +152,15 @@ reach outside the project).
 ## Content pipeline
 
 Content hierarchy (lab-first): a **path** is Module 0 (a skip-ahead
-pre-check, a standalone briefing video, and reference cards), a sequence of
-**labs** with fading guidance, and a **capstone**. Each lab is its own WWT
-lab repo, and its steps embed **media**: silent looping GIFs, 30-90 s
-narrated micro-videos, reference cards, and predict prompts (media types and
-rules in `.claude/house-style.md` "Lab-first design"). How many labs and
-media items a path has is not fixed: `/outline`'s researcher suggests shapes
-from how comparable paths are sized, and the user picks.
+pre-check and a standalone briefing video), a sequence of **labs** with
+fading guidance, and a **capstone**. Each lab is its own WWT lab repo split
+into module pages, and its steps embed **media**: silent looping GIFs,
+30-90 s narrated micro-videos, reference cards (inline at the step that
+first needs them), and predict prompts (media types and rules in
+`.claude/house-style.md` "Lab-first design"). How many labs, module pages
+per lab, and media items a path has is not fixed: `/outline`'s researcher
+suggests shapes from how comparable paths and labs are sized, and the user
+picks.
 
 Every media item has an ID from the outline (`<prefix>-briefing`,
 `<prefix>-lN-vK` micro-video, `<prefix>-lN-gK` GIF, `<prefix>-card-<name>`)
@@ -158,9 +172,10 @@ New paths flow through these skills in `.claude/skills/`, each stopping for
 user review; never run the next stage unprompted:
 
 1. `/outline <topic>` → `courses/<slug>/outline.md` (frontmatter: `slug`,
-   `prefix`, `status: draft|approved`), a lab-first path plan with a media
-   inventory. Interactive: scope questions, research findings and suggested
-   shapes, a skeleton to approve, then the full draft.
+   `prefix`, `status: draft|approved`), a lab-first path plan with a module
+   list per lab and a media inventory. Interactive: scope questions,
+   research findings and suggested shapes, a skeleton to approve, then the
+   full draft.
 2. `/scripts <slug> [lab]` → `courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md`:
    narration above a `## Visual brief` heading for videos and the briefing, a
    `## Loop spec` for GIFs, a `## Card layout` for cards. Frontmatter
@@ -174,12 +189,12 @@ user review; never run the next stage unprompted:
    that lab: MP4 + VTT for videos, MP4 + PNG poster for GIFs, PNG for cards.
 5. `/lab <slug> <lab | capstone | 0>` → the lab's WWT repo draft in
    `labs/<lab-slug>/` (or the path page for `0`), then `/lab-review`,
-   `/lab-topology`, and `/lab-build`.
+   `/lab-topology`, `/lab-build`, and `/lab-setup`.
 
 **Agents** (`.claude/agents/`): `researcher` does cited web research before
 writing: `/outline` surveys lab platforms, other learning paths, and cert
 objectives for gaps and suggested shapes; `/scripts` and `/lab` share one
-brief per lab that fact-checks its steps, predict outcomes, and checks.
+brief per lab that fact-checks its steps and predict outcomes.
 Briefs land in `courses/<slug>/research/` and are reused (rules in
 `.claude/house-style.md` "Research briefs"). `script-linter` checks media
 specs before any audio is generated (`/scripts`, `/audio`, `/produce` call
@@ -214,9 +229,10 @@ written lesson, and their captions carry the narration.
 
 **Deliverables go to** `deliverables/` in this repo as `<media-id>.mp4`,
 `.vtt`, or `.png` (gitignored); a GIF delivers an `.mp4` and its `.png`
-poster. `/video` also copies each file into
-the lab repo's media folder when the outline names the repo
-(`**Lab repo:** <lab-slug>`). Overlay .mov files are not delivered.
+poster. `/video` also copies each file into the lab repo's `media/module-N/`
+folder for the module that embeds it (a card goes to the module that first
+uses it) when the outline names the repo (`**Lab repo:** <lab-slug>`).
+Overlay .mov files are not delivered.
 
 **Closing out:** when a path (or a range of its labs) is finished and handed
 off, `/closeout <slug> [N-M]` runs `scripts/closeout.mjs` to bundle the
@@ -232,14 +248,26 @@ workflow from path media with its own conventions and asset set
 `LabDrop` in the Linux Intermediate course repo's `src/LabDrop.tsx`.
 
 **Labs:** one WWT lab repo per outline lab, plus one for the capstone.
+Every lab has the same page set; only the number of module pages varies,
+and it comes from the outline's module list for that lab. The final module
+closes the lab (Workflow Summary plus Congratulations), with no conclusion
+page. A lab with more than one device adds a `_quickref_passwords.md` page
+(Device, Management IP, Method(s), Username, Password). Reference cards sit
+inline in the module step that first needs them, image plus text version.
+The capstone repo is goals only, with one collapsed hint per problem inline
+and a `solutions.md` page after the last module; no other lab has one.
+Lab pages follow the linux-intermediate lab conventions (see
+`.claude/style-guide.md` "Lab pages").
 `/lab` drafts the guide with the path's media embedded at their steps,
-the outline's guidance level, and portal checks in SETUP.md;
+the outline's guidance level, and the build checklist in SETUP.md;
 `/lab-review` cleans it up before the VM exists and `/lab-topology` draws
 the environment diagram. Labs live in `labs/<lab-slug>/` while drafting and
 publish to their own GitHub repo each; the course repo ignores `labs/`.
 Once a lab is reviewed, `/lab-build <lab-slug>` plans the vCloud Director vApp for it
 in Lab Builder (a separate repo: golden images, networks, gateway VM, edge firewall from
 SETUP.md's table) and stops at `terraform plan`; the user builds from there.
+Once the vApp exists, `/lab-setup <lab-slug> <vapp-address>` builds the lab guests over SSH
+from SETUP.md and dry-runs the lab on them.
 
 ## Per-media workflow
 

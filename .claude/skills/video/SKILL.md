@@ -8,7 +8,8 @@ First do the repo check in `.claude/house-style.md` ("Where content
 lives"): in a template folder, stop.
 
 Build the media for one lab or an inclusive range (`/video linux-filesystem
-3`, `... 1-4`; `0` is Module 0: the briefing and its cards). Each item in the
+3`, `... 1-4`; `0` is Module 0: the briefing). A card is built with the
+lab that first uses it. Each item in the
 lab's scripts folder becomes one deliverable:
 
 | Type | Deliverable | Built from |
@@ -100,10 +101,11 @@ so plainly and carry on with the rest.
    narration's phonetic forms. List the remaining warnings in the report.
 8. **Deliver.** Copy each deliverable to `deliverables/`: `<id>.mp4` and
    `<id>.vtt` for a video, `<id>.mp4` and `<id>.png` for a GIF, `<id>.png`
-   for a card. If the outline names this lab's
-   repo (`**Lab repo:** <lab-slug>`) and `labs/<lab-slug>/` exists, also copy
-   each file to the media path the guide references, and list any guide
-   reference with no file and any file the guide doesn't reference.
+   for a card. If the outline names this lab's repo (`**Lab repo:**
+   <lab-slug>`) and `labs/<lab-slug>/` exists, also copy each file to the
+   media path the guide references (`media/module-N/` for the module that
+   embeds it; a card goes to the module that first uses it), and list any
+   guide reference with no file and any file the guide doesn't reference.
 9. **Collect articles.** Wait for each `article-writer`, confirm the file
    exists, run `prose-checker` on it, and send any FIX findings back to the
    writer with `SendMessage`. Put the path, word count, and any flagged

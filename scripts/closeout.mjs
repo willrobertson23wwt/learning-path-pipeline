@@ -10,8 +10,10 @@
 //
 //   first-last       inclusive lab range (e.g. 1-5, or a single 3). Default: the whole path.
 //                    Media IDs carry the lab number (<prefix>-l3-v1, <prefix>-l3-g1).
-//                    Path-level media (<prefix>-briefing, <prefix>-card-*) and legacy
-//                    video-first names (<prefix>-v3-ch1, selected by video) also work.
+//                    A card (<prefix>-card-*) goes with the lab whose scripts folder
+//                    holds its spec (the lab that first shows it). Path-level media
+//                    (<prefix>-briefing) and legacy video-first names
+//                    (<prefix>-v3-ch1, selected by video) also work.
 //   --renders        also archive the raw renders in out/ for those labs (large).
 //   --purge-renders  after the zip verifies, delete those out/ files. Prompts unless --yes.
 //   --yes            skip the purge confirmation (for the /closeout skill after the user agreed).
@@ -58,18 +60,31 @@ if (!prefix) {
 }
 
 const inRange = (n) => !range || (n >= range[0] && n <= range[1]);
-// Lab number from a media ID (<prefix>-l3-v1) or a legacy chapter name (<prefix>-v3-ch1).
-const videoOf = (name) => {
-  const m = name.match(new RegExp(`^${prefix}-[lv](\\d+)-`));
-  return m ? Number(m[1]) : null;
-};
-// Path-level media: not tied to one lab, so archived only on a whole-path closeout.
-const isPathLevel = (name) => new RegExp(`^${prefix}-(intro|review|briefing|card-)`).test(name);
 const nnOf = (name) => {
   const m = name.match(/^(\d+)-/);
   return m ? Number(m[1]) : null;
 };
 const listDir = (dir) => (existsSync(dir) ? readdirSync(dir) : []);
+// Cards carry no lab number in their ID; their spec's scripts folder (NN-*) gives it.
+const cardLab = new Map();
+for (const d of listDir(path.join('courses', slug, 'scripts'))) {
+  const n = nnOf(d);
+  if (n === null) continue;
+  for (const f of listDir(path.join('courses', slug, 'scripts', d))) {
+    if (f.startsWith(`${prefix}-card-`) && f.endsWith('.md')) cardLab.set(f.slice(0, -3), n);
+  }
+}
+// Lab number from a media ID (<prefix>-l3-v1), a card's spec folder, or a legacy
+// chapter name (<prefix>-v3-ch1).
+const videoOf = (name) => {
+  const m = name.match(new RegExp(`^${prefix}-[lv](\\d+)-`));
+  if (m) return Number(m[1]);
+  const id = name.replace(/\.[^.]+$/, '');
+  return cardLab.has(id) ? cardLab.get(id) : null;
+};
+// Path-level media: not tied to one lab, so archived only on a whole-path closeout.
+// A card with no spec folder falls back to path-level.
+const isPathLevel = (name) => new RegExp(`^${prefix}-(intro|review|briefing|card-)`).test(name);
 
 // --- collect ---------------------------------------------------------------
 const files = []; // repo-relative paths

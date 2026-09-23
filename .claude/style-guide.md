@@ -38,6 +38,52 @@ Deliberate departures from Google, so reviewers stop flagging them:
 - "log in" and "login" on Linux and device consoles, not "sign in", because
   the platform prints `login:`.
 
+## Lab pages
+
+Lab pages (the learner-facing pages in `labs/<lab-slug>/`) follow the
+voice and conventions of the linux-intermediate labs (`broken-path` and
+`log-rotation-tool` are the reference), the model for every lab. Where a rule
+in this file conflicts with those labs, the labs win on lab pages. These
+rules don't apply there:
+
+- **Heading form.** Module titles are imperative ("Fix the Address") and
+  step-group headings are gerund phrases ("Fixing the Prefix", "Opening a
+  Terminal and Surveying the Damage"). The base manual's imperative,
+  no-gerund task-heading rule gives way. Title Case (M8) still applies.
+- **P1 lead-in form.** A step opens with a plain sentence ("Confirm the
+  change.", "Try to reach `web01` anyway, by its known address.") and no
+  required "To X, run:".
+- **P4 wording.** No required "The output is similar to the following".
+  Say what varies in the note after the screenshot ("your output may show a
+  few extra rows"). The result still follows the action.
+- **P2 one command per block.** Related commands can share a block when
+  they're read together ("Confirm the change." with `ip -br addr` and `ip
+  route show`).
+- **P8 one-step groups.** A group with one step is still a numbered list.
+- **G1 paragraph length.** Explanations after a step run as long as the
+  lesson needs; each paragraph is still one source line (the labdocs build
+  turns line breaks into visible breaks).
+- **F9 quoted output.** Screenshot alt text is short: the command or the
+  result ("ip -br addr", "ping: Network is unreachable"), not quoted output
+  lines.
+- **F6 position words.** "below" and "above" are fine ("the password
+  below").
+- **G2 once and since.** "Once your lab is provisioned" and "since the path
+  depends on the network" are fine. G2's other pairs still apply.
+- **V3 'll.** "You'll" and "you'll" are fine.
+- **V4 "just".** "just" is fine ("They just never get a reply"). The
+  other minimizers are still out.
+- **F2 "click".** Portal buttons are clicked: "click **Launch**". Labels
+  stay bold.
+- **M4 spelled durations.** Durations in sentences can be spelled out, as
+  the labs do ("about fifteen minutes", "up to five minutes").
+- **Concept-only callbacks** (house style). A lab page can name a video by
+  its topic: "the addressing video showed you". Never by number.
+
+Still in force on lab pages: the inclusive-language rules, M4 and M5 for
+every other number and unit, no em dashes or en dashes (M2), and no emojis.
+Lab markup for the ATC labdocs build is documented in the `/lab` skill.
+
 ## Voice and tone
 
 - **V1. Address the learner as "you".** Don't use "we", "us", or "let's".
@@ -86,8 +132,8 @@ a terminal open beside the page.
   data disk mount point directory list").
 - **G5. One term per concept, across the whole lab**, not only within a
   paragraph (unslop rule 11). Don't use one word for two things either:
-  "check" means the portal check, so a learner's own look is "confirm" or
-  "look at".
+  "link" could mean a hard link or a symbolic link, so say "hard link" or
+  "symlink" every time.
 - **G6. Give "this" a noun** when the previous sentence named two things:
   "This mount hides the directory", not "This hides it".
 - **G7. Define terms and acronyms where they're used.** Define a term at the
@@ -148,7 +194,7 @@ a terminal open beside the page.
     item. Rewrite a sentence that would start with a lowercase command or
     product name: "The `sudo` command prompts for a password."
   - Capitalize a named page or card, not the generic noun: "the Permission
-    Bits card on the Reference Cards page", "a reference card".
+    Bits card", "the Environment page", "a reference card".
 - **M9. No emphasis formatting in prose.** No bold, italics, or capitals to
   stress a word. Italicize a term only where it's defined ("A *hard link*
   is a second name for the same inode"). Bold is for UI labels (F2), keys
@@ -220,7 +266,8 @@ a terminal open beside the page.
 - **F9. Alt text** says what the image shows, not that it's an image ("Image
   of", "GIF of", "Screenshot of" are out). Keep it under about 155
   characters, except where it has to carry text: a screenshot of command
-  output quotes, verbatim, the lines the learner compares against. A
+  output quotes, verbatim, the lines the learner compares against (lab
+  pages use short alt text instead; see "Lab pages"). A
   diagram gets a short alt that names what's in it, with the long
   description in the page nearby (the Device Access Information table for
   a topology).
@@ -257,10 +304,10 @@ a terminal open beside the page.
   "understand", "know", "learn", or "be familiar with". "Explain why a hard
   link survives deletion and a symlink doesn't."
 - **P10. Goal-only tasks have one defensible end state.** The goal names the
-  object (the exact path or host), the end state, any constraint ("leave
-  `/etc` unchanged"), and how the learner can confirm it. Its wording
-  matches the portal check's pass condition. If two careful learners could
-  build different end states from the same words, rewrite it.
+  object (the exact path or host), an end state the learner can see in the
+  terminal, and any constraint ("leave `/etc` unchanged"). If two careful
+  learners could build different end states from the same words, rewrite
+  it.
 
 ## Inclusive language
 

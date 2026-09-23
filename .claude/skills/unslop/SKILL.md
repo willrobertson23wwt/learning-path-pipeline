@@ -79,8 +79,9 @@ The pass runs on prose a learner reads or hears. Apply it to:
   (`courses/<slug>/scripts/**/*.md`, above `## Visual brief`),
 - the text on reference cards (the `## Card layout` content),
 - articles for standalone videos (`courses/<slug>/articles/*.md`),
-- lab guides (`labs/<slug>/module-*.md`, `environment.md`, `reference.md`,
-  `description.md`), including predict prompts, reveals, and hints,
+- lab guides (`labs/<slug>/module-*.md`, `environment.md`,
+  `description.md`, the capstone's `solutions.md`), including predict
+  prompts, reveals, hints, and inline card text versions,
 - the path page (`courses/<slug>/path-page.md`),
 - outline goals, steps, predict prompts, and descriptions
   (`courses/<slug>/outline.md`).

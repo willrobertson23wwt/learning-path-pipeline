@@ -1,0 +1,17 @@
+#!/usr/bin/expect -f
+# Password scp to/from a lab VM (recursive).
+#   LAB_PASS='...' scripts/lab-scp <src> <user>@<host>:<dst>
+set timeout 600
+set src [lindex $argv 0]
+set dst [lindex $argv 1]
+if {![info exists env(LAB_PASS)]} { puts stderr "LAB_PASS not set"; exit 1 }
+set pass $env(LAB_PASS)
+spawn scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
+    -o PreferredAuthentications=password -o PubkeyAuthentication=no $src $dst
+expect {
+  -re "(?i)password( for \\S+)?:" { send "$pass\r"; exp_continue }
+  -re "Permission denied \\(publickey|Permission denied, please try again" { puts stderr "AUTH FAILED"; exit 2 }
+  eof
+}
+lassign [wait] pid spawnid os_err rc
+exit $rc

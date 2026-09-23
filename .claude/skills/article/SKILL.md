@@ -40,8 +40,8 @@ article's writer with `SendMessage`, or fix them yourself if you wrote it.
   screen. If it's missing, stop and point at `/scripts`.
 - `courses/<slug>/outline.md`: the video's `**Description:**` line for the
   frontmatter, plus what the outline says it covers, as a checklist. For the
-  briefing, that is Module 0's mental models and the reference cards it
-  introduces.
+  briefing, that is Module 0's mental models and any reference card the
+  briefing points to.
 - `courses/<slug>/research/`, if a brief covers the video, as a fact check
   only. The article teaches what the video teaches, so it takes no new
   topics from the brief. If the brief shows a script fact is wrong, keep the
