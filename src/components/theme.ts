@@ -1,5 +1,5 @@
 export const ACCENT = '#00C2FF';
-export const DANGER = '#FF5C5C';
+export const DANGER = '#FF6666';
 export const SUCCESS = '#3DD68C';
 export const WARNING = '#E8A13A';
 export const LINE = 'rgba(255,255,255,0.92)';
