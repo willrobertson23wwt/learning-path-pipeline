@@ -94,10 +94,7 @@ model. Then survey how this topic is taught and practiced elsewhere:
   imperative ("Fix the Address"). Only the module count varies between
   labs.
 - **Capstone scenario ideas:** realistic breakages from the job, each with
-  the seeded state, what the fixed state looks like, and the one hint that
-  would unstick a learner.
-- **Pre-check ideas:** one quick question per skill a lab teaches, for the
-  skip-ahead gate.
+  the seeded state, what the fixed state looks like, and the fix.
 - **Gap analysis** (only if an outline already exists): topics it leaves out
   that are core or common elsewhere, topics it covers that look outdated,
   and ordering others use that it doesn't.

@@ -153,8 +153,7 @@ four ALL-CAPS sections, two blank lines before each:
 
 ## shots_spec.py: every output screenshot in one place
 
-Every command-output image under `media/module-N/` (and, in the capstone,
-under `media/solutions/`) is rendered from one table, so all of them can be
+Every command-output image under `media/module-N/` is rendered from one table, so all of them can be
 re-rendered together. Log Rotation Tool's is the model:
 
 ```python

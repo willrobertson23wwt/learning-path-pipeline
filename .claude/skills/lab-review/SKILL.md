@@ -250,7 +250,8 @@ Then the lab-first pieces, against the guide format's "Lab-first pieces":
   options are bullets with the letter in the text (`- a. It gets deleted`),
   and its reveal is collapsed and holds the step's screenshot.
 - Hints follow the guidance-level table: Hint then Answer, and in the
-  capstone one `Stuck? Hint` per problem with no Answer on the module page.
+  capstone one collapsed `Solution` per problem, matching its section on
+  `solutions.md`.
   A Hint that doesn't name the tool or where to look is too vague.
 - Each goal step has one defensible end state the learner can see in the
   terminal.

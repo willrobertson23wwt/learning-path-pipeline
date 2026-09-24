@@ -62,12 +62,12 @@ Go step by step. At each step, ask:
   prediction from what you know so far. Flag a predict prompt you can't make
   a reasoned guess at, or whose answer you can see without opening the
   reveal.
-- **Is the hint enough?** For a step with a Hint (or a capstone `Stuck?
-  Hint`), flag one that leaves you guessing the tool or where to look. Flag
-  a step where you're stuck and no Answer is within reach, except in the
-  capstone, whose answers are on the Solutions page. When you reach the
-  Solutions page, flag any problem whose solution needs something the hint
-  and the earlier labs never pointed to.
+- **Is the hint enough?** For a step with a Hint, flag one that leaves you
+  guessing the tool or where to look. Flag a step where you're stuck and no
+  Answer is within reach. In the capstone, try each problem before opening
+  its collapsed `Solution`, then flag any solution that needs something the
+  earlier labs never taught, and any place the Solutions page disagrees
+  with the module's inline solution.
 - **Could two careful learners build different end states?** For a goal
   step, try a second reasonable reading of the same words. If it leads to a
   different end state, report CLARIFY, or BLOCKING if a later step only

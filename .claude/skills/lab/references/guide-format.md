@@ -465,7 +465,7 @@ only the step wording and where the command and screenshot sit.
 | New commands given, goals for known ones | Commands the path hasn't taught yet appear exactly; for ones it has, the step states the goal ("list the directory with inode numbers") | Answer, collapsed, on goal steps |
 | Goal plus hint | The goal, then the Hint as an italic line | Hint in the open, Answer collapsed |
 | Goal plus collapsed hint | The goal, then the collapsed blocks | Hint and Answer, both collapsed |
-| Goals only (the capstone) | The goal and nothing else | `Stuck? Hint`, collapsed; the answers are on the Solutions page |
+| Goals only (the capstone) | The goal and nothing else | `Solution`, collapsed, with the full worked solution; all solutions again on the Solutions page |
 
 A goal step has one defensible end state. It names the object (the exact
 path or host), an end state the learner can see in the terminal, and any
@@ -475,14 +475,17 @@ by others, and keep its read and write bits as they are. `ls -l` then reads
 
 ## solutions.md (capstone only)
 
-The capstone's goals-only modules keep one collapsed `Stuck? Hint` per
-problem; the full worked solution for every problem lives on one page after
-the last module:
+The capstone's goals-only modules put each problem's full worked solution
+in a collapsed `<details markdown="1"><summary>Solution</summary>` block
+under it. One page after the last module repeats every solution in one
+place:
 
 - `# Solutions`, then one paragraph: try each problem first, and the
   solutions follow the order of the modules.
 - One `## <Problem title>` section per problem, in module order, each in the
-  fully guided step format: lead-in, command, screenshot, what to notice,
+  fully guided step format, the same content as the module's collapsed
+  Solution: lead-in, command, screenshot (the module's image from
+  `media/module-N/`), what to notice,
   whole-file writes as `dryrun/states/` checkpoints, and the one sentence on
   why the fault produced the symptom the scenario describes.
 - No other lab gets a solutions page, and the final capstone module still

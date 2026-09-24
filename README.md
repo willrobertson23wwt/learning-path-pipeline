@@ -5,8 +5,7 @@ paths with Claude Code. In a lab-first path the labs are the course: learners
 spend most of their time at the terminal, and each lab step embeds the help
 it needs, such as a short silent GIF before a step, a 30-90 second narrated
 micro-video after a predict step, or a static reference card for lookup.
-Guidance fades lab by lab, a pre-check lets experienced learners skip ahead,
-and a goals-only capstone closes the path.
+Guidance fades lab by lab, and a challenge-style capstone closes the path.
 
 The repo holds the Remotion motion-graphics toolkit, the ElevenLabs,
 whisper.cpp, and caption helper scripts, the `CLAUDE.md` instruction set, the

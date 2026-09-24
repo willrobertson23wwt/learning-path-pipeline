@@ -17,7 +17,7 @@ commands need the PATH setup in `.claude/house-style.md`.
 The model comes from `ELEVENLABS_MODEL_ID` in `.env` (default `eleven_v3`),
 with optional `ELEVENLABS_STABILITY` and `ELEVENLABS_SEED`. It must match
 the platform profile's **TTS model** line; one model, stability, and seed
-per path, so a retake after a one-word edit sounds like the approved take.
+(if any) per path, so a retake after a one-word edit sounds like the approved take.
 If `.env` and the profile disagree, stop and ask which is right.
 
 ## Steps

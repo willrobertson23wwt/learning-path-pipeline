@@ -49,9 +49,8 @@ many labs, videos, GIFs, or cards a path has; the outline decides that.
 - **Fade the guidance (Kalyuga, expertise reversal).** Guidance drops lab by
   lab, down this ladder: full commands and expected output; full commands
   with predict prompts; new commands given, goals for known ones; goal plus
-  hint; goal plus collapsed hint; goals only. A pre-check lets experienced
-  learners skip ahead, and every video is optional and labeled with its
-  length.
+  hint; goal plus collapsed hint; goals only. Every video is optional and
+  labeled with its length.
 - **Labs are split into module pages.** Only the number of module pages
   varies between labs, and the outline sets it per lab from the
   researcher's suggestion. Each module is one layer or one fault, about 10
@@ -61,9 +60,11 @@ many labs, videos, GIFs, or cards a path has; the outline decides that.
   than one device adds a `_quickref_passwords.md` page (Device, Management
   IP, Method(s), Username, Password).
 - **Capstone for transfer.** The capstone is its own lab repo in the
-  standard file set: goals only, on a pre-seeded broken system, with one
-  collapsed hint per problem inline and a `solutions.md` page after the
-  last module holding the full solutions. No other lab has a solutions
+  standard file set and reads like any other lab, but as a challenge:
+  goals instead of walk-through steps, on a pre-seeded broken system. Each
+  problem's full solution sits collapsed inline under it, and a
+  `solutions.md` page after the last module holds all the solutions in one
+  place. No other lab has a solutions
   page. It adds no new videos; it links back to earlier ones ("Rewatch:
   inodes (90 s)").
 - **No automated checks yet.** The ATC lab portal can't run automated

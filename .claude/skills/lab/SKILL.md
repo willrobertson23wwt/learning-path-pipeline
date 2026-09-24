@@ -1,6 +1,6 @@
 ---
 name: lab
-description: Draft one lab of a lab-first path as its own WWT mkdocs lab repo (index, environment, the outline's module pages, description) plus the internal SETUP.md build checklist, SUPPORT.md, LISTING.md, shots_spec.py, and dryrun states, under labs/<lab-slug>/, with the path's GIFs, micro-videos, reference cards, predict prompts, and hints embedded at their steps and the guidance level the outline sets. Also drafts the capstone repo (with its Solutions page), and the path page for Module 0 (pre-check and briefing). Use whenever the user asks to write, draft, or start a lab, the capstone, or the pre-check, e.g. "/lab linux-filesystem 3", "/lab linux-filesystem capstone". Guide only; review, topology, and the VM build are later stages.
+description: Draft one lab of a lab-first path as its own WWT mkdocs lab repo (index, environment, the outline's module pages, description) plus the internal SETUP.md build checklist, SUPPORT.md, LISTING.md, shots_spec.py, and dryrun states, under labs/<lab-slug>/, with the path's GIFs, micro-videos, reference cards, predict prompts, and hints embedded at their steps and the guidance level the outline sets. Also drafts the capstone repo (with its Solutions page), and the path page for Module 0 (the briefing). Use whenever the user asks to write, draft, or start a lab, the capstone, or the path page, e.g. "/lab linux-filesystem 3", "/lab linux-filesystem capstone". Guide only; review, topology, and the VM build are later stages.
 argument-hint: <course-slug> <lab-number | capstone | 0>
 ---
 
@@ -15,7 +15,7 @@ lab-first path the lab *is* the lesson, and the media only supports it
 
 **One repo per lab.** Every outline lab, and the capstone, is its own WWT lab
 repo with its own environment, SETUP.md, and vApp. Module 0 is not a lab: its
-pre-check and briefing live on the learning path's page on the platform.
+briefing lives on the learning path's page on the platform.
 
 **The model is the Linux Intermediate labs.** That course repo's
 `labs/broken-path/` (multi-host), `labs/confined-service/` (single VM), and
@@ -79,7 +79,7 @@ since each folder becomes its own GitHub repo), and add `**Lab repo:**
 | `SUPPORT.md` | Plain-text notes for the ATC support team (internal) | internal docs |
 | `shots_spec.py` | Every output screenshot's lines, anticipated until the dry run | internal docs |
 | `dryrun/states/`, `dryrun/check-states.py` | One checkpoint per whole-file block, and the checker | internal docs |
-| `media/index/`, `media/environment/`, `media/module-N/` (and `media/solutions/` in the capstone) | One folder per page, created up front | |
+| `media/index/`, `media/environment/`, `media/module-N/` | One folder per page, created up front | |
 
 - **Learner pages:** follow `references/guide-format.md`: the labdocs build
   rules, each page's shape, the module format, commands and files (the
@@ -123,22 +123,24 @@ internal files only.
 `/lab <slug> capstone` drafts the capstone as its own repo from the outline's
 capstone section, with the standard file set above plus `solutions.md`:
 
-- Module pages from the outline's module list, written at the goals-only
-  level in the scenario's voice ("A teammate reports three issues on this
+- Module pages from the outline's module list. The capstone reads like
+  any other lab, but as a challenge: goals instead of walk-through steps,
+  in the scenario's voice ("A teammate reports three issues on this
   box"). Module 1 still opens with the terminal and a survey of the
   starting state, and each module still ends with `## What You Have
   Learned`; the last one ends with its Workflow Summary and Congratulations
   paragraph.
 - Each problem is a goal step with one defensible end state the learner can
-  see in the terminal, followed by one collapsed `Stuck? Hint` that names
-  the tool or where to look. No Answer blocks on module pages.
-- `solutions.md`, after the last module in the nav, holds the full worked
-  solution for every problem in the guide's fully guided step format, with
-  its screenshots in `media/solutions/`. No other lab gets one.
+  see in the terminal, followed by one collapsed `Solution` block holding
+  the full worked solution in the fully guided step format (command,
+  screenshot, what to notice).
+- `solutions.md`, after the last module in the nav, repeats every problem's
+  solution in one place, in module order, reusing the module pages'
+  screenshots from `media/module-N/`. No other lab gets one.
 - Every seeded problem is in SETUP.md's pre-seeded section, precise enough to
   build, with a table mapping problem to seeded state.
-- No new videos. Where the outline names a rewatch, the embed goes inside
-  that problem's `Stuck? Hint`, labeled `**Video (90 s, rewatch): <Title>.**`,
+- No new videos. Where the outline names a rewatch, the embed goes under
+  that problem's goal, before its collapsed `Solution`, labeled `**Video (90 s, rewatch): <Title>.**`,
   and the media file is copied into this repo's module folder so the repo
   stands on its own.
 
@@ -147,8 +149,6 @@ capstone section, with the standard file set above plus `solutions.md`:
 `/lab <slug> 0` writes `courses/<slug>/path-page.md`, the content for the
 learning path's page on the platform (not a lab repo):
 
-- The pre-check: each question, its answer, and the lab a correct answer
-  lets the learner skip to.
 - The briefing video (`<prefix>-briefing.mp4` with its captions), its length,
   and a link to its article.
 - The reference cards introduced in Module 0, each with its text version.

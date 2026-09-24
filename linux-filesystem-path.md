@@ -16,7 +16,7 @@
 | **Animation for procedures, short segments** (Höffler & Leutner; Guo) | GIFs run 5 to 15 seconds and loop. Videos run 30 to 90 seconds, cover one idea, and have pause, scrub, and captions. |
 | **Transient information effect** | Anything learners look up repeatedly (the directory map, the permission bits table) is a static reference card, not a video, placed inline at the step that first needs it. |
 | **Guided for novices** (Kirschner et al.) | Labs 1 and 2 give exact commands and expected output. |
-| **Fading and expertise reversal** (Kalyuga) | Guidance drops with each lab. The capstone gives goals only. A pre-check lets experienced learners skip ahead. Every video is optional and labeled with its length. |
+| **Fading and expertise reversal** (Kalyuga) | Guidance drops with each lab. The capstone gives goals only. Every video is optional and labeled with its length. |
 
 ### Media types
 
@@ -30,7 +30,7 @@
 - Each lab is its own lab repo with the same page set. Only the number of module pages varies, and each lab's module list sets it.
 - A module covers one skill or one fault, runs about 10 to 20 minutes, and ends on a working state. The final module closes the lab with a workflow summary and Congratulations.
 - Every lab here runs on one VM, so none needs a `_quickref_passwords.md` page. A lab with more than one device would add one.
-- The capstone is its own lab repo too, with one collapsed hint per problem and a Solutions page (`solutions.md`) after its last module. No other lab has a Solutions page.
+- The capstone is its own lab repo too, a challenge lab with each problem's full solution collapsed under it and all the solutions again on a Solutions page (`solutions.md`) after its last module. No other lab has a Solutions page.
 
 ---
 
@@ -38,7 +38,7 @@
 
 | # | Lab | Guidance level | Modules | Time | Media |
 |---|---|---|---|---|---|
-| 0 | Pre-check and Briefing | None | n/a | 5 min | Briefing video (2:30) |
+| 0 | Briefing | None | n/a | 5 min | Briefing video (2:30) |
 | 1 | Moving Around the Tree | Full commands and expected output | 1 | 15 min | 2 GIFs, 1 video, Filesystem Map card |
 | 2 | Where Things Live | Full commands, predict prompts | 2 | 20 min | 1 GIF, 2 videos |
 | 3 | Inodes and Links | New commands given, goals for known ones | 2 | 20 min | 1 video |
@@ -48,14 +48,7 @@
 
 ---
 
-## Module 0: Pre-check and Briefing
-
-**Pre-check (skip-ahead gate).** Each correct answer to these five quick questions unlocks **Skip to** for the matching lab:
-1. You're in `/var/log`. Where does `cd ../../etc` put you?
-2. Which directory holds system-wide configuration files?
-3. You delete a file that has a hard link. Can you still read the data?
-4. What does `chmod 750 script.sh` allow the group to do?
-5. You mount a disk on a directory that already has files in it. What happens to those files?
+## Module 0: Briefing
 
 **Briefing video (2:30): One Tree, Everything Hangs off It.** It gives the supportive information up front:
 - There are no drive letters. Everything starts at `/`.
@@ -294,12 +287,10 @@ What's seeded:
 - The `/opt/app/current` symlink points to a deleted `release-1.2`, and `release-1.3` exists.
 - The `start.sh` file in `release-1.3` is mode `640`, group `deploy`.
 
-One collapsed hint per problem, inline under it:
-1. The `du -a` command lists every file with its size, hidden directories included, and `sort -h` orders human-readable sizes.
-2. Run `ls -l /opt/app` to see where `current` points. The `ln -sfn` command replaces a symlink in place.
-3. Compare the file's group bits with the bit that running a script needs.
-
-The Solutions page holds the full answers: `sudo du -ah /var | sort -h | tail -n 5` finds `/var/tmp/.cache/core.dump`; `sudo ln -sfn /opt/app/release-1.3 /opt/app/current` repoints the symlink; `sudo chmod g+x /opt/app/current/start.sh` lets the group run the script.
+Each problem's full solution sits collapsed under it, and the Solutions page repeats all three:
+1. `sudo du -ah /var | sort -h | tail -n 5` lists the largest entries, hidden directories included, and shows `/var/tmp/.cache/core.dump`.
+2. `ls -l /opt/app` shows `current` pointing at the missing `release-1.2`. `sudo ln -sfn /opt/app/release-1.3 /opt/app/current` repoints it in place.
+3. The file's group bits are `r--`, and running a script needs `x`. `sudo chmod g+x /opt/app/current/start.sh` lets the `deploy` group run it.
 
 ---
 
@@ -313,11 +304,3 @@ The Solutions page holds the full answers: `sudo du -ah /var | sort -h | tail -n
 | Reference cards | 2 | n/a | Filesystem Map, Permission Bits |
 
 That's about 11 minutes of video in total for about 2 hours of learning, which is roughly the reverse of a typical video-then-lab path.
-
-## Measuring whether it works
-
-- **Hint use per step.** Shows where the guidance fades too fast.
-- **Video watch rate per clip.** Low watch rates on optional clips are fine. High rewatch rates flag a concept that needs a better lab step.
-- **Predict accuracy.** This should start low (that's the point) and improve on the "apply the model" steps.
-- **Capstone completion without hints or the Solutions page.** This is the real transfer measure.
-- **If possible, A/B one lab** (for example, Lab 3) against your current video-then-lab version, using the same capstone as the outcome measure.

@@ -23,8 +23,8 @@ A **lab-first learning path**: the labs are the course. Learners spend most
 of their time at the terminal or console, and each lab step embeds the help
 it needs: a looping GIF before a step, a 30-90 s narrated micro-video after a
 predict step, a static reference card for lookup, and a briefing video before
-the first lab. Guidance fades lab by lab, a pre-check lets experienced
-learners skip ahead, and a goals-only capstone closes the path. The
+the first lab. Guidance fades lab by lab, and a challenge-style capstone
+closes the path. The
 rules and the research behind them are in `.claude/house-style.md`
 "Lab-first design"; `linux-filesystem-path.md` is the worked example of a
 whole path.
@@ -71,7 +71,7 @@ Keep it short; one line each.
   with a password prompt · "Run as administrator" / UAC · `enable` mode>.
 - **Lab environment default:** <e.g. one Ubuntu 24.04 VM, browser terminal via
   the WWT ATC Lab Portal, `labuser` / `Labpass01!`>.
-- **TTS model:** eleven_v3, stability 0.5 (Natural), seed <n or none>,
+- **TTS model:** eleven_v3, stability 0.5 (Natural), no seed,
   output MP3 44.1 kHz 128 kbps (matches `.env` and the ElevenLabs website
   settings).
 - **Measured narration rate:** <N> wpm on <model>/<voice> (from the first
@@ -153,8 +153,8 @@ reach outside the project).
 
 ## Content pipeline
 
-Content hierarchy (lab-first): a **path** is Module 0 (a skip-ahead
-pre-check and a standalone briefing video), a sequence of **labs** with
+Content hierarchy (lab-first): a **path** is Module 0 (a standalone
+briefing video), a sequence of **labs** with
 fading guidance, and a **capstone**. Each lab is its own WWT lab repo split
 into module pages, and its steps embed **media**: silent looping GIFs,
 30-90 s narrated micro-videos, reference cards (inline at the step that
@@ -256,8 +256,10 @@ closes the lab (Workflow Summary plus Congratulations), with no conclusion
 page. A lab with more than one device adds a `_quickref_passwords.md` page
 (Device, Management IP, Method(s), Username, Password). Reference cards sit
 inline in the module step that first needs them, image plus text version.
-The capstone repo is goals only, with one collapsed hint per problem inline
-and a `solutions.md` page after the last module; no other lab has one.
+The capstone repo reads like any other lab, but as a challenge: goals
+instead of walk-through steps, with each problem's full solution collapsed
+inline under it and all the solutions again on a `solutions.md` page after
+the last module; no other lab has one.
 Lab pages follow the linux-intermediate lab conventions (see
 `.claude/style-guide.md` "Lab pages").
 `/lab` drafts the guide with the path's media embedded at their steps,

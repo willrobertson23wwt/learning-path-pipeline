@@ -86,8 +86,7 @@ and a micro-video after it; its reference material becomes a card.
 
 Propose the path without steps:
 
-- Module 0: the pre-check questions (one per lab it can unlock) and the
-  briefing's mental models.
+- Module 0: the briefing's mental models.
 - Each lab: title, goal, guidance level, time, the surprise it's built
   around, its media counts, and its module list. Only the number of module
   pages varies between labs. Each module gets a title in the imperative
@@ -96,8 +95,9 @@ Propose the path without steps:
   Start from the brief's suggested split.
 - The reference cards, each placed at the module step that first needs it.
 - The capstone: the scenario, its problems, the seeded state behind each
-  one, and its module list. It's its own lab repo, with one collapsed hint
-  per problem and a `solutions.md` page after the last module.
+  one, and its module list. It's its own lab repo that reads like any other
+  lab but as a challenge, with each problem's solution collapsed under it
+  and all the solutions on a `solutions.md` page after the last module.
 
 Show it as the path-overview table plus a line per lab and its modules. Ask
 for changes and revise until the user approves it. This is the cheapest
@@ -129,8 +129,8 @@ rules and fix what fails:
   host), an end state the learner can see in the terminal, and any
   constraint.
 - The capstone adds no new videos and links back to earlier ones. Each
-  problem has one hint, and `solutions.md` holds the full solutions.
-- Every pre-check question names the lab it unlocks.
+  problem has its full solution collapsed under it, and `solutions.md`
+  repeats them all.
 - Total video time stays at or under about 20% of the path's time.
 - Media lengths are within range (GIF 5-15 s, micro-video 30-90 s).
 
@@ -186,14 +186,11 @@ status: draft     # the user flips this to approved after review
 
 | # | Lab | Guidance level | Modules | Time | Media |
 |---|---|---|---|---|---|
-| 0 | Pre-check and Briefing | None | n/a | 5 min | Briefing video (2:30) |
+| 0 | Briefing | None | n/a | 5 min | Briefing video (2:30) |
 | 1 | <title> | Full commands and expected output | 2 | 30 min | 2 GIFs, 1 video, Filesystem Map card |
 | C | Capstone: "<scenario>" | Goals only | 2 | 30 min | links back only |
 
-## Module 0: Pre-check and Briefing
-
-**Pre-check (skip-ahead gate).**
-1. <question> (unlocks: skip to Lab N)
+## Module 0: Briefing
 
 **Briefing video `lf-briefing` (2:30, standalone): <title>.** Supportive
 information, the only video before hands-on work.
@@ -254,11 +251,6 @@ the full answers are on `solutions.md`.
 | Reference cards | | n/a | |
 
 About <N> minutes of video for about <N> hours of learning.
-
-## Measuring
-<the signals to track: hint rate per step, watch and rewatch rate per
-clip, predict accuracy, capstone completion without hints or solutions, and
-an A/B test if the platform allows one>
 ```
 
 ## Style
