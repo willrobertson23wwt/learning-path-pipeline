@@ -1,0 +1,11 @@
+{
+ "music": [
+  {
+   "src": "audio/li-v6-hd/li-v6-ch1-hd.music.bed.wav",
+   "at": 0,
+   "gainDb": 0,
+   "label": "music (bed, envelope baked): The Sun Might Rise in the West (track 8.780-98.447)"
+  }
+ ],
+ "sfx": []
+}

@@ -1,19 +1,30 @@
 # Learning-path pipeline
 
-A complete starter template for producing **lab-first** IT-training learning
-paths with Claude Code. In a lab-first path the labs are the course: learners
-spend most of their time at the terminal, and each lab step embeds the help
-it needs, such as a short silent GIF before a step, a 30-90 second narrated
-micro-video after a predict step, or a static reference card for lookup.
-Guidance fades lab by lab, and a challenge-style capstone closes the path.
+A complete starter template for producing IT-training learning paths with
+Claude Code, in either of two formats. You choose one when you create a path:
 
-The repo holds the Remotion motion-graphics toolkit, the ElevenLabs,
-whisper.cpp, and caption helper scripts, the `CLAUDE.md` instruction set, the
-slash-command skills and review agents that take a topic from a researched
-outline to rendered media and WWT lab guides, and a worked example path
-(`linux-filesystem-path.md`). Built on Linux courses; written so the same
-pipeline produces a Windows Server, PowerShell, Cisco, or cloud learning path
-without changing the skills.
+- **Traditional:** a video course. Modules of 4-6 narrated videos (4-6
+  minutes each, split into 2-4 chapters you cut between your screencasts in
+  Premiere), an article with every video, and a closing hands-on lab per
+  module. Worked example: Linux Intermediate
+  (`formats/traditional/linux-intermediate-path.md`).
+- **Lab-first:** the labs are the course. Learners spend most of their time
+  at the terminal, and each lab step embeds the help it needs: a short
+  silent GIF before a step, a 30-90 second narrated micro-video after a
+  predict step, a static reference card for lookup. Guidance fades lab by
+  lab, and a challenge-style capstone closes the path. Worked example:
+  `formats/lab-first/linux-filesystem-path.md`.
+
+Both formats make their videos the same way: hand-drawn explainers (marker
+lettering and doodles drawn on as the narrator speaks, on the WWT navy
+ground), designed by a video-designer agent, drawn by a sketch-builder,
+scored and levelled by a sound-engineer, and reviewed from stills. The repo
+holds the Remotion toolkit, the ElevenLabs, whisper.cpp, and caption helper
+scripts, the `CLAUDE.md` instruction set, the slash-command skills and
+agents that take a topic from a researched outline to rendered media and
+WWT lab guides, and a worked example per format. Built on Linux courses;
+written so the same pipeline produces a Windows Server, PowerShell, Cisco,
+or cloud learning path without changing the skills.
 
 Works on macOS and Windows. Setup is about 20 minutes plus download time.
 
@@ -176,76 +187,103 @@ in the desktop app's Code tab) and type:
 /new-path PowerShell Fundamentals
 ```
 
-Claude copies the toolkit, skills, agents, scripts and worked examples into
-a sibling folder (`../powershell-fundamentals/`), sets the package name, asks
-you for the platform details it can't infer (shell and prompt, elevation
-model, lab environment, course prefix), fills in the Platform profile in that
-folder's `CLAUDE.md`, installs, typechecks, renders the smoke still, and
-inits git. All course work happens in that folder, never in this one.
+Claude asks which format you want (traditional or lab-first), copies the
+toolkit, shared skills, agents and scripts plus that format's skills into a
+sibling folder (`../powershell-fundamentals/`), fills in the format's
+sections of that folder's `CLAUDE.md` and house style, sets the package
+name, asks you for the platform details it can't infer (shell and prompt,
+elevation model, lab environment, course prefix), fills in the Platform
+profile, installs, typechecks, renders the smoke still, and inits git. All
+course work happens in that folder, never in this one.
 
 Then open Claude Code in the new folder and work through the stages. Each
-one writes plain files and stops for your review before the next:
+one writes plain files and stops for your review before the next.
+
+**Traditional path:**
+
+| Stage | Command | Writes | You review |
+|---|---|---|---|
+| 1. Outline | `/outline <topic>` | `courses/<slug>/outline.md`: modules, videos and their chapters, a lab per module | an interactive plan: scope questions, research findings and suggested shapes, a skeleton, then the draft; set `status: approved` when happy |
+| 2. Scripts | `/scripts <slug> [video]` | `courses/<slug>/scripts/NN-<video>/MM-<chapter>.md`, plus each video's `00-intro.md` | narration + visual briefs per chapter |
+| 3. Audio | `/audio <slug> [video]` | `public/chapters/<chapter-id>/narration.mp3`, transcript, and captions | listen to every chapter |
+| 4. Video | `/video <slug> <video>` | the designer's shot lists (you approve them), then `deliverables/<chapter-id>.mp4` + `.vtt` per chapter, and the video's article | the chapters; you assemble the video in Premiere with your screencasts |
+| 3+4 | `/produce <slug> <video>` | both of the above in one shot | once you trust the scripts |
+| Labs | `/lab <slug> <module>`, then the lab skills below | the module's closing lab as a WWT repo draft in `labs/<lab-slug>/` | the guide, then the diagram |
+
+Chapter IDs tie each stage together: `<prefix>-v3-ch2` is chapter 2 of video
+3, `<prefix>-v3-intro` its chapter 0 (narration over your custom intro
+footage).
+
+**Lab-first path:**
 
 | Stage | Command | Writes | You review |
 |---|---|---|---|
 | 1. Outline | `/outline <topic>` | `courses/<slug>/outline.md`: labs, guidance levels, steps, and a media inventory | an interactive plan: scope questions, research findings and suggested shapes, a skeleton, then the draft; set `status: approved` when happy |
 | 2. Scripts | `/scripts <slug> [lab]` | `courses/<slug>/scripts/NN-<lab>/<media-id>.md` | narration + visual briefs for videos, loop specs for GIFs, layouts for cards |
 | 3. Audio | `/audio <slug> [lab]` | `public/chapters/<media-id>/narration.mp3`, transcript, and captions | listen to every track |
-| 4. Video | `/video <slug> <lab>` | `deliverables/<media-id>.mp4` + `.vtt` for videos, `.mp4` + `.png` poster for GIF loops, `.png` for cards, and articles for standalone videos | the MP4s, GIFs, cards, and captions |
+| 4. Video | `/video <slug> <lab>` | shot lists for each video (you approve them), then `deliverables/<media-id>.mp4` + `.vtt` for videos, `.mp4` + `.png` poster for GIF loops, `.png` for cards, and articles for standalone videos | the MP4s, GIFs, cards, and captions |
 | 3+4 | `/produce <slug> <lab>` | both of the above in one shot | once you trust the scripts |
-| Labs | `/lab <slug> <lab \| capstone \| 0>`, `/lab-review <lab>`, `/lab-topology <lab>` | one WWT repo draft per lab in `labs/<lab-slug>/`, in the shape of the linux-intermediate labs (index, environment, the outline's module pages, a quickref login page when there's more than one device, internal SETUP, SUPPORT, LISTING, `shots_spec.py`, dryrun states), the capstone repo with its Solutions page, the path page for `0`, topology SVG | the guide, then the diagram |
+| Labs | `/lab <slug> <lab \| capstone \| 0>`, then the lab skills below | one WWT repo draft per lab in `labs/<lab-slug>/`, the capstone repo with its Solutions page, the path page for `0` | the guide, then the diagram |
+
+Media IDs tie each stage together: `<prefix>-briefing`, `<prefix>-l3-v1` (a
+micro-video in Lab 3), `<prefix>-l3-g1` (a GIF), `<prefix>-card-<name>`.
+
+**Both formats:**
+
+| Stage | Command | Writes | You review |
+|---|---|---|---|
+| Lab review | `/lab-review <lab>`, `/lab-topology <lab>` | a documentation-only cleanup of the drafted lab (index, environment, module pages, a quickref login page when there's more than one device, internal SETUP, SUPPORT, LISTING, `shots_spec.py`, dryrun states) and its topology SVG | the review report and the diagram |
 | Lab build | `/lab-build <lab>` | `lab.yaml` + `PLAN.md` in [Lab Builder](https://github.com/willrobertson23wwt/Lab-Builder) and a `terraform plan` of the vApp | the plan; you run the build |
 | Lab setup | `/lab-setup <lab> <vapp-address>` | the guests built over SSH from SETUP.md (audit, upgrade, idempotent `dryrun/setup.sh`), as-found notes, and the quickref page's management IPs | the audit and the setup log; then the dry run and screenshots |
 | Done | `/closeout <slug> [A-B]` | `archives/<slug>-<date>.zip` + manifest; optional render purge | the dry-run plan, then the purge question |
 
-Media IDs from the outline tie each stage together: `<prefix>-briefing`,
-`<prefix>-l3-v1` (a micro-video in Lab 3), `<prefix>-l3-g1` (a GIF),
-`<prefix>-card-<name>`. Edit any file and rerun just that stage for one lab
-(`/scripts <slug> 3`, `/audio <slug> 3`). Nothing advances automatically.
+Edit any file and rerun just that stage for one video or lab. Nothing
+advances automatically.
 
 Along the way, agents in `.claude/agents/` do focused work in their own
 context: `researcher` runs cited web research before the outline and each
-lab, `script-linter` checks specs before any narration credits are spent,
-`media-builder` builds each media item in parallel, `stills-reviewer` checks
-every item's stills before it renders, `prose-checker` rereads learner prose
-for AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
+lab or module, `script-linter` checks scripts before any narration credits
+are spent, `video-designer` writes each video's shot list, `sketch-builder`
+draws it, `sound-engineer` picks the music and effects and sets the levels,
+`manim-builder` and `blender-builder` make exact plots and 3D devices on
+demand, `media-builder` builds each GIF and card (lab-first),
+`stills-reviewer` checks every item's stills before it renders,
+`article-writer` writes articles, `prose-checker` rereads learner prose for
+AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
 
 ## What is in this repo
 
 | Path | What it is |
 |---|---|
 | `CLAUDE.md` | Project instructions Claude Code loads. Platform-neutral except the **Platform profile** section, which each course fills in. |
-| `.claude/house-style.md` | Rules the skills share: the template guard, the lab-first design rules and media types, learner-prose rules, and research-brief reuse. |
+| `formats/traditional/`, `formats/lab-first/` | What differs by format: the `/outline`, `/scripts`, `/audio`, `/video`, `/article`, `/produce` and `/lab` skills, the `researcher`, `script-linter` and `article-writer` agents, the worked example path, and the fragments that fill the FORMAT sections of `CLAUDE.md` and the house style. `/new-path` applies one with `scripts/apply-format.mjs`. |
+| `.claude/house-style.md` | Rules the skills share: the template guard, the course-design rules (filled in per format), learner-prose rules, and research-brief reuse. |
+| `.claude/references/` | The video playbook (`video-design.md` and its three cited briefs), the hand-drawn house style (`sketch-style.md`), the sound rules (`sound-design.md`), the Manim and Blender styles, the writing research, and worked examples (`examples/li-v6-ch1-hd/`, a hand-drawn chapter; `examples/li-v6-ch1/`, the Manim version). |
 | `.claude/style-guide.md` | The writing style guide: the Google developer documentation style guide as the base manual, with house departures and numbered rules for voice, global English, mechanics, formatting, procedures, inclusive language, and brief citations. Review agents cite its rule IDs. |
 | `.claude/references/writing/` | The cited research behind the style guide and the script rules (technical writing, style manuals, and writing for technical video). |
-| `linux-filesystem-path.md` | A complete worked lab-first path (Linux filesystem). `/outline` matches its shape. |
-| `.claude/skills/new-path` | `/new-path <topic>` scaffolds a new course folder from this repo. The only skill that runs here. |
-| `.claude/skills/outline` | `/outline <topic>` plans a lab-first path with you, from a research survey, into `courses/<slug>/outline.md`. |
-| `.claude/skills/scripts` | `/scripts <slug> [lab]` writes one spec per media item: narration + visual brief, GIF loop spec, or card layout. |
-| `.claude/skills/audio` | `/audio <slug> [lab]` generates ElevenLabs MP3s, whisper word timings, and WebVTT captions. |
-| `.claude/skills/video` | `/video <slug> <lab>` builds and renders a lab's videos, GIFs, and cards, and delivers them into the lab repo. |
-| `.claude/skills/produce` | `/produce <slug> <lab>` runs audio + video for named labs in one shot. |
-| `.claude/skills/article` | `/article <slug> <media-id>` writes the written alternative to a standalone video (the briefing). Embedded media gets captions instead. |
+| `.claude/skills/new-path` | `/new-path <topic>` asks the format and scaffolds a new course folder from this repo. The only skill that runs here. |
 | `.claude/skills/unslop` | `/unslop <path>` strips AI tells from learner-facing prose. Other skills call it. |
-| `.claude/skills/lab` | `/lab <slug> <lab>` drafts one lab as its own WWT mkdocs repo in the linux-intermediate shape, with one page per outline module, media and reference cards at their steps, predict prompts, and hints, plus internal SETUP.md, SUPPORT.md, LISTING.md, `shots_spec.py`, and dryrun states. Also the capstone (with `solutions.md`) and the path page. |
 | `.claude/skills/lab-review` | `/lab-review <lab-slug>` documentation-only cleanup of a drafted lab before the VM exists. |
 | `.claude/skills/lab-topology` | `/lab-topology <lab-slug>` draws the lab's environment SVG and writes its alt text into LISTING.md. Includes a single-VM template. |
 | `.claude/skills/lab-setup` | `/lab-setup <lab-slug> <vapp-address>` builds a delivered vApp's guests over SSH from SETUP.md and records the as-found state. |
 | `.claude/skills/labdrop` | `/labdrop <learning path>` builds the ATC Lab Drop promo video. |
 | `.claude/skills/closeout` | `/closeout <slug> [A-B]` zips a finished path's deliverables, narration, captions, specs, articles, and research briefs with a sha256 manifest, verifies the zip, and on your say-so deletes the multi-GB renders in `out/`. |
 | `.claude/agents/` | The review and build agents the skills launch (listed above). |
-| `src/components/` | The shared toolkit: `theme.ts`, `layout.tsx` (Studio props schema plumbing), `TitleCard`, `ThankYouCard`, `Backdrop` (paper + fluid loop), `HudIcon` (Lottie badges), `terminal/kit.tsx` (`TermWindow`, type-on, pills, easing helpers), `BulletList`, `LowerThird`, `PrinciplePanel`, `Waveform`, `icons/`. |
+| `src/components/sketch/`, `src/assets/hand/` | The hand-drawn video toolkit: marker ink, single-line hand lettering, rough shapes and doodles, sheet wipes, the navy ground and title light, the hand-lettered thank-you card. |
+| `src/components/` | The shared toolkit: `theme.ts` (the WWT palette), `MixTrack.tsx` (the sound engineer's mix), `ManimLayer.tsx`, `layout.tsx` (Studio props schema plumbing), `TitleCard`, `ThankYouCard`, `Backdrop` (paper + fluid loop), `HudIcon` (Lottie badges), `terminal/kit.tsx` (`TermWindow`, type-on, pills, easing helpers), `BulletList`, `LowerThird`, `PrinciplePanel`, `Waveform`, `icons/`. |
 | `src/ExampleCh1.tsx`, `src/components/example-ch1/`, `public/chapters/example-ch1/` | One complete worked video composition (bespoke, schema-driven, with its narration and transcript). Renders as `ExampleCh1`. Every convention in `CLAUDE.md` points at it. |
 | `src/Chapter.tsx`, `src/types.ts`, `src/chapters/example-generic/` | The generic data-driven chapter pattern (`timeline.json` of cues) for simple title/bullet chapters. |
 | `src/Root.tsx`, `src/constants.ts`, `src/index.ts` | Composition registry with the `audioMetadata` helper, `FPS` and buffer constants, entry point. |
 | `public/backgrounds/` | The paper texture and dark fluid loop `Backdrop` uses. |
-| `scripts/` | `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `captions.mjs` (WebVTT captions with text from the script and timings from whisper, phonetic spellings mapped back to real syntax, and reading-rate checks), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `lab-ssh` and `lab-scp` (password SSH for `/lab-setup`, password from `LAB_PASS`), `prepare-hud.mjs` (Lottie icon prep). |
+| `scripts/` | `apply-format.mjs` (applies a format in `/new-path`), `beats.mjs` (beat timings from the transcript), `stills.mjs` (many stills from one bundle), `hand-font.mjs`, the Manim scripts, `generate-audio.mjs` (ElevenLabs), `transcribe.mjs` (whisper.cpp timings), `captions.mjs` (WebVTT captions with text from the script and timings from whisper, phonetic spellings mapped back to real syntax, and reading-rate checks), `closeout.mjs` (archive + purge), `lab-terminal-shot.py` (portal-look terminal screenshots), `lab-ssh` and `lab-scp` (password SSH for `/lab-setup`, password from `LAB_PASS`), `prepare-hud.mjs` (Lottie icon prep). |
 | `package.json`, `package-lock.json`, `tsconfig.json`, `remotion.config.ts`, `.env.example` | Pinned toolchain. zod must stay at 4.3.6 for `@remotion/zod-types`. |
 
 ## Also needed, not in the repo
 
 - **An ElevenLabs account** with a cloned or chosen voice. Narration is one
-  API request per micro-video or briefing; the worked example path has nine.
+  API request per chapter (traditional) or per micro-video (lab-first).
+- **An Epidemic Sound account**, connected to Claude, for the music and
+  effects the sound engineer picks (you approve each download).
 - **The WWT ATC lab portal** to host each lab repo, with the guide beside a
   browser terminal to the lab VM. The portal can't run automated checks yet,
   so labs have none.
@@ -316,7 +354,10 @@ section. Course-specific chapters, audio, and the raw Envato icon pack were
 left behind on purpose.
 
 The pipeline started out video-first (4-6 minute narrated videos cut between
-screencasts, with a lab at the end of each module). It moved to lab-first
-paths, with the skills and agents developed in the `Lab-based-learning-path`
-template folder, which carries the same skill set without the Remotion
-runtime. The video-first version is in git history before this change.
+screencasts, with a lab at the end of each module), moved to lab-first
+paths developed in the `Lab-based-learning-path` template folder, and now
+holds both as formats (2026-09-25): the traditional format is the
+linux-intermediate structure on the current tooling, and the lab-first
+template folder was merged in and retired. The hand-drawn video style
+replaced the earlier Remotion and Manim looks after an A/B of the same
+chapter in all three.

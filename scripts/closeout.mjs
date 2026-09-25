@@ -1,19 +1,21 @@
-// Close out a finished course (or a range of its labs): gather the
-// deliverables (MP4s, GIFs, card PNGs, captions), the source narration,
-// transcripts and captions, the media scripts, the articles for standalone
-// videos, the research briefs and the caption map into one dated zip with a
+// Close out a finished course (or a range of its labs or videos): gather the
+// deliverables (MP4s, captions, a traditional video's chapter 0 MP3, and a
+// lab-first path's GIFs and card PNGs), the source narration, transcripts and
+// captions, the scripts, the articles, the research briefs and the caption
+// map into one dated zip with a
 // manifest, verify the zip, and optionally delete the multi-GB renders in out/
 // afterwards.
 //
 // Usage:
 //   node scripts/closeout.mjs <course-slug> [first-last] [--renders] [--purge-renders] [--dry-run]
 //
-//   first-last       inclusive lab range (e.g. 1-5, or a single 3). Default: the whole path.
-//                    Media IDs carry the lab number (<prefix>-l3-v1, <prefix>-l3-g1).
-//                    A card (<prefix>-card-*) goes with the lab whose scripts folder
-//                    holds its spec (the lab that first shows it). Path-level media
-//                    (<prefix>-briefing) and legacy video-first names
-//                    (<prefix>-v3-ch1, selected by video) also work.
+//   first-last       inclusive range (e.g. 1-5, or a single 3). Default: the whole path.
+//                    Lab-first: a lab range; media IDs carry the lab number
+//                    (<prefix>-l3-v1, <prefix>-l3-g1), and a card (<prefix>-card-*) goes
+//                    with the lab whose scripts folder holds its spec. Traditional: a
+//                    video range; chapter IDs carry the video number (<prefix>-v3-ch1,
+//                    <prefix>-v3-intro). Path-level media (<prefix>-briefing, -intro,
+//                    -review) goes in only on a whole-path closeout.
 //   --renders        also archive the raw renders in out/ for those labs (large).
 //   --purge-renders  after the zip verifies, delete those out/ files. Prompts unless --yes.
 //   --yes            skip the purge confirmation (for the /closeout skill after the user agreed).
@@ -95,7 +97,7 @@ const add = (rel) => {
 
 for (const f of listDir('deliverables')) {
   const v = videoOf(f);
-  if (((v !== null && inRange(v)) || (isPathLevel(f) && !range)) && /\.(mp4|mov|gif|png|vtt)$/i.test(f)) add(path.join('deliverables', f));
+  if (((v !== null && inRange(v)) || (isPathLevel(f) && !range)) && /\.(mp4|mov|gif|png|vtt|mp3)$/i.test(f)) add(path.join('deliverables', f));
 }
 for (const d of listDir(path.join('public', 'chapters'))) {
   const v = videoOf(d);
@@ -117,11 +119,12 @@ for (const f of listDir(path.join('courses', slug, 'articles'))) {
   if ((n !== null && inRange(n)) || (n === null && !range)) add(path.join('courses', slug, 'articles', f));
 }
 if (!range) add(path.join('courses', slug, 'caption-map.json'));
-// Research briefs: per-video ones (NN-*.md) follow the range; the outline and
-// lab briefs (outline.md, lab-*.md) are course-level, like outline.md itself.
+// Research briefs: per-lab ones (NN-*.md) follow the range; a traditional
+// path's per-module briefs (module-N-*.md) are small and always go in, since a
+// module spans several videos; the outline brief is course-level.
 for (const f of listDir(path.join('courses', slug, 'research'))) {
   const n = nnOf(f);
-  if ((n !== null && inRange(n)) || (n === null && !range)) add(path.join('courses', slug, 'research', f));
+  if ((n !== null && inRange(n)) || /^module-\d+/.test(f) || (n === null && !range)) add(path.join('courses', slug, 'research', f));
 }
 if (!range) add(path.join('courses', slug, 'outline.md'));
 

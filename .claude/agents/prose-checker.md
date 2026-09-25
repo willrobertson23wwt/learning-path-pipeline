@@ -2,7 +2,8 @@
 name: prose-checker
 description: Read-only unslop reviewer. Give it one or more saved learner-facing files (media specs, articles, lab pages, the path page, the outline); it flags AI tells, house-style prose misses, and style-guide breaks with the unslop rule number or style-guide ID, the quoted line, and a suggested rewrite, respecting the course-content exceptions. The author fixes what it flags. Used after the author's own unslop pass by /scripts, /article, /lab, /lab-review, /outline, and /video.
 tools: Read, Glob, Grep
-model: sonnet
+model: claude-opus-5-5
+effort: medium
 ---
 
 The author of these files has already run the unslop pass on them. Authors
@@ -25,10 +26,11 @@ anything. Report only.
 
 - **Media specs** (`courses/<slug>/scripts/**`): for a video or the
   briefing, the narration body only, above `## Visual brief`. Spoken command
-  forms and phonetic spellings stay, and a standalone video's mandated
-  closing line stays. For a card, the text in `## Card layout` (short labels
+  forms and phonetic spellings stay, and the mandated closing line stays
+  (a standalone video's, or a traditional video's last chapter's). For a card, the text in `## Card layout` (short labels
   are fine). Skip visual briefs and GIF loop specs.
-- **Articles** (`courses/<slug>/articles/*.md`, standalone videos only):
+- **Articles** (`courses/<slug>/articles/*.md`: every video's in a
+  traditional path, standalone videos' in a lab-first one):
   every rule in full. Flag any
   phonetic spelling carried over from narration ("ess ess", "dollar one")
   since articles use real syntax. Title Case H1 stays; H2/H3 are sentence
@@ -44,8 +46,8 @@ anything. Report only.
   `SETUP.md` and `SUPPORT.md` are out of scope.
 - **Path page** (`courses/<slug>/path-page.md`): every rule.
 - **Outline** (`courses/<slug>/outline.md`): goals, steps, predict prompts,
-  the capstone scenario, and `**Description:**` lines. Titles stay Title
-  Case.
+  the capstone scenario, key points, lab entries, and `**Description:**`
+  lines (whichever the format has). Titles stay Title Case.
 
 ## What to flag
 

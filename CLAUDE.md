@@ -1,15 +1,18 @@
 # <Learning Path Name>
 
 <!--
-  This is the shared, vendor-agnostic CLAUDE.md for lab-first learning paths.
-  It lives in the templates (learning-path-pipeline, and the lab-first
-  template folder with TEMPLATE.md), and every new path starts from a copy.
-  To start one (Linux, Windows Server, PowerShell, Cisco, Azure, anything
-  with a CLI or console to teach):
+  This is the shared, vendor-agnostic CLAUDE.md for learning paths. It lives
+  in the template (learning-path-pipeline), and every new path starts from a
+  copy. A path has one of two formats, chosen when it's created:
+  traditional (narrated videos of a few chapters each, an article per
+  video, a closing lab per module) or lab-first (the labs are the course,
+  with short media embedded in their steps). To start one (Linux, Windows
+  Server, PowerShell, Cisco, Azure, anything with a CLI or console to teach):
 
-  1. Run `/new-path <topic>` from a template. It copies the Remotion
-     toolkit, skills, agents, scripts and worked examples into a sibling
-     folder and inits git.
+  1. Run `/new-path <topic>` from the template. It asks the format, copies
+     the Remotion toolkit, shared skills, agents and scripts plus that
+     format's skills into a sibling folder, fills in the FORMAT sections of
+     this file and the house style, and inits git.
   2. Replace the title above with the learning path's name.
   3. Fill in the "Platform profile" section below. Everything else in this
      file is platform-neutral and should not need edits.
@@ -19,23 +22,28 @@
 
 -->
 
-A **lab-first learning path**: the labs are the course. Learners spend most
-of their time at the terminal or console, and each lab step embeds the help
-it needs: a looping GIF before a step, a 30-90 s narrated micro-video after a
-predict step, a static reference card for lookup, and a briefing video before
-the first lab. Guidance fades lab by lab, and a challenge-style capstone
-closes the path. The
-rules and the research behind them are in `.claude/house-style.md`
-"Lab-first design"; `linux-filesystem-path.md` is the worked example of a
-whole path.
+<!-- FORMAT:intro -->
+(The learning path's format, filled in by `/new-path` from
+`formats/<format>/fragments/claude-intro.md`.)
+<!-- /FORMAT:intro -->
 
 The media is built with Remotion from ElevenLabs narration: audio-synced
-motion graphics, rendered as MP4s (dark background, audio baked in) and, for
-GIFs, as muted looping MP4s with a PNG poster. The Remotion toolkit and its
+motion graphics, rendered as MP4s (navy ground, audio baked in) and, for a
+lab-first path's GIFs, as muted looping MP4s with a PNG poster. The Remotion toolkit and its
 worked example chapter (`src/ExampleCh1.tsx`, `src/components/example-ch1/`,
 `public/chapters/example-ch1/`, composition `ExampleCh1`) come from the
 `learning-path-pipeline` repo; the example is the pattern reference for the
-conventions below until the path has media of its own. Every chapter still
+conventions below until the path has media of its own. Narrated videos are
+**hand-drawn** (user decision, 2026-09-25, after an A/B against Manim and
+the older Remotion look): marker line art, hand lettering and doodles drawn
+on stroke by stroke as the narrator speaks, on the WWT navy ground, the
+look of the minutephysics explainers. They're built in Remotion with this
+template's toolkit, `src/components/sketch/` (rules in
+`.claude/references/sketch-style.md`; worked example, li-v6-ch1-hd, in
+`.claude/references/examples/li-v6-ch1-hd/`). Manim stays for exact plots
+and diagrams only, shown as a card in the drawing (`manim/_kit/`,
+`ManimLayer.tsx`; its old whole-chapter example is
+`.claude/references/examples/li-v6-ch1/`). Every chapter still
 registers a `-Overlay` composition (transparent ProRes 4444, alpha channel),
 but overlay renders are **not produced by default**, only if the user asks.
 
@@ -48,7 +56,7 @@ would otherwise assume, so they can confirm or correct it. A wrong assumption
 about the lab platform spreads through every skill that builds on it.
 
 Explain pipeline terms the first time you use one with the user, such as
-"guidance level" or "predict prompt", in a plain sentence. Don't assume they
+"guidance level", "predict prompt" or "chapter 0", in a plain sentence. Don't assume they
 share vocabulary the skills made up.
 
 ## Platform profile (fill in per learning path)
@@ -59,9 +67,10 @@ Keep it short; one line each.
 - **Platform / vendor:** <e.g. Ubuntu 24.04 · Windows Server 2025 + PowerShell 7 ·
   Cisco IOS-XE 17>
 - **Course prefix:** <two or three letters from the outline frontmatter, e.g.
-  `lf`, `ps`, `cs`>; media IDs are `<prefix>-briefing`, `<prefix>-lN-vK`,
-  `<prefix>-lN-gK`, `<prefix>-card-<name>`, and composition IDs the same in
-  PascalCase (`LfL3V1`).
+  `lf`, `ps`, `cs`>; item IDs follow the format's pattern in "Content
+  pipeline" below (`<prefix>-l3-v1` in a lab-first path, `<prefix>-v3-ch2`
+  in a traditional one), and composition IDs the same in PascalCase
+  (`LfL3V1`, `PsV3Ch2`).
 - **Shell / console shown on screen:** <bash · PowerShell · IOS privileged
   EXEC>; fenced-block language tag in articles and labs: <`bash` · `powershell`
   · `text`>.
@@ -103,6 +112,18 @@ Keep it short; one line each.
   installs a bogus `tsc` package).
 - `src/index.ts` imports `tailwind.css`; keep it even if no chapter uses
   Tailwind classes.
+- **The hand-drawn toolkit's libraries** (added by `/new-path`, pinned):
+  `roughjs`, `perfect-freehand`, and `@remotion/noise` at the installed
+  Remotion version. The lettering is converted from the EMS single-line
+  fonts into `src/assets/hand/` (`scripts/hand-font.mjs`).
+- **Manim toolchain, only when a video needs an exact plot or diagram**,
+  per project, no Homebrew or sudo (Homebrew and sudo are blocked on WWT
+  machines): `scripts/setup-manim.sh` installs pixi into `.pixi/bin/`,
+  Python 3.12 and Manim from conda-forge into `.pixi/envs/`, and TinyTeX
+  (portable TeX Live, for LaTeX text) into `.tinytex/`, all
+  checksum-verified and gitignored. It takes about 2 GB of disk, so ask the
+  user before running it. `pip`/`uv` installs fail (pycairo has no macOS
+  wheel), and conda-forge's `texlive-core` has no LaTeX formats.
 
 ## Commands
 
@@ -115,18 +136,31 @@ npx remotion still <Id> out/x.png --frame=N    # fast single-frame verification
 # The deliverable (background + audio):
 npx remotion render <Id> out/<name>-preview.mp4
 
-# A GIF: muted looping MP4 plus a poster of the finished state (hold start x FPS):
+# A GIF (lab-first): muted looping MP4 plus a poster of the finished state (hold start x FPS):
 npx remotion render <Id> out/<media-id>.mp4 --muted
 npx remotion still <Id> out/<media-id>.png --frame=<finished-state frame>
 
-# A reference card:
+# A reference card (lab-first):
 npx remotion still <Id> out/<media-id>.png --frame=0
 
-# Captions: text from the spec's narration (map turns phonetic spellings back
-# into real syntax), timings from the transcript; read the warnings it prints:
+# Captions: text from the script's narration (map turns phonetic spellings back
+# into real syntax), timings from the transcript; read the warnings it prints.
+# Once beats.json exists (/video), add --beats so cues follow the holds:
 node scripts/captions.mjs public/chapters/<id>/narration.transcript.json \
   --map courses/<slug>/caption-map.json \
-  --script courses/<slug>/scripts/NN-<lab-slug>/<id>.md
+  --script courses/<slug>/scripts/<folder>/<script>.md \
+  [--beats public/chapters/<id>/beats.json]
+
+# Narrated videos (the /video "Designing a narrated item" flow):
+node scripts/beats.mjs public/chapters/<id>/narration.transcript.json --words   # timed words for the designer
+node scripts/beats.mjs public/chapters/<id>/narration.transcript.json \
+  --spec out/<id>/beats.spec.json --out public/chapters/<id>/beats.json
+node scripts/stills.mjs <Id> out/stills/<Id> <f1,f2,...>   # stills at many frames, one bundle
+
+# A Manim layer (exact plots and diagrams only):
+scripts/manim-render.sh manim/<id>/scene.py <Class> public/manim/<id>/<name>.webm --frames  # frames for Studio
+scripts/manim-watch.sh manim/<id>/scene.py <Class> public/manim/<id>/<name>.webm           # re-render on save
+scripts/manim-render.sh manim/<id>/scene.py <Class> public/manim/<id>/<name>.webm           # final WebM (alpha)
 
 # Transparent overlay (alpha), ONLY if explicitly requested:
 npx remotion render <Id>-Overlay out/<name>-overlay.mov \
@@ -144,166 +178,45 @@ Keep licensed stock assets (Envato or similar) in a folder outside the repo and
 name its path here: `<path to your asset library>`. Useful categories: icon
 packs as SVG/PNG (computer parts, data center, operating systems, cloud, network
 devices, business people), 3D folder illustrations, dark animated backgrounds
-(abstract loop, line particles, digital glitch grid: candidates to experiment
-with alongside `PaperBackdrop`/`TransitionBackdrop`). Premiere `.mogrt`
+(abstract loop, line particles, digital glitch grid). The videos draw
+everything by hand now, so stock is for the rare exact piece, shown as a
+card. Premiere `.mogrt`
 templates (lower thirds, titles, arrows) are for the editor's Premiere timeline,
 not usable in Remotion; prefer the SVG/PNG/video sources. To use an asset in a
 composition, copy it into `public/` first (Remotion's `staticFile()` can't
 reach outside the project).
 
+<!-- FORMAT:pipeline -->
 ## Content pipeline
 
-Content hierarchy (lab-first): a **path** is Module 0 (a standalone
-briefing video), a sequence of **labs** with
-fading guidance, and a **capstone**. Each lab is its own WWT lab repo split
-into module pages, and its steps embed **media**: silent looping GIFs,
-30-90 s narrated micro-videos, reference cards (inline at the step that
-first needs them), and predict prompts (media types and rules in
-`.claude/house-style.md` "Lab-first design"). How many labs, module pages
-per lab, and media items a path has is not fixed: `/outline`'s researcher
-suggests shapes from how comparable paths and labs are sized, and the user
-picks.
-
-Every media item has an ID from the outline (`<prefix>-briefing`,
-`<prefix>-lN-vK` micro-video, `<prefix>-lN-gK` GIF, `<prefix>-card-<name>`)
-that names its script, its audio folder, its composition, and its
-deliverable. A narrated item is one ElevenLabs request → one
-`narration.mp3` → one composition → one MP4 plus a caption file.
-
-New paths flow through these skills in `.claude/skills/`, each stopping for
-user review; never run the next stage unprompted:
-
-1. `/outline <topic>` → `courses/<slug>/outline.md` (frontmatter: `slug`,
-   `prefix`, `status: draft|approved`), a lab-first path plan with a module
-   list per lab and a media inventory. Interactive: scope questions,
-   research findings and suggested shapes, a skeleton to approve, then the
-   full draft.
-2. `/scripts <slug> [lab]` → `courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md`:
-   narration above a `## Visual brief` heading for videos and the briefing, a
-   `## Loop spec` for GIFs, a `## Card layout` for cards. Frontmatter
-   `folder:` (the media ID) names the `public/chapters/<folder>/` dir.
-3. `/audio <slug> [lab]` → `scripts/generate-audio.mjs` (ElevenLabs, key +
-   voice ID in `.env`) writes each narrated item's `narration.mp3`, then
-   `scripts/transcribe.mjs` for timings and `scripts/captions.mjs --script`
-   for its `narration.vtt` (cue text from the spec, phonetic spellings mapped
-   back to real syntax by `courses/<slug>/caption-map.json`).
-4. `/video <slug> <lab>` → the per-media workflow below for every item in
-   that lab: MP4 + VTT for videos, MP4 + PNG poster for GIFs, PNG for cards.
-5. `/lab <slug> <lab | capstone | 0>` → the lab's WWT repo draft in
-   `labs/<lab-slug>/` (or the path page for `0`), then `/lab-review`,
-   `/lab-topology`, `/lab-build`, and `/lab-setup`.
-
-**Agents** (`.claude/agents/`): `researcher` does cited web research before
-writing: `/outline` surveys lab platforms, other learning paths, and cert
-objectives for gaps and suggested shapes; `/scripts` and `/lab` share one
-brief per lab that fact-checks its steps and predict outcomes.
-Briefs land in `courses/<slug>/research/` and are reused (rules in
-`.claude/house-style.md` "Research briefs"). `script-linter` checks media
-specs before any audio is generated (`/scripts`, `/audio`, `/produce` call
-it). `/video` runs `article-writer` in the background for standalone
-videos, one `media-builder` per item in parallel, and `stills-reviewer` on
-each item's stills before it renders. `prose-checker` rereads every saved
-piece of learner prose after the author's own unslop pass. `/lab-review`
-runs `lab-walker` (the review itself, in a fresh context) and then
-`lab-learner` (follows the learner pages literally, never sees SETUP.md or
-this lab's predict answers) alongside `prose-checker`. The repo isn't under
-git, so parallel agents share the working tree: each writes only its own
-files, and the main thread owns `Root.tsx`, shared components, the outline,
-CLAUDE.md, `caption-map.json`, and all final renders.
-
-**Prose quality pass:** `.claude/skills/unslop/SKILL.md` (adapted from
-cursor/plugins' `unslop`) strips AI tells from learner-facing prose. `/scripts`,
-`/article`, `/lab` and `/outline` run it as their last step before saving;
-`/unslop <path>` runs it on any file by hand. Its "Course content" section lists
-the exceptions (the standalone video close, TTS phonetic spellings in
-narration, Title Case titles and WWT lab headings, terse card labels).
-
-Optional fast path: `/produce <slug> <lab>` runs stages 3 + 4 for named labs
-in one shot (user opt-in; skips the listen-first stop, specs must already be
-reviewed and the outline approved).
-
-**Articles are for standalone videos only.** The briefing, and any video the
-outline marks `standalone`, gets a companion article: `/article <slug>
-<media-id>` → `courses/<slug>/articles/<media-id>.md` (git-tracked, sourced
-from the spec; real syntax, never the narration's phonetic spellings).
-Embedded micro-videos and GIFs get none; the lab page around them is the
-written lesson, and their captions carry the narration.
-
-**Deliverables go to** `deliverables/` in this repo as `<media-id>.mp4`,
-`.vtt`, or `.png` (gitignored); a GIF delivers an `.mp4` and its `.png`
-poster. `/video` also copies each file into the lab repo's `media/module-N/`
-folder for the module that embeds it (a card goes to the module that first
-uses it) when the outline names the repo (`**Lab repo:** <lab-slug>`).
-Overlay .mov files are not delivered.
-
-**Closing out:** when a path (or a range of its labs) is finished and handed
-off, `/closeout <slug> [N-M]` runs `scripts/closeout.mjs` to bundle the
-deliverables, source narration, transcripts and captions, specs, articles,
-and research briefs into one dated zip under `archives/` (gitignored) with a
-manifest, verifies it, and only then, on explicit confirmation, deletes the
-multi-GB `out/` renders for those labs. See `.claude/skills/closeout/SKILL.md`.
-
-**Marketing one-offs:** `/labdrop <learning path>` builds an ATC Lab Drop
-promo video (music-synced brand sting, VO slides, WWT end card), a separate
-workflow from path media with its own conventions and asset set
-(`public/labdrop/`); see `.claude/skills/labdrop/SKILL.md`. Worked example:
-`LabDrop` in the Linux Intermediate course repo's `src/LabDrop.tsx`.
-
-**Labs:** one WWT lab repo per outline lab, plus one for the capstone.
-Every lab has the same page set; only the number of module pages varies,
-and it comes from the outline's module list for that lab. The final module
-closes the lab (Workflow Summary plus Congratulations), with no conclusion
-page. A lab with more than one device adds a `_quickref_passwords.md` page
-(Device, Management IP, Method(s), Username, Password). Reference cards sit
-inline in the module step that first needs them, image plus text version.
-The capstone repo reads like any other lab, but as a challenge: goals
-instead of walk-through steps, with each problem's full solution collapsed
-inline under it and all the solutions again on a `solutions.md` page after
-the last module; no other lab has one.
-Lab pages follow the linux-intermediate lab conventions (see
-`.claude/style-guide.md` "Lab pages").
-`/lab` drafts the guide with the path's media embedded at their steps,
-the outline's guidance level, and the build checklist in SETUP.md;
-`/lab-review` cleans it up before the VM exists and `/lab-topology` draws
-the environment diagram. Labs live in `labs/<lab-slug>/` while drafting and
-publish to their own GitHub repo each; the course repo ignores `labs/`.
-Once a lab is reviewed, `/lab-build <lab-slug>` plans the vCloud Director vApp for it
-in Lab Builder (a separate repo: golden images, networks, gateway VM, edge firewall from
-SETUP.md's table) and stops at `terraform plan`; the user builds from there.
-Once the vApp exists, `/lab-setup <lab-slug> <vapp-address>` builds the lab guests over SSH
-from SETUP.md and dry-runs the lab on them.
-
-## Per-media workflow
-
-1. For a narrated item (video or briefing), `/audio` has already written
-   `public/chapters/<media-id>/narration.mp3`, its
-   `narration.transcript.json` (word-level timings via whisper.cpp), and its
-   `narration.vtt`. If the transcript is missing, run
-   `node scripts/transcribe.mjs public/chapters/<folder>/narration.mp3`, then
-   `node scripts/captions.mjs` on the transcript with `--map` and
-   `--script`. GIFs and cards need only their spec.
-2. Map narration cues (or the loop spec's beat times) → beats, build the item
-   per its spec (`courses/<slug>/scripts/NN-*/<media-id>.md`), register it in
-   `src/Root.tsx` under the outline's composition ID.
-3. Typecheck → render stills at each beat to verify → render the MP4 (plus a
-   GIF's poster PNG) or the card PNG → check the captions and the warnings
-   `captions.mjs` printed → copy out.
+(Filled in by `/new-path` from
+`formats/<format>/fragments/claude-pipeline.md`: the content hierarchy, the
+skills in order, the agents, deliverables, labs, and the per-item
+workflow.)
+<!-- /FORMAT:pipeline -->
 
 ## Architecture
 
-Every media item is a composition. Videos and the briefing use the patterns
+Every media item is a composition. Videos, the briefing, and traditional chapters use the patterns
 below; a GIF is a fixed-length silent composition (1280x720, `durationInFrames`
 = its spec's length x `FPS`, flat dark background) whose beat table comes
 from its loop spec; a card is a one-frame 1920x1080 composition rendered with
 `remotion still`. The toolkit's code calls a video composition a "chapter"
-(`Chapter.tsx`, `ExampleCh1`); read "chapter" below as one video. Two
-patterns coexist for videos:
+(`Chapter.tsx`, `ExampleCh1`): in a traditional path that's literal (a video
+is 2-4 chapter compositions); in a lab-first path read "chapter" as one
+video. GIFs and cards are lab-first only. Patterns for videos:
 
 - **Generic, data-driven** (`src/Chapter.tsx` + a `timeline.json` per chapter;
   `src/chapters/example-generic/timeline.json` is the shape): a `timeline.json` lists cues
   (`title`, `lowerThird`, `bullets`, `principle`) with `start`/`duration` in
   seconds. Good for simple title/bullet chapters.
-- **Bespoke per-chapter** (the usual choice; worked example: `src/ExampleCh1.tsx`
+- **Hand-drawn** (the course's video style; worked example:
+  `.claude/references/examples/li-v6-ch1-hd/src/LiV6Ch1HD.tsx`): one file
+  per chapter draws every element with the sketch toolkit (`Ink`,
+  `HandText`, `shapes.ts`, `SweepMask`, `NavyGround`, `TitleLight`), each
+  on its own window from `beats.json`, with the narration split at holds
+  (`kit.ts`) and `MixTrack`. See `.claude/references/sketch-style.md`.
+- **Bespoke per-chapter** (the older look, and GIFs; worked example: `src/ExampleCh1.tsx`
   + `src/components/example-ch1/`): all panels render inside one
   `<Sequence from={offset}>` so `useCurrentFrame()` equals the audio frame, and
   each panel self-gates on a beat-timing table `T` (seconds) in the chapter's
@@ -314,7 +227,8 @@ patterns coexist for videos:
   PowerShell prompt, an IOS prompt, or a config-file editor equally well. The
   prompt string and syntax colors are yours to set per chapter.
 
-Shared: `src/components/theme.ts` (palette + font stacks), `TitleCard`,
+Shared: `src/components/theme.ts` (the WWT palette under the runtime's
+names, plus `GROUND`; `sketch/palette.ts` has the tokens and roles), `TitleCard`,
 `ThankYouCard`, `HudIcon` (Lottie badges), `scripts/prepare-hud.mjs`
 (strips/recolors HUD callout JSON into `src/assets/hud/*.json`; rerun to add
 icons).
@@ -329,14 +243,16 @@ end buffer needs its own frames plus a fade-out beat, not silence.
 **End buffer, by type.** An **embedded micro-video** plays inside a lab page
 and stops on its last frame, so its final assembled beat holds, fully
 readable, for the ~2 s of `END_BUFFER_SECONDS` with no fade-out. A
-**standalone video** (the briefing) keeps the Premiere-style tail below. GIFs
-return to frame 0's state instead (the loop point), and cards have no time
-at all.
+**standalone video** (the lab-first briefing) and every **chapter** of a
+traditional video (each is cut into Premiere between screencasts) keep the
+Premiere-style tail below. GIFs return to frame 0's state instead (the loop
+point), and cards have no time at all.
 
-**End buffer for Premiere transitions (standalone videos):** the video holds
+**End buffer for Premiere transitions (standalone videos and traditional chapters):** the video holds
 for ~2 s past its last narration beat before the composition ends. In that window, fade out the
 foreground elements (panels, text, icons: everything the chapter added) but
-keep the backdrop (`PaperBackdrop`/`TransitionBackdrop`) visible, so Premiere
+keep the ground visible (in the hand-drawn style: one sheet wipe of the
+whole drawing, leaving `NavyGround`), so Premiere
 has clean background-only frames at the tail to build a transition into.
 Mechanically: `END_BUFFER_SECONDS = 2` in `src/constants.ts`; `Root.tsx`'s
 `audioMetadata(audio, tailSeconds)` adds it ONCE for opted-in chapters (pass
@@ -374,23 +290,28 @@ To bake chosen values back in after tweaking in Studio: update the `DEFAULT_*` c
   keep every chapter overlay-clean. The `-Overlay` variant must stay transparent
   (only the dark panels show; never bake a full-frame opaque background into the
   chapter stage, since backdrops belong on the non-transparent variant only).
-- **Backgrounds** (`src/components/Backdrop.tsx`, assets in `public/backgrounds/`):
-  every video's non-transparent render shows `<PaperBackdrop />` (dark
-  crumpled-paper texture) behind the content (GIFs and cards use a flat dark
-  background instead), and a standalone video's title `<Sequence>`
-  additionally gets `<TransitionBackdrop durationInFrames={...} fadeInFrames={0} />`
-  (dark fluid loop) behind the `TitleCard`. Both sit behind
-  `{transparent ? null : ...}` guards, never in the overlay. Follow the
-  `ExampleCh1` wiring pattern in every new chapter.
-- **Never open on bare backdrop.** A standalone video's beat table sets
-  `titleIn: 0` and the title's `TransitionBackdrop` gets `fadeInFrames={0}`,
-  so frame 0 already shows the fluid backdrop with the title springing in,
-  with no flash of empty paper background before the graphics arrive. Keep the
-  fade-out (`fadeFrames`) so the title still hands back to the paper cleanly.
+- **Backgrounds: the WWT navy sheet** (user decision, 2026-09-25,
+  replacing the 2026-09-24 charcoal). Every narrated video's lesson frames
+  sit on `<NavyGround />` (`src/components/sketch/Ground.tsx`): WWT navy
+  (#1D1E48) lightest behind the drawing, falling to navy-ink (#11122E) in
+  the corners, with a frozen fine grain. A standalone video's title and its
+  thank-you card sit on `<TitleLight />` over it: two soft pools of WWT
+  blue and indigo light drifting at about 30 px/s, fading with the title
+  to exactly the lesson ground. Only the main marker and secondary colors
+  sit on the title light; red never does. GIFs and cards use the flat
+  navy `GROUND` from `theme.ts`. Grounds sit behind
+  `{transparent ? null : ...}` guards, never in the overlay. Render with
+  JPEG quality 95 (`remotion.config.ts`), or the falloff bands after
+  encoding. The older `PaperBackdrop`/`TransitionBackdrop` stay only for
+  chapters built before the switch.
+- **Never open on bare backdrop.** A standalone video's (or a traditional
+  chapter's) beat table sets `titleIn: 0`; the title light is up and the title's first stroke is
+  already drawn on frame 0, so there's no flash of bare ground. The title
+  and its light leave together, on one fade, back to the lesson ground.
   An **embedded micro-video** has no title card (the lab page shows the
   title): frame 0 already shows content, usually the output the learner just
   saw, redrawn.
-- **GIFs:** still called GIFs and designed as silent 5-15 s loops, 1280x720,
+- **GIFs** (lab-first paths): still called GIFs and designed as silent 5-15 s loops, 1280x720,
   flat dark background (texture pulls the eye off the keystrokes).
   Delivered as a muted, looping H.264 MP4 that the lab page autoplays with
   controls, since WCAG 2.2.2 needs a pause control on anything that moves
@@ -404,29 +325,59 @@ To bake chosen values back in after tweaking in Studio: update the `DEFAULT_*` c
 - **No flashing:** nothing flashes more than three times in any one second
   (WCAG 2.3.1), in any media type. A cursor blinking about once a second is
   fine.
-- **No background music** in path media (coherence principle); music is only
-  for `/labdrop`.
+- **Music and sound effects are mixed into the render** (user decision,
+  2026-09-24). Every narrated video gets a very low instrumental music bed
+  that fills the narration's holds, plus sparse sound effects on key beats
+  only. The `sound-engineer` agent owns each video's sound across all its
+  chapters: it picks and fits the music (Epidemic Sound connector), places
+  the effects, writes the mix, and checks the levels. The levels rules are in
+  `.claude/references/sound-design.md`: the house mix keeps the music
+  flat at 34 dB below the voice (about -40 dB in Premiere), the title silent apart from its effect,
+  and one loudness target (-16 LUFS) for every final mix. GIFs and
+  cards stay silent.
 - **Caption safe area:** in videos, keep essential text out of the bottom 15%
   of the frame. Captions render there.
-- **Reference cards:** one static 1920x1080 frame, flat dark background,
+- **Reference cards** (lab-first paths): one static 1920x1080 frame, flat dark background,
   large type that reads at half size, lookup content only (tables, maps,
   syntax), nothing mid-animation.
-- **Palette** (`theme.ts`): dark translucent panels, cyan `ACCENT` (#00C2FF),
-  `SUCCESS` green, `WARNING`/`DANGER` for problem states. Keep it consistent across all
-  chapters.
+- **Palette: the WWT design system** (user decision, 2026-09-25), one
+  meaning per role across every course: main marker gray-50, secondary
+  navy-25, ghost navy-50, accent A blue-50 (the focus; "network"), accent B
+  orange-50 (the other side; "host"), key gold (the reveal, the setting
+  that decides), problem red-50 (always with a cross or the word), success
+  green (thick strokes only). Tokens and roles in
+  `src/components/sketch/palette.ts`; `theme.ts` maps the runtime's
+  `ACCENT`/`DANGER`/`SUCCESS`/`WARNING`/panel names to them. Full-strength
+  brand colors are for fills and thick strokes only (4.5:1 or less on
+  navy). Contrast table: `.claude/references/video-design/03-accessible-color.md`.
 - **Easing:** all motion uses springs (`config: {damping: 200}`) or eased
   interpolation: smooth, no linear ramps.
 - **Hold, don't pulse:** Lottie icons play their draw-in once and hold the last frame
   (`loop={false}` in `HudIcon`). No looping/repeating pulses. Elements enter once and
   stay until their scene cuts (no mid-scene exit fades).
-- **Pause at scene changes only:** at a scene change that brings new text to
-  read, hold the fully assembled beat static for ~1 s (30 frames @ `FPS`)
-  before the next scene animates in. Make the hold by splitting the
-  narration `<Audio>` into two Sequences at that paragraph boundary, so the
-  narration never runs on over a static hold. No pauses elsewhere: inserted
-  pauses don't improve learning (Fiorella and Mayer 2018), and learners can
-  pause the player themselves. `/scripts` budgets about 1 s per scene
-  change.
+- **Let the picture land: holds in the narration, sized to what moves.**
+  A pause lasts as long as something is happening on screen, and no
+  longer (user decision, 2026-09-24: 1.8-2 s pauses over a still frame
+  felt too long):
+  - **Still frame** (a scene change or a finished frame to read, nothing
+    moving): about 0.2 s added to the voice's own sentence break, about
+    1.0-1.25 s of silence in all.
+  - **Key animation** that plays in silence (the reveal, a transform the
+    lesson depends on): the animation's run time plus about 1-1.3 s to
+    take in the result (li-v6-ch1's reveal: 1.5 s added, about 2.3 s of
+    silence). The hold adds to the voice's own break, so measure it: in
+    li-v6-ch1-hd the voice already paused 0.8 s after "left.", and the
+    approved 2.4 s hold would have left the result sitting 2.2 s; it was
+    built at 1.6 s.
+
+  The designer places these holds in the shot list. Make each one by
+  splitting the narration `<Audio>` at a sentence boundary (inside
+  measured silence), so the narration never runs over a hold and the
+  visuals stay in sync. Designer-inserted pauses at meaningful boundaries
+  helped learning in three studies (Spanjers et al. 2012; Rey et al. 2019;
+  Biard et al. 2018; see `.claude/references/video-design/01-instructional-evidence.md`),
+  and learners rarely pause the player themselves. Background music added
+  in post fills the gaps. `/scripts` budgets the holds (see its word budget).
 - **Centered when possible:** single elements centered; paired elements (e.g. icon +
   bullets, editor + key panel) centered together as a balanced pair.
 - **No accidental overlap:** elements (panels, pills, captions, annotations) must not
@@ -449,10 +400,13 @@ To bake chosen values back in after tweaking in Studio: update the `DEFAULT_*` c
   surrounding tokens are colored but the literal inherits default black and
   disappears on the dark panel. Set a light default color on the line wrapper
   so any uncolored text stays visible.
-- **Video-close convention (standalone videos only):** narration ends with
+- **Video-close convention (a standalone video, or a traditional video's
+  last chapter):** narration ends with
   "Hope you found this helpful and I'd like to thank you for watching." and the
-  scene fades back into the shared `src/components/ThankYouCard.tsx` ("Thank You
-  for Watching!", gated on a `thankIn` beat). No next-video teasers. Embedded
+  sheet is wiped for `<SketchThankYou inSec={B.thankIn} />`
+  (`src/components/sketch/`): the title light fades back in and "Thank You
+  for Watching!" letters itself on (`ThankYouCard.tsx` is the older look's
+  version). No next-video teasers. Embedded
   micro-videos have no close: they hand back to the lab ("head back and try
   it") and end on their final beat (`/scripts` enforces both).
 - **Cross-references describe the concept, never a video or lab number.**
@@ -467,7 +421,28 @@ To bake chosen values back in after tweaking in Studio: update the `DEFAULT_*` c
 Every one of these was found in per-beat stills or on a listen-through. Check
 new chapters against the list; they are platform-neutral.
 
+Hand-drawn videos (details in `.claude/references/sketch-style.md`):
+
+- Hand lettering measures 15-60% wider than a designer's box estimate
+  (lowercase most). Measure with `layoutText` and fit the shapes around
+  it (circles, braces, bubbles, enclosures); keep the cap sizes. Lettering
+  touching a drawn shape is this style's most common defect.
+- Anything that moves is drawn at home and moved with `translate`: the
+  wobble comes from the stroke's coordinates, so moving the points would
+  make it boil.
+- A beat phrase can't reuse the previous beat's words (`beats.mjs`
+  searches forward); trim to the unshared words, keeping the edge word.
+- Letter short terms and acronyms steadier (`jitter` 0.6-0.9): a slanted
+  I made "CIDR" read "C/DR", and tall x's read as capitals.
+- Balance each scene in the 0-918 band; a strip in the top half for half a
+  minute reads as sitting high (moved 45 px down in li-v6-ch1-hd).
+
 Audio and timing:
+
+- A title and its backdrop leave together, on one fade. When the fluid loop
+  faded early and the title stayed on the plain paper, it read as a bug
+  (li-v6-ch1 pilot). In a hybrid build, drive both fades from the same beat
+  in beats.json with the same duration and easing.
 
 - Regenerated narration reuses folder paths. `transcribe.mjs` rebuilds the
   16 kHz wav when the mp3 is newer, but a beat table built from a stale
@@ -483,6 +458,10 @@ Audio and timing:
 
 Panels and text:
 
+- On the navy ground, a terminal or card panel (`TERM_BG` ink, `PANEL_BG`
+  navy-ink) nearly disappears toward the frame edges. Give any panel whose
+  edge matters a 2 px border at white 30-40% (first found on the charcoal
+  ground, 2026-09-24; the same holds on navy).
 - `TermWindow` has `overflow: hidden`, so badges and annotations must sit inside
   the panel bounds or they clip. A side annotation pinned beside a long code
   line clips at the panel edge; put it on its own caption line inside the
@@ -541,22 +520,9 @@ Pairs, connectors, and travel animations:
 
 ## Course Status
 
-<!--
-  Append one entry per lab as its media ships, matching this shape. This
-  section is the project memory the skills read when they need continuity
-  (terminal styling, motifs already used, gotchas already hit). Keep it in
-  this repo; it does not belong in the template.
-
-  - **Lab N "<Title>"** (repo `labs/<lab-slug>`): media done. Deliverables in
-    `deliverables/<media-id>.*`.
-    - `<prefix>-lN-v1` "<Title>" (video, 75 s, `src/<Prefix>LNV1.tsx` +
-      `src/components/<prefix>-lN-v1/`): one or two sentences naming the
-      motif and the payoff beat. Explains the surprise from step <n>.
-    - `<prefix>-lN-g1` "<Title>" (GIF, 8 s): what it shows; loop point.
-    - `<prefix>-card-<name>` (card): what it holds.
-    - Gotchas: anything found in stills, captions, or on listen-through that
-      the "Lessons learned" section above does not already cover. Promote
-      recurring ones up into that section.
--->
+<!-- FORMAT:status -->
+(The Course Status entry template for this format, filled in by `/new-path`
+from `formats/<format>/fragments/claude-status.md`.)
+<!-- /FORMAT:status -->
 
 (no media produced yet)

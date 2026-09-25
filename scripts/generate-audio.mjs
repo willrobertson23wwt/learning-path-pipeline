@@ -4,11 +4,13 @@
 // (frontmatter `type: gif` or `type: card`) have no narration and are skipped.
 //
 // Usage:
-//   node scripts/generate-audio.mjs <course-slug> [lab|first-last] [--force] [--dry-run] [--no-trim]
+//   node scripts/generate-audio.mjs <course-slug> [lab|video|first-last] [--force] [--dry-run] [--no-trim]
 //
-// Reads courses/<course-slug>/scripts/NN-<lab-slug>/<media-id>.md (recursively;
-// NN is the lab number, 00 for the briefing). Legacy video-first courses use
-// NN-<video>/MM-<chapter>.md, and the number then selects videos.
+// Reads courses/<course-slug>/scripts/NN-*/*.md (recursively). In a lab-first
+// path that's NN-<lab-slug>/<media-id>.md (NN the lab number, 00 for the
+// briefing); in a traditional path, NN-<video-slug>/MM-<chapter-slug>.md with
+// 00-intro.md as chapter 0 (NN the video number), and the number selects
+// videos.
 // The narration is everything above the "## Visual brief" heading, minus
 // frontmatter, headings, and HTML comments. Output goes to
 // public/chapters/<folder>/narration.mp3 where <folder> comes from the script
@@ -194,7 +196,7 @@ for (const file of files) {
   }
 
   if (!meta.folder) {
-    console.error(`Error: ${file} has no "folder:" in frontmatter. Add the media ID, for example folder: ${meta.id || '<prefix>-l<N>-v<K>'}`);
+    console.error(`Error: ${file} has no "folder:" in frontmatter. Add the media ID, for example folder: ${meta.id || '<prefix>-l<N>-v<K> (lab-first) or <prefix>-v<N>-ch<M> (traditional)'}`);
     failed++;
     continue;
   }

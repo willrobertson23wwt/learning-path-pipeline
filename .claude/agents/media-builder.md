@@ -1,8 +1,9 @@
 ---
 name: media-builder
-description: Builds ONE media item for a lab-first path (a narrated micro-video, the briefing, a silent looping GIF, or a static reference card) as a Remotion composition from its spec, the video's transcript when there is one, and the lab's continuity note; renders a still at every beat and returns the stills list for stills-reviewer. Writes only its own item's files; never touches Root.tsx, shared components, or other items. Several run in parallel from /video step 4, one per item.
+description: Builds ONE media item for a lab-first path (a silent looping GIF or a static reference card; narrated videos and the briefing go to sketch-builder) as a Remotion composition from its spec, the video's transcript when there is one, and the lab's continuity note; renders a still at every beat and returns the stills list for stills-reviewer. Writes only its own item's files; never touches Root.tsx, shared components, or other items. Several run in parallel from /video step 4, one per item.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: claude-opus-5-5
+effort: high
 ---
 
 You build one media item while other builders work on the lab's other items
@@ -51,10 +52,12 @@ put the request in your report so the caller can promote it.
 1. **Beat table.**
    - Video or briefing: find each phrase the visual brief quotes in
      `public/chapters/<id>/narration.transcript.json` and take its start
-     time. Build the `T` table (seconds) with a hold of about 1 s only at a
-     scene change that brings new text to read, made by splitting the
-     narration `<Audio>` into two Sequences at that paragraph boundary so
-     narration and visuals stay in sync. No holds elsewhere. Add the end
+     time. Build the `T` table (seconds) with the holds the spec calls for
+     (a short breath of about 0.2 s at a still scene change, the
+     animation's run time plus about 1 s around a key animation; CLAUDE.md
+     "Let the picture land"), each made by
+     splitting the narration `<Audio>` at that sentence boundary so
+     narration and visuals stay in sync. Add the end
      beats the per-type rules call for (an embedded video holds its final
      frame; a standalone video fades to `ThankYouCard`).
    - GIF: take the beat times straight from the loop spec. The last beat
@@ -65,8 +68,12 @@ put the request in your report so the caller can promote it.
 2. Build the item with the schema-driven pattern: `LayoutProvider`,
    `useNum`/`useFlag`, `DEFAULT_*` constants in your `kit*.ts`. Videos get
    the backdrops behind `transparent` guards; GIFs and cards use the flat
-   dark background from `theme.ts`, since texture pulls the eye off the
-   keystrokes and fights a card's legibility. In a video, keep essential
+   navy `GROUND` from `theme.ts` and its WWT palette names (`ACCENT`,
+   `DANGER`, `SUCCESS`, `WARNING`, `PANEL_BG`, `TERM_BG`), since texture
+   pulls the eye off the keystrokes and fights a card's legibility. They
+   stay typeset, not hand-drawn: exact keystrokes and lookup tables read
+   best that way. Give a terminal panel a 2 px border at white 30-40% so it
+   holds its edge on navy. In a video, keep essential
    text out of the bottom 15% of the frame, where captions render. Nothing
    flashes more than three times in any one second.
 3. Typecheck. `npx tsc --noEmit` checks the whole project and other builders

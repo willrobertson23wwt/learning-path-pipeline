@@ -75,15 +75,17 @@ arguments, apply the pass to the prose you are about to save.
 
 The pass runs on prose a learner reads or hears. Apply it to:
 
-- the narration body of every video and briefing spec
+- the narration body of every video, briefing and chapter script
   (`courses/<slug>/scripts/**/*.md`, above `## Visual brief`),
 - the text on reference cards (the `## Card layout` content),
-- articles for standalone videos (`courses/<slug>/articles/*.md`),
+- articles (`courses/<slug>/articles/*.md`: every video's in a
+  traditional path, standalone videos' in a lab-first one),
 - lab guides (`labs/<slug>/module-*.md`, `environment.md`,
   `description.md`, the capstone's `solutions.md`), including predict
   prompts, reveals, hints, and inline card text versions,
 - the path page (`courses/<slug>/path-page.md`),
-- outline goals, steps, predict prompts, and descriptions
+- outline goals, steps, predict prompts, key points, lab entries, and
+  descriptions
   (`courses/<slug>/outline.md`).
 
 Do not apply it to visual briefs, GIF loop specs, `SETUP.md`, beat tables,
@@ -94,8 +96,10 @@ not a tell.
 Exceptions, because the house rules for these already decide the matter:
 
 - **Rule 20 does not touch the mandated video close.** Every standalone
-  video ends with exactly "Hope you found this helpful and I'd like to thank
-  you for watching." Keep it. (Embedded micro-videos have no close.) Likewise keep the lab's closing
+  video, and the last chapter of every traditional video, ends with exactly
+  "Hope you found this helpful and I'd like to thank you for watching."
+  Keep it. (Embedded micro-videos and a video's other chapters have no
+  close.) Likewise keep the lab's closing
   "Congratulations. You have completed the ... lab" paragraph.
 - **Rule 33 yields to the TTS rules in `/scripts`.** Narration is written for
   the ear on purpose: spoken command forms ("run chmod plus x"), phonetic

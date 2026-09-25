@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "studio",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "export PATH=\"$HOME/.nvm/versions/node/$(ls \"$HOME/.nvm/versions/node\" | tail -1)/bin:$PATH\" && npx remotion studio --port 3000 --no-open"],
+      "port": 3000
+    }
+  ]
+}

@@ -70,7 +70,7 @@ Rules:
 | Briefing 150 s (4 changes, standalone tail 2 s) | 144 s | 336 (at 150 wpm: 360) |
 
 - After `/audio`, compute each take's actual wpm from the transcript (word count / speaking seconds) and report it. Flag anything above 165 or below 120. Record the voice's measured rate in the platform profile so later budgets use it.
-- Pauses in the audio come from paragraph breaks only. Longer holds belong in Remotion: split the narration `<Audio>` at a paragraph boundary, as "Lessons learned" already describes. Keep scene-change holds to about 1 s, where there is new on-screen text to read. That is a partial conflict with CLAUDE.md "Pause between ideas" (1-2 s at every idea). See Q9.
+- Pauses in the audio come from sentence breaks, never from TTS tags or punctuation tricks. The video build splits the narration there for holds: a short breath (about 0.2 s beyond the sentence break) at a still scene change, and the animation's run time plus about 1 s around a key animation the viewer should watch in silence; long pauses over a still frame felt dead (user, 2026-09-24) (CLAUDE.md "Let the picture land", decided by the user 2026-09-24; background music fills the gaps in post). This supersedes the research note below (item 6) that argued for 1 s holds only.
 
 ### Q3. Writing for the ear
 
@@ -108,7 +108,7 @@ Rules (testable):
 - **The screen shows what the narration can't say well:** the command, the output, the diagram. The narration explains why. Never put a narration sentence on screen, and never have the narration read a full on-screen string verbatim.
 - **On-screen words that aren't terminal content are keyword labels of 1-4 words,** placed next to the thing they label. Allow at most one verdict pill per scene. This matches the CLAUDE.md "fewer Pill containers" rule and now has a source.
 - **One highlight at a time, landing on the word that names it.** Each visual beat's quoted phrase marks when the highlight appears. Aim to have it land within about 0.3 s of the phrase's first word. That tolerance is practice, not a published threshold.
-- **No music bed** in path media (coherence). The Lab Drop promo is separate.
+- **Music bed: superseded (user decision, 2026-09-24).** Every narrated video now gets a very low instrumental bed (22 LU under the voice) and 2-4 effects per chapter, owned by the `sound-engineer` (`.claude/references/sound-design.md`). The coherence evidence above is why the bed stays that low and the effects stay few, not a ban.
 - **Keep the caption area clear.** WebVTT renders at the bottom of the frame, and DCMP and BBC say captions must not cover essential picture information. Keep essential text out of the bottom 15% of the frame in videos.
 
 ### Q5. ElevenLabs script craft (current docs, fetched 2026-09-23)
@@ -252,7 +252,7 @@ Rules the research confirms: open on what the learner saw; no welcome or "in thi
 | Optional pronunciation dictionary with alias rules | audio skill; CLAUDE.md platform profile | new (optional) | "If the phonetic list grows past about 20 entries, consider an ElevenLabs pronunciation dictionary with alias rules (all models) passed via `pronunciation_dictionary_locators`; phoneme rules only on eleven_v3 and flash_v2." |
 | Screen shows, narration explains; labels 1-4 words, next to their target | scripts skill ("Visual briefs"); CLAUDE.md style | new (codifies) | "On-screen words other than terminal content are keyword labels of one to four words placed beside what they name. Never put a narration sentence on screen, and never read a whole on-screen string aloud." |
 | One highlight at a time, timed to its phrase | scripts skill ("Visual briefs") | already covered (quoted phrases); refine | Add: "each highlight lands on the first word of its quoted phrase." |
-| No music bed | CLAUDE.md style | new | "No background music in path media (coherence principle); music is only for `/labdrop`." |
+| No music bed | CLAUDE.md style | superseded 2026-09-24 | The user chose a very low bed plus sparse effects for every narrated video; see CLAUDE.md "Music and sound effects are mixed into the render" and `.claude/references/sound-design.md`. |
 | Caption safe area | CLAUDE.md style; stills-reviewer | new | "Keep essential text out of the bottom 15% of a video frame; captions render there." |
 | Scene-change holds about 1 s, made by splitting audio | CLAUDE.md "Pause between ideas" | partial conflict | "Hold about 1 s at a scene change where new text must be read, created by splitting the narration audio at the paragraph boundary so narration and visuals stay in sync. Don't add pauses elsewhere." |
 | Integrated description | scripts skill ("Visual briefs"); script-linter visual brief checks | new | Skill: "Every on-screen fact the explanation depends on (a value, a highlight, a verdict) is named in the narration by its meaning." Linter NOTE: a beat introducing a label, value, or verdict with no spoken mention. |

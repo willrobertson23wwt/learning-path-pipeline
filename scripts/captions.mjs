@@ -4,10 +4,18 @@
 // Usage:
 //   node scripts/captions.mjs public/chapters/<folder>/narration.transcript.json \
 //     --script courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md \
-//     --map courses/<slug>/caption-map.json
+//     --map courses/<slug>/caption-map.json \
+//     [--beats public/chapters/<folder>/beats.json]
 //
-// Both flags are optional; --script is the recommended mode. Writes
+// All flags are optional; --script is the recommended mode. Writes
 // narration.vtt next to the transcript.
+//
+// --beats moves the cues onto the composition's timeline. A narrated video
+// adds holds (pauses) by splitting the narration at sentence breaks, so
+// without it every cue after a hold runs early against the render. It reads
+// beats.json's `holds` (composition seconds; a hold at 0 is the lead-in) and
+// shifts each cue by the lead-in plus every hold that comes before it in the
+// narration. Run it once beats.json exists (the /video step), not at /audio.
 //
 // --script takes the cue TEXT from the spec's narration (the same text
 // generate-audio.mjs sent to ElevenLabs: frontmatter stripped, everything above
@@ -88,13 +96,13 @@ const SOFT_END = new Set(['your', 'its', 'their', 'our', 'my', 'this', 'these', 
 
 // ---------------------------------------------------------------- arguments
 
-const USAGE = 'Usage: node scripts/captions.mjs <narration.transcript.json> [--map <file.json>] [--script <spec.md>]';
+const USAGE = 'Usage: node scripts/captions.mjs <narration.transcript.json> [--map <file.json>] [--script <spec.md>] [--beats <beats.json>]';
 const args = process.argv.slice(2);
 const opts = {};
 let input = null;
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
-  if (a === '--map' || a === '--script') {
+  if (a === '--map' || a === '--script' || a === '--beats') {
     if (!args[i + 1] || args[i + 1].startsWith('--')) {
       console.error(USAGE);
       process.exit(1);
@@ -116,6 +124,25 @@ if (!existsSync(input)) {
 
 const warnings = [];
 const warn = (msg) => warnings.push(msg);
+
+// Holds from beats.json, as narration-time positions. A hold's composition
+// time minus the holds before it is where it sits in the narration (inside
+// the silence the audio is cut at); the lead-in (at 0) shifts everything.
+let holdShift = () => 0;
+if (opts.beats) {
+  if (!existsSync(opts.beats)) {
+    console.error(`No beats file at ${opts.beats}.`);
+    process.exit(1);
+  }
+  const holds = [...(JSON.parse(readFileSync(opts.beats, 'utf8')).holds ?? [])].sort((a, b) => a.at - b.at);
+  let before = 0;
+  const marks = holds.map((h) => {
+    const m = {narrMs: h.at <= 0.001 ? -Infinity : (h.at - before) * 1000, ms: h.seconds * 1000};
+    before += h.seconds;
+    return m;
+  });
+  holdShift = (narrMs) => marks.reduce((sum, m) => (m.narrMs <= narrMs ? sum + m.ms : sum), 0);
+}
 
 // ------------------------------------------------------------------ helpers
 
@@ -568,7 +595,8 @@ const body = cues
     if (cps > MAX_CPS) warn(`cue ${i + 1} (${secs(cueFrom(c))}s) reads at ${cps.toFixed(1)} characters per second, over ${MAX_CPS}: "${text}"`);
     const lines = layout(c.toks, c.forced).map((l) => l.map(render).join(' '));
     if (lines.length > MAX_LINES) warn(`cue ${i + 1} (${secs(cueFrom(c))}s) needs ${lines.length} lines: "${text}"`);
-    return `${i + 1}\n${ts(cueFrom(c))} --> ${ts(c.end)}\n${lines.join('\n')}`;
+    const shift = holdShift(cueFrom(c));
+    return `${i + 1}\n${ts(cueFrom(c) + shift)} --> ${ts(c.end + shift)}\n${lines.join('\n')}`;
   })
   .join('\n\n');
 
@@ -579,4 +607,4 @@ const speakingMin = (cueTo(cues[cues.length - 1]) - cueFrom(cues[0])) / 60000;
 const wpm = speakingMin > 0 ? words / speakingMin : 0;
 if (wpm > MAX_WPM) warn(`average rate is ${Math.round(wpm)} words per minute over speaking time, above the ${MAX_WPM} wpm ceiling for adult educational captions`);
 for (const w of warnings) console.error(`warning: ${w}`);
-console.log(`${cues.length} cues, ${words} words, ${Math.round(wpm)} wpm over ${(speakingMin * 60).toFixed(1)}s of speech -> ${out}`);
+console.log(`${cues.length} cues, ${words} words, ${Math.round(wpm)} wpm over ${(speakingMin * 60).toFixed(1)}s of speech -> ${out}${opts.beats ? ` (shifted by the holds in ${opts.beats})` : ''}`);

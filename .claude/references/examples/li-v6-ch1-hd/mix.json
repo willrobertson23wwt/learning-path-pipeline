@@ -1,0 +1,24 @@
+{
+ "music": [
+  {
+   "src": "audio/li-v6-hd/li-v6-ch1-hd.music.mix.wav",
+   "at": 0,
+   "gainDb": 0,
+   "label": "music (mix, envelope baked): The Sun Might Rise in the West (track 8.780-98.447)"
+  }
+ ],
+ "sfx": [
+  {
+   "src": "audio/li-v6-hd/sfx-chapter-open.wav",
+   "at": 0,
+   "gainDb": -11.7,
+   "label": "sfx: chapter-open (titleIn)"
+  },
+  {
+   "src": "audio/li-v6-hd/sfx-boundary-seat.wav",
+   "at": 48.3,
+   "gainDb": -13.8,
+   "label": "sfx: boundary-seat (divider rests, frame 1464)"
+  }
+ ]
+}

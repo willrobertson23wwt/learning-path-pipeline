@@ -1,0 +1,53 @@
+{
+  "_doc": "li-v6-ch1 tunables. Pixels on the 1080p frame (x right, y down), sizes in CSS px, times in seconds. Keys follow out/li-v6-ch1-fresh/design.md. Beat times live in public/chapters/li-v6-ch1/beats.json, not here.",
+
+  "beat_offsets": {"_doc": "seconds added to a beat in this layer only, e.g. \"cNet16\": 0.15", "aAddr": 0.3, "cNet16": 0},
+
+  "title":       {"px": 96, "center": [960, 470], "start_opacity": 0.5, "start_scale": 0.94, "spring_s": 0.3, "fade_out_s": 0.6},
+  "subtitle":    {"px": 44, "center": [960, 570]},
+
+  "strip":       {"_doc": "px down for every scene A-C element (address, bits, divider, braces, labels, counts, underlines, CIDR label, neighbors rows); all A-C y keys below are before this shift. 48 centers the A and B fullest frames in y 0-918 (A needs 47, B 50); the C neighbors block sits higher than the shot list (neighbors keys) so its lowest ink (the /16 slash foot) stays about 100 px above the caption line at y 918.", "offset_y": 48},
+
+  "address":     {"px": 110, "center": [960, 290], "write_s": 0.7,
+                  "octet_centers": [364, 740, 1116, 1492], "dot_centers": [552, 928, 1304],
+                  "spread_s": 0.9, "dim_s": 0.4, "brighten_s": 0.5, "recolor_s": 0.5, "clear_s": 0.3},
+
+  "bits":        {"px": 52, "center_y": 440, "cell_w": 40, "group_left": [204, 580, 956, 1332],
+                  "fan_s": 0.45, "octet_lag_s": 0.35, "bit_lag": 0.12, "fan_start_scale": 0.4, "recolor_s": 0.6},
+
+  "divider":     {"x": 1304, "grey_width": 3, "grey_top": 405, "grey_bottom": 475,
+                  "amber_width": 5, "amber_top": 395, "amber_bottom": 485,
+                  "draw_s": 0.4, "cue_s": 0.4, "reveal_x": 928, "reveal_s": 1.8},
+
+  "braces":      {"top": 480, "bottom": 510, "stroke": 3, "left": 204, "right": 1652, "gap_to_divider": 28, "draw_s": 0.5},
+  "network_label": {"px": 48, "center_y": 555, "write_s": 0.5},
+  "host_label":    {"px": 48, "center_y": 555, "write_s": 0.5},
+  "bit_counts":  {"px": 44, "center_y": 615, "flight_s": 0.9, "flight_arc_deg": 70, "bits_write_s": 0.4, "write_s": 0.5},
+
+  "prefix":      {"left": 1555, "write_s": 0.5, "swap_s": 0.5},
+  "cidr_label":  {"px": 44, "gap_above_prefix": 25, "offset_x": 0, "write_s": 0.6},
+
+  "underlines":  {"top": 363, "thickness": 3, "draw_s": 0.4,
+                  "net24": [282, 1171], "host24": [1437, 1547], "prefix": [1565, 1720],
+                  "net16": [282, 823], "host16": [1061, 1547]},
+
+  "neighbors":   {"_doc": "row*_center_y lift the block (first row sits under the \"16 bits\" counts, second row below it); label_center_y is where \"neighbors\" settles (keep it midway between the rows). It fades in on the /24 row's baseline at cNbr24 and glides to label_center_y over label_glide_s as the /16 row writes on.",
+                  "label_px": 44, "label_right": 790, "label_center_y": 709, "label_fade_s": 0.5, "label_glide_s": 0.45,
+                  "row_px": 52, "prefix_left": 830, "pattern_left": 970,
+                  "row24_center_y": 678, "row16_center_y": 740, "write_s": 0.6},
+
+  "anchor_exit": {"shift_x": -240, "s": 0.5},
+
+  "private_head": {"px": 64, "center": [960, 200], "write_s": 0.7},
+  "ranges":      {"px": 64, "left": 260, "row_center_y": [350, 470, 590], "write_s": 0.6, "row192_write_s": 1.0},
+
+  "no_route":    {"brace_x": [940, 970], "brace_y": [326, 614], "line_x": [985, 1425], "line_y": 470,
+                  "stroke": 3, "brace_draw_s": 0.35, "line_draw_s": 0.45},
+  "cloud":       {"box": [1440, 415, 1600, 525], "stroke": 3, "fade_s": 0.5},
+  "public_label": {"px": 48, "center": [1520, 575], "write_s": 0.5},
+  "cross":       {"center": [1210, 470], "size": 60, "stroke": 6, "land_s": 0.3, "start_scale": 1.5},
+  "not_routed":  {"px": 44, "center": [1210, 392], "write_s": 0.5},
+  "example":     {"center_y": 710, "slide_s": 0.5, "morph_s": 0.5},
+
+  "tail":        {"fade_s": 0.6}
+}

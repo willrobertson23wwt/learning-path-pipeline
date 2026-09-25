@@ -1,15 +1,17 @@
 /* Tailwind v4 — theme + utilities only (no preflight/base reset, so the
-   existing inline-styled chapters stay pixel-identical). */
+   existing inline-styled chapters stay pixel-identical). Colors are the WWT
+   design system (overrides the runtime's copy; keep in step with theme.ts). */
 @layer theme, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme {
-  --color-accent: #00c2ff;
-  --color-danger: #ff5c5c;
-  --color-success: #3dd68c;
-  --color-warning: #e8a13a;
-  --color-panel: rgb(13 22 38 / 0.92);
+  --color-accent: #66b6f2;
+  --color-danger: #f57e7f;
+  --color-success: #1e9e62;
+  --color-warning: #ffc601;
+  --color-panel: rgb(17 18 46 / 0.92);
+  --color-ground: #1d1e48;
   --font-display:
     'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,
     Arial, sans-serif;

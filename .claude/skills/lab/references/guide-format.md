@@ -341,6 +341,13 @@ desktop shots captured by hand.
         The VM can take up to five minutes to come back after a reboot. The portal's Reconnect button fails while the machine is still booting, so click it again every minute or so until the login prompt returns. A failed reconnect does not mean the lab is broken.
     ```
 
+## No checks
+
+Every lab, in either format: the ATC portal can't run automated checks
+yet, so a lab has no check section and no question-style check. Each module
+ends on `## What You Have Learned`, the final one on its summary and
+Congratulations paragraph.
+
 ## Lab-first pieces
 
 A lab-first lab carries its own teaching, with media placed at the steps
@@ -448,11 +455,6 @@ is ("the Permission Bits card in Module 2"). No separate reference page.
     | `w` | 2 | Change the contents | Create, delete, and rename entries |
     | `x` | 1 | Run it as a program | Enter it and reach entries by name |
 ```
-
-**No checks.** The ATC portal can't run automated checks yet, so a lab has
-no check section and no question-style check. Each module ends on
-`## What You Have Learned`, the final one on its summary and Congratulations
-paragraph.
 
 **Guidance levels.** The outline sets one per lab. Write every step to it. The
 five Linux Intermediate labs are all at the first level; later levels change

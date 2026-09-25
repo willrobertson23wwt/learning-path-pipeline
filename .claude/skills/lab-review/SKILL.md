@@ -33,7 +33,8 @@ Three agents, so the review isn't done by whoever drafted the lab:
    - **`prose-checker`** on `description.md`, `environment.md`, every
      `module-*.md`, and `solutions.md` in the capstone.
    - **`lab-learner`** with the lab slug, plus the course slug and the lab's
-     number in the outline (or `capstone`). Find them from the
+     number in the outline (or `capstone`; in a traditional path, the
+     module number the lab closes). Find them from the
      `**Lab repo:** <lab-slug>` line in `courses/*/outline.md`; if none
      matches, run it without them and say so. It reads only what a learner
      sees, never SETUP.md, so it catches gaps the walk can't see.
@@ -63,11 +64,12 @@ If the agents are unavailable, do steps 1-6 here yourself.
 - CLAUDE.md's platform profile. The command walk is checked against that
   platform.
 - The lab's section of `courses/<course-slug>/outline.md` (found by its
-  `**Lab repo:** <slug>` line): its guidance level, module list, steps,
-  media IDs, and predict prompts.
-- `courses/<course-slug>/research/NN-<lab-slug>.md` (or `capstone.md`), if
-  it exists: researched output shapes, predict outcomes, and gotchas for the
-  lab's image. Prefer it to memory for output shapes, and say in the report
+  `**Lab repo:** <slug>` line): its module list and steps, plus, in a
+  lab-first path, its guidance level, media IDs, and predict prompts.
+- The lab's research brief, if it exists: `courses/<course-slug>/research/NN-<lab-slug>.md`
+  (or `capstone.md`) in a lab-first path, `module-N-<module-slug>.md` in a
+  traditional one. It holds researched output shapes, predict outcomes
+  (lab-first), and gotchas for the lab's image. Prefer it to memory for output shapes, and say in the report
   which shots it confirmed.
 
 ## 1. Environment page to its published shape
@@ -232,7 +234,9 @@ Check each of these and fix silently:
   addressing video"), never by number.
 - `description.md` doesn't open with the ATC boilerplate.
 
-Then the lab-first pieces, against the guide format's "Lab-first pieces":
+Then, in a lab-first path only (skip this block for a traditional path's
+module lab), the lab-first pieces, against the guide format's "Lab-first
+pieces":
 
 - Every step reads at the lab's guidance level. Exact commands for a task
   the path already taught, in a goal-plus-hint lab, is a fix; a missing

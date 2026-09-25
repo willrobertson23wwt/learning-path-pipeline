@@ -1,0 +1,110 @@
+{
+  "titleIn": {
+    "at": 0
+  },
+  "titleHold": {
+    "at": 0,
+    "hold": 1.0
+  },
+  "loopOut": {
+    "at": 2.4
+  },
+  "aAddr": "32 bits",
+  "titleOut": {
+    "at": 2.4
+  },
+  "aSpread": "The four numbers",
+  "aBitsIn": "way of writing",
+  "hold1Bits": {
+    "phrase": "ones and zeros",
+    "edge": "end",
+    "hold": 0.2
+  },
+  "aDim": {
+    "phrase": "And every address",
+    "offset": 0.55
+  },
+  "aSplit": "two parts",
+  "aNet": "names the network",
+  "aHost": "names the host",
+  "hold2Parts": {
+    "phrase": "on that network",
+    "edge": "end",
+    "hold": 0.2
+  },
+  "bStart": "The prefix tells",
+  "bCue": "where that split",
+  "bSlash": "/24",
+  "bCidr": "CIDR notation",
+  "bNet24": "first 24 bits",
+  "bHost8": "eight bits for hosts",
+  "bTake": "Take 192",
+  "bNetDec": "through the 10",
+  "bHostDec": "42 is the",
+  "hold3Reading": {
+    "phrase": "host",
+    "edge": "end",
+    "hold": 0.2
+  },
+  "cStart": "Here's the part",
+  "cCue": "a different prefix",
+  "cSlash16": "/16",
+  "cClear": "the split",
+  "cReveal": "moves",
+  "hold4Reveal": {
+    "phrase": "left",
+    "edge": "end",
+    "hold": 1.5
+  },
+  "cNet16": "first two numbers",
+  "cHost16": "last two together",
+  "cNbr24": "its neighbors",
+  "cNbr16": "changed completely",
+  "hold5Story": {
+    "phrase": "half the story",
+    "edge": "end",
+    "hold": 0.2
+  },
+  "dStart": "One more thing",
+  "dOut": {
+    "phrase": "Certain ranges",
+    "edge": "end"
+  },
+  "dHead": "private address space",
+  "dTen": "starting with 10",
+  "d172a": "172.16",
+  "d172b": "172.31",
+  "d192": {
+    "phrase": "everything starting with",
+    "edge": "end"
+  },
+  "dNoRoute": {
+    "phrase": "never route",
+    "offset": 0.3
+  },
+  "dPublic": {
+    "phrase": "public internet",
+    "edge": "end"
+  },
+  "dBlock": {
+    "phrase": "They're where",
+    "offset": 0.4
+  },
+  "dNotRouted": {
+    "phrase": "your lab",
+    "offset": 0.18
+  },
+  "dExample": "examples in",
+  "dMorph": {
+    "phrase": "this module",
+    "edge": "end"
+  },
+  "fadeOut": {
+    "phrase": "they do",
+    "edge": "end",
+    "offset": 0.7
+  },
+  "end": {
+    "at": 86.57
+  }
+}
