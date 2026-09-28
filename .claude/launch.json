@@ -4,8 +4,20 @@
     {
       "name": "studio",
       "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["-c", "export PATH=\"$HOME/.nvm/versions/node/$(ls \"$HOME/.nvm/versions/node\" | tail -1)/bin:$PATH\" && npx remotion studio --port 3000 --no-open"],
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/$(ls \"$HOME/.nvm/versions/node\" | tail -1)/bin:$PATH\" && npx remotion studio --port 3000 --no-open"
+      ],
       "port": 3000
+    },
+    {
+      "name": "review",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/$(ls \"$HOME/.nvm/versions/node\" | tail -1)/bin:$PATH\" && npx --no-install video-review . --port 3100"
+      ],
+      "port": 3100
     }
   ]
 }

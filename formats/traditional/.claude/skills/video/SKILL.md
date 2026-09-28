@@ -276,7 +276,10 @@ user reviews it once.
     `manim/<chapter-id>/layout.json` and how `scripts/manim-watch.sh`
     re-renders it on save. Wait for their changes. They hear the full mix in
     Studio, so ask them to listen for the bed under speech, each effect,
-    and the track change between chapters.
+    and the track change between chapters. For anything they'd rather point
+    at than describe, offer the review editor (CLAUDE.md "Review editor"):
+    they mark the frame, press Send, and you run `/revise <chapter-id>`.
+    Repeat until they have nothing left open.
 11. **Final.** If a chapter has Manim layers, encode them (`manim-render.sh`
     without `--frames`) and switch each `ManimLayer` to its `.webm`. Then
     continue with "Per video" step 5 (Render).

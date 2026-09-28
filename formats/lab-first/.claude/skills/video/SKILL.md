@@ -236,7 +236,10 @@ Their written exchange goes in the shot list's `## Design log`.
    and, if the video has a Manim layer, which are in
    `manim/<id>/layout.json` and how `scripts/manim-watch.sh` re-renders it
    on save. Wait for their changes. They hear the full mix in Studio, so ask them to listen
-   for the bed under speech and each effect.
+   for the bed under speech and each effect. For anything they'd rather point
+   at than describe, offer the review editor (CLAUDE.md "Review editor"):
+   they mark the frame, press Send, and you run `/revise <id>`. Repeat until
+   they have nothing left open.
 11. **Final.** If the video has Manim layers, encode them
    (`manim-render.sh` without `--frames`) and switch each `ManimLayer` to its
    `.webm`. Then continue with step 6 (Render) above. Before delivering, send the rendered MP4 to
