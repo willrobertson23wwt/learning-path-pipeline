@@ -287,7 +287,7 @@ To bake chosen values back in after tweaking in Studio: update the `DEFAULT_*` c
 
 ## Review editor (marking up frames for Claude)
 
-The review editor ([video-review](../Video_Editor)) plays the course's live
+The review editor ([video-review](https://github.com/willrobertson23wwt/Video-Editor)) plays the course's live
 compositions. The user draws a box, circle, arrow or freehand mark on a frame, or picks a
 time range, writes a note, and presses **Send**. It writes
 `out/<chapter-id>/review/review.json` plus annotated stills. **`/revise
@@ -295,9 +295,13 @@ time range, writes a note, and presses **Send**. It writes
 and marks each note resolved with a reply. The user verifies or reopens it in the
 editor, which hot-reloads as you edit.
 
-- Install once per course: `npm i -D ../Video_Editor` (a sibling checkout), then
-  `npx video-review . --port 3100` (the `review` launch config). It uses the
-  course's own Remotion, so there are no versions to match.
+- Install once per course, then run `npx video-review . --port 3100` (the `review`
+  launch config). It uses the course's own Remotion, so there are no versions to match.
+  - From GitHub: `npm i -D github:willrobertson23wwt/Video-Editor`.
+  - Or, to work on the editor itself, clone it next to the course
+    (`git clone https://github.com/willrobertson23wwt/Video-Editor ../Video-Editor`)
+    and link it: `npm i -D ../Video-Editor`. Use whatever the folder is actually
+    called; the author's checkout is `../Video_Editor`.
 - Each note carries the playing beat (`beats.json`), the narration around it, and the
   marks' bounding box in composition pixels. `/revise` finds the element from these.
   Keep elements' pixel positions in props or `DEFAULT_*` constants (as above)
