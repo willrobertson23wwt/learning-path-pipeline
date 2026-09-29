@@ -6,8 +6,8 @@ How this course builds the exact pieces of a video in Manim. Since
 like Blender, for what must be precise: a plotted curve, a true-to-scale
 diagram, math. Its output is a transparent layer shown as a clean card on
 the drawing. `manim-builder` reads this whole file before any build;
-`sketch-builder` reads "Division of labor" and "Handoff to Remotion". The
-video designer never reads it.
+whoever builds the drawing reads "Division of labor" and "Handoff to
+Remotion". It plays no part in designing the shot list.
 
 The rules below were found in the li-v6-ch1 pilot (September 2026), when
 Manim drew whole chapters; they still hold for any Manim layer.

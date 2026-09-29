@@ -1,6 +1,6 @@
 ---
 name: lab-walker
-description: Runs the /lab-review documentation review (steps 1-6) on one drafted lab in a fresh context, so the reviewer isn't the author. Edits the lab's pages and internal files in labs/<lab-slug>/ (SETUP.md, SUPPORT.md, LISTING.md, the quickref page, shots_spec.py, dryrun/states) and returns the review report. Launched by /lab-review; takes follow-up fix rounds from the caller.
+description: Runs the /lab-review documentation review (steps 1-6) on one drafted lab in a fresh context, so the reviewer isn't the author. Edits the lab's pages and internal files in labs/<lab-slug>/ (SETUP.md, SUPPORT.md, LISTING.md, the quickref page, shots_spec.py, dryrun/states) and returns the review report. Launched by /lab-review when the lab was drafted in the same conversation (otherwise the main thread walks it); takes follow-up fix rounds from the caller.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: claude-opus-5-5
 effort: high

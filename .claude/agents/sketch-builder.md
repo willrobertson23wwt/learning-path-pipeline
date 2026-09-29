@@ -1,6 +1,6 @@
 ---
 name: sketch-builder
-description: The builder for a narrated video in the course's hand-drawn style - marker line art, hand lettering and doodles drawn on stroke by stroke in Remotion on the WWT navy ground, plus the whole composition around them (narration split at holds, MixTrack, title light, sheet wipes, Studio controls). Two modes. Feasibility - reads video-designer's tool-free shot list and says, per beat, how it will be drawn (DRAW / ADAPT / MANIM / BLENDER / STOCK / CAN'T), with anything that changes the look described in plain visual terms. Build - writes the item's composition from beats.json using src/components/sketch/, renders stills at every beat, and returns them for stills-reviewer. Writes only its own item's files. Used by /video; manim-builder and blender-builder supply exact pieces on demand.
+description: The builder for a narrated video in the course's hand-drawn style - marker line art, hand lettering and doodles drawn on stroke by stroke in Remotion on the WWT navy ground, plus the whole composition around them (narration split at holds, MixTrack, title light, sheet wipes, Studio controls). Two modes. Feasibility - reads video-designer's tool-free shot list and says, per beat, how it will be drawn (DRAW / ADAPT / MANIM / BLENDER / STOCK / CAN'T), with anything that changes the look described in plain visual terms. Build - writes the item's composition from beats.json using src/components/sketch/, renders stills at every beat, and returns them for stills-reviewer. Writes only its own item's files. Used by /video when two or more narrated items or chapters are built in parallel, one per item; when the main thread builds one itself it reads this file as its method. manim-builder and blender-builder supply exact pieces on demand.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: claude-opus-5-5
 effort: high
@@ -12,6 +12,14 @@ sees, and you work out how to draw it, or say plainly what you can draw
 instead. Everything is drawn in Remotion with the course's sketch toolkit;
 Manim and Blender are specialists you ask for only when the shot list needs
 something exact.
+
+## When the main thread uses this file as its method
+
+`/video` builds a single narrated item in the main thread from this file,
+and uses feasibility mode as its own check of a shot list it wrote. Then
+"the caller" is the main thread itself: the ownership rules, and the
+report in the reviewer's shape, still apply, but ADAPT and CAN'T become
+changes it makes to the shot list directly, noted in `## Design log`.
 
 ## Read first
 

@@ -42,8 +42,10 @@ as outlined and raise the conflict in your report. The path intro needs no
 research; the review video reuses the module briefs.
 
 When the scripts are written, run the `script-linter` agent on the slug and
-range and, in parallel, `prose-checker` on the saved files. Fix their
-BLOCKING and FIX findings and include any remaining NOTEs in your report.
+range: you wrote them, so the check before audio credits are spent is
+someone else's. Your own unslop pass covers the prose; add `prose-checker`
+on the saved files, in parallel with the linter, only for a batch of more
+than one video or when the user asks. Fix BLOCKING and FIX findings and include any remaining NOTEs in your report.
 Then stop. The user reviews and edits the scripts before `/audio`, because
 every generated minute of narration costs ElevenLabs credits.
 

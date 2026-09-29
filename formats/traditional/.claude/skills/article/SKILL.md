@@ -26,9 +26,11 @@ per video, all in one message, and collect their reports. Each writes only
 its own file, and none edits the outline or `caption-map.json`. For a single
 video, write it here or with one `article-writer`.
 
-**Every article gets a `prose-checker` pass** once it's saved (one checker
-per article, in parallel for several). Send its FIX findings to that
-article's writer with `SendMessage`, or fix them yourself if you wrote it.
+**Every article is checked by someone who didn't write it.** If an
+`article-writer` wrote it, read it yourself against `/unslop` and the house
+style and fix what you find (send a large rewrite back to that writer with
+`SendMessage`). If you wrote it, run `prose-checker` on it (one per article,
+in parallel for several) and fix its FIX findings.
 
 ## Inputs
 

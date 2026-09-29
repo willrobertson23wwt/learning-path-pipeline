@@ -1,6 +1,6 @@
 ---
 name: revise
-description: Act on the user's review notes from the video-review editor. Each note is a box, circle, arrow or freehand mark on a frame, or a time range, with a comment. The skill reads out/<chapter-id>/review/review*.json and the annotated stills, finds the element each note points at, fixes it (routing to the builder that owns it when the fix is more than a tweak), renders an after-still, and marks the note resolved with a reply. The user then verifies it in the editor. Use when the user asks to revise, apply review notes, or fix what they marked, e.g. "/revise li-v6-ch1", or "/revise" for every chapter with notes waiting.
+description: Act on the user's review notes from the video-review editor. Each note is a box, circle, arrow or freehand mark on a frame, or a time range, with a comment. The skill reads out/<chapter-id>/review/review*.json and the annotated stills, finds the element each note points at, fixes it (itself by default; sound and exact Manim or Blender layers go to their agents), renders an after-still, and marks the note resolved with a reply. The user then verifies it in the editor. Use when the user asks to revise, apply review notes, or fix what they marked, e.g. "/revise li-v6-ch1", or "/revise" for every chapter with notes waiting.
 argument-hint: "[chapter-id] [note-id ...]"
 ---
 
@@ -58,14 +58,16 @@ composition registered as `id="<compositionId>"` in `src/Root.tsx`, its
 
 ## 3. Fix it
 
-Route each note the way `/video` routes stills-reviewer findings:
+Fix notes yourself by default (CLAUDE.md "Who does the work"). Hand one
+off only as the table says, or when many notes across several chapters can
+be fixed in parallel (one builder per chapter, in one message).
 
 | The note is about | Who fixes it |
 |---|---|
-| Position, size, colour, wording on screen, a stroke that looks wrong | Edit the chapter yourself if it's a tweak (a `DEFAULT_*` constant or a prop). For a redrawn doodle or a new element, use `sketch-builder`. For a lab-first item, use `media-builder`. |
+| Position, size, colour, wording on screen, a stroke that looks wrong | You: a `DEFAULT_*` constant or a prop for a tweak; for a redrawn doodle or a new element, read `.claude/agents/sketch-builder.md` (or `media-builder.md` for a GIF or card) and redraw it. |
 | Timing: too fast, too slow, holds too long, appears too early | `out/<chapter-id>/beats.spec.json` (a phrase anchor, `offset`, or `hold`), then re-resolve with `node scripts/beats.mjs … --spec … --out public/chapters/<chapter-id>/beats.json`. Never hand-edit times in beats.json. |
-| What the shot shows: a different diagram, a new scene, a change of layout | `video-designer` first, to update design.md; then the builder. Ask the user before changing the design's scope. |
-| Music, effects, levels | `sound-engineer` |
+| What the shot shows: a different diagram, a new scene, a change of layout | You: update design.md first (the method in `.claude/agents/video-designer.md`), then the chapter. Ask the user before changing the design's scope. |
+| Music, effects, levels | A level you can read off `mix.json` yourself; a new track or effect, or a re-measure, goes to `sound-engineer` (it owns the mix sheet and the Epidemic tools) |
 | An exact plot or diagram layer | `manim-builder` or `blender-builder` |
 | The narration itself (wording, pronunciation) | Out of scope: it needs `/audio`. Reply saying so and leave the note `submitted`. |
 
@@ -86,7 +88,8 @@ the same beat often interact, so read them together before editing.
 3. Look at each after-still next to the annotated one. If the note isn't
    fixed, go back to step 3. If the change moved something that shares
    the screen, render the `nearbyBeats` frames too, and send them to
-   `stills-reviewer` if more than a tweak changed.
+   `stills-reviewer` if more than a tweak changed and you made the change
+   (review them yourself if a builder did).
 
 ## 5. Write back
 

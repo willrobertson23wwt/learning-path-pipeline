@@ -206,7 +206,7 @@ one writes plain files and stops for your review before the next.
 | 1. Outline | `/outline <topic>` | `courses/<slug>/outline.md`: modules, videos and their chapters, a lab per module | an interactive plan: scope questions, research findings and suggested shapes, a skeleton, then the draft; set `status: approved` when happy |
 | 2. Scripts | `/scripts <slug> [video]` | `courses/<slug>/scripts/NN-<video>/MM-<chapter>.md`, plus each video's `00-intro.md` | narration + visual briefs per chapter |
 | 3. Audio | `/audio <slug> [video]` | `public/chapters/<chapter-id>/narration.mp3`, transcript, and captions | listen to every chapter |
-| 4. Video | `/video <slug> <video>` | the designer's shot lists (you approve them), then `deliverables/<chapter-id>.mp4` + `.vtt` per chapter, and the video's article | the chapters; you assemble the video in Premiere with your screencasts |
+| 4. Video | `/video <slug> <video>` | the shot lists (you approve them), then `deliverables/<chapter-id>.mp4` + `.vtt` per chapter, and the video's article | the chapters; you assemble the video in Premiere with your screencasts |
 | 3+4 | `/produce <slug> <video>` | both of the above in one shot | once you trust the scripts |
 | Labs | `/lab <slug> <module>`, then the lab skills below | the module's closing lab as a WWT repo draft in `labs/<lab-slug>/` | the guide, then the diagram |
 
@@ -240,16 +240,23 @@ micro-video in Lab 3), `<prefix>-l3-g1` (a GIF), `<prefix>-card-<name>`.
 Edit any file and rerun just that stage for one video or lab. Nothing
 advances automatically.
 
-Along the way, agents in `.claude/agents/` do focused work in their own
-context: `researcher` runs cited web research before the outline and each
-lab or module, `script-linter` checks scripts before any narration credits
-are spent, `video-designer` writes each video's shot list, `sketch-builder`
-draws it, `sound-engineer` picks the music and effects and sets the levels,
+The main chat is the orchestrator: it talks with you, makes the calls, and
+does the work itself unless handing it off is clearly better (CLAUDE.md
+"Who does the work"). It hands work to an agent in `.claude/agents/` for
+four reasons only: independence (whoever built something doesn't sign it
+off), parallel items, noisy output, and long background jobs. In practice:
+`researcher` runs cited web research before the outline and each lab or
+module, `script-linter` checks scripts before any narration credits are
+spent, `sketch-builder` builds narrated videos and chapters in parallel,
+`media-builder` builds GIFs and cards in parallel (lab-first),
+`sound-engineer` picks the music and effects and sets the levels,
 `manim-builder` and `blender-builder` make exact plots and 3D devices on
-demand, `media-builder` builds each GIF and card (lab-first),
-`stills-reviewer` checks every item's stills before it renders,
-`article-writer` writes articles, `prose-checker` rereads learner prose for
-AI tells, and `lab-walker` and `lab-learner` review each drafted lab.
+demand, `stills-reviewer` checks stills the main chat built,
+`article-writer` writes articles in the background, `prose-checker`
+rereads learner prose the main chat wrote, and `lab-walker` and
+`lab-learner` review each drafted lab. `video-designer` is on call for a
+fresh or second design; normally the main chat writes the shot list itself
+from that file.
 
 ## How the agents work together
 

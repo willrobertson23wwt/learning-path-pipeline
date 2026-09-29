@@ -2,10 +2,11 @@
 
 How this course builds narrated videos: marker line art and hand lettering
 drawn on stroke by stroke in Remotion, on the WWT navy ground.
-`sketch-builder` reads this whole file before any build; `stills-reviewer`
-reads "Checks". The video designer never reads it: design intent comes in
-tool-free, in the playbook's visual terms (`video-design.md`), and turning it
-into strokes is the builder's job.
+Whoever builds (the main thread or `sketch-builder`) reads this whole file
+before any build; `stills-reviewer` reads "Checks". Don't read it while
+designing: the shot list is written first, in the playbook's visual terms
+(`video-design.md`), and checked against this file afterwards, as its own
+step.
 
 Every rule here was found building li-v6-ch1-hd (2026-09-25) unless it says
 otherwise. Worked example: `examples/li-v6-ch1-hd/` (read its
@@ -24,7 +25,7 @@ doodled, each shown as a clean card laid onto the drawing:
 | `blender-builder` | a specific real device, an exploded or true-to-scale 3D view | its transparent frames on a card |
 | stock (Envato search) | a screen recording, a photo-accurate part | a card |
 
-Use them only when the designer's shot list asks for something exact; the
+Use them only when the shot list asks for something exact; the
 drawing is the default for everything else.
 
 ## The toolkit (`src/components/sketch/`, barrel `index.ts`)

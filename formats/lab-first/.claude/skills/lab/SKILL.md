@@ -161,8 +161,8 @@ each module, `solutions.md`, `environment.md`, and `description.md`. WWT
 Title Case headings and the closing "Congratulations" paragraph stay;
 `SETUP.md`, `SUPPORT.md`, `LISTING.md`, commands, and shown output are out
 of scope. Then run `grep -n '{#\|{{\|{%' *.md` (any hit outside a `{% raw %}`
-wrapper gets one) and `python3 dryrun/check-states.py`, and run
-`prose-checker` on the saved learner pages and fix its FIX findings.
+wrapper gets one) and `python3 dryrun/check-states.py`. Don't run `prose-checker` here:
+`/lab-review` checks the same pages independently next.
 
 Report the files written, the module list used, the media files the guide
 expects, the screenshots `shots_spec.py` anticipates (which lines came from

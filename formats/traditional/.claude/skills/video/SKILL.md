@@ -22,29 +22,38 @@ composition: it opens on its own title card and ends on its own tail.
 
 CLAUDE.md fully specifies how a chapter is built: read its "Per-chapter
 workflow", "Architecture", "Style & motion conventions", and "Lessons
-learned", plus `.claude/references/sketch-style.md`, and follow them. This
-skill wires the pipeline's inputs into that workflow and splits the work
-across agents:
+learned", plus `.claude/references/sketch-style.md`, and follow them.
 
-- `video-designer` designs every chapter of the video in one pass, so
-  motifs carry from chapter to chapter. It sets the artistic and
-  instructional vision and knows nothing about tools.
-- `sketch-builder` draws each chapter by hand (marker lettering, doodles,
-  the course's navy ground) and builds its whole composition, one agent per
-  chapter.
-- On demand only, for what must be exact: `manim-builder` (a plotted curve,
-  a true-to-scale diagram) and `blender-builder` (a real device in 3D), each
-  shown as a card in the drawing.
-- `sound-engineer` owns the video's sound across all its chapters: a
-  different music track per chapter, the effects, the mastered voice, the
-  levels.
-- `stills-reviewer` checks each chapter's stills before it renders.
-- `article-writer` writes the video's companion article in the background.
+## Who does what
 
-The agents share one working tree (no worktrees). What keeps that safe is ownership: each builder writes only its own
-chapter's files, and you (the main thread) own every shared file
-(`Root.tsx`, shared components, the outline, CLAUDE.md, `caption-map.json`)
-and every final render.
+You run this stage and decide what to hand off, by CLAUDE.md "Who does the
+work". The defaults for this skill:
+
+| Work | Default | Hand it off when |
+|---|---|---|
+| Shot lists, every chapter in one pass | you, reading `.claude/agents/video-designer.md` for the method and output shape, so motifs carry from chapter to chapter | the user asks for a fresh or second design: `video-designer` |
+| Building the chapters | one `sketch-builder` per chapter, in parallel (a video has 2-4) | a one-chapter video (the path intro or review): build it yourself, reading `.claude/agents/sketch-builder.md` |
+| Exact pieces (a plotted curve, a real device in 3D) | `manim-builder`, `blender-builder` (noisy, slow) | always handed off; only when the engine plan needs one |
+| Stills review (a gate, below) | whoever didn't build the chapter: you, when builders did | you built it: `stills-reviewer` |
+| Music, effects, mix, across all chapters | `sound-engineer` (search output is noisy; it has the Epidemic tools) | always handed off |
+| The companion article | `article-writer`, in the background | the writer fails: write it yourself with `/article` |
+
+**Gates.** These hold however the work is split:
+
+- No chapter renders until its stills have been checked by someone who
+  didn't build it, and every BLOCKING and FIX finding is fixed or accepted
+  by you as intentional (say so in the report).
+- No chapter is built until the user approves the video's shot lists.
+- Nothing is downloaded from Epidemic Sound or Envato, and no Blender asset
+  is started, without the user's go-ahead.
+
+**Ownership, when agents run in parallel.** They share one working tree (no
+worktrees). Each builder writes only its own chapter's files; you own every
+shared file (`Root.tsx`, shared components, the outline, CLAUDE.md,
+`caption-map.json`) and every final render. If a builder asks for a shared
+change (a doodle to promote into `src/components/sketch/`), make it
+yourself and tell the other builders it's there. Once a builder has
+reported, its files are yours too.
 
 For a range, finish each video (design, build, verify, render, deliver)
 before starting the next, in ascending order, and report per video. If one
@@ -57,8 +66,8 @@ fails, say so plainly and carry on with the rest.
    and `MM-<chapter-slug>.md` for each chapter, each with `folder:` (the
    chapter ID) in its frontmatter. The narration is what the audio says.
    The `## Visual brief` and the outline's **Visual moments** are the script
-   writer's suggestions: the designer may use them or set them aside, and
-   gets neither when the user asks for a fresh design. For every chapter
+   writer's suggestions: use them or set them aside, and ignore both when
+   the user asks for a fresh design. For every chapter
    except chapter 0, `public/chapters/<chapter-id>/` must hold
    `narration.mp3`, `narration.transcript.json`, and `narration.vtt`. If
    any is missing, stop and run `/audio` first; beats built without real
@@ -69,8 +78,8 @@ fails, say so plainly and carry on with the rest.
    in `courses/<slug>/outline.md`: learner-facing, under 30 words, saying
    what the video teaches. If it's missing, write it from the chapter
    scripts, run the unslop pass on it, add it to the outline, and quote it
-   in the report. Then launch one `article-writer` in the background with
-   the slug and video number. It writes
+   in the report. Then start the article in the background (see "Who does
+   what"), with the slug and video number. It writes
    `courses/<slug>/articles/NN-<video-slug>.md` and stops if the
    description is missing, which is why the line comes first.
 3. **Plan continuity.** Read every chapter script in the video together,
@@ -103,18 +112,18 @@ fails, say so plainly and carry on with the rest.
    public/chapters/<chapter-id>/beats.json`. Check one cue after the last
    hold against the render; never hand-edit cue times. Chapter 0 has no
    holds, so its `/audio` captions stand.
-7. **Check loudness.** Send each rendered chapter MP4 to `sound-engineer`
-   for the final check (-16 ±0.5 LUFS integrated, true peak -1.0 dBTP or
-   lower, decoded), one chapter at a time. Apply any gain it gives you and
-   re-render that chapter.
+7. **Check loudness.** Measure each rendered chapter MP4 yourself (two-pass
+   `loudnorm` JSON on the decoded file, `.claude/references/sound-design.md`:
+   -16 ±0.5 LUFS integrated, true peak -1.0 dBTP or lower). Apply any gain it
+   needs, re-render that chapter, and record each reading in the mix sheet.
 8. **Deliver.** Copy each chapter's `<chapter-id>.mp4` and `<chapter-id>.vtt`
    to `deliverables/`, and chapter 0's `narration.mp3` and `narration.vtt`
    as `<prefix>-vN-intro.mp3` and `<prefix>-vN-intro.vtt`.
-9. **Collect the article.** Wait for the `article-writer`, confirm the file
-   exists, run `prose-checker` on it, and send any FIX findings back to the
-   writer with `SendMessage`. Put the path, word count, and any flagged
-   ambiguities in the report. If the writer failed, write the article
-   yourself with `/article <slug> <video>`.
+9. **Collect the article.** Confirm the file exists. If an agent wrote it,
+   read it yourself against `/unslop` and the house style and fix what you
+   find; if you wrote it (`/article <slug> <video>`, because the writer
+   failed), run `prose-checker` on it. Put the path, word count, and any
+   flagged ambiguities in the report.
 10. **Course Status.** Add the video to CLAUDE.md's "Course Status" section
     at the same level of detail as existing entries (or, for the first
     video, one line per chapter: title, duration, composition file, the
@@ -128,14 +137,15 @@ fails, say so plainly and carry on with the rest.
 
 ## Designing the video
 
-The designer owns the vision, the builders own feasibility, and you
-mediate between them. Their written exchange goes in each shot list's
-`## Design log`. The whole video goes through each step together, so the
-user reviews it once.
+The whole video goes through each step together, so the user reviews it
+once.
 
-1. **Brief the designer.** For each chapter, run `node scripts/beats.mjs
-   public/chapters/<chapter-id>/narration.transcript.json --words`. Launch
-   one `video-designer` for the whole video with:
+1. **Write the shot lists, vision first.** For each chapter, run `node
+   scripts/beats.mjs public/chapters/<chapter-id>/narration.transcript.json
+   --words`. Read `.claude/agents/video-designer.md` and its reading list
+   (where it says "Lab-first design", read `.claude/house-style.md`
+   "Traditional course design"), then write one shot list per chapter,
+   `out/<chapter-id>/design.md` and `out/<chapter-id>/beats.spec.json`, from:
    - every chapter's timed transcript and narration, in order;
    - the video's goal and each chapter's key points from the outline, and
      where the chapter sits: chapter 1 follows the intro footage, and each
@@ -150,47 +160,37 @@ user reviews it once.
      thank-you card;
    - the continuity note;
    - each chapter's visual brief and the outline's visual moments, unless
-     the user asked for a fresh design;
-   - a note to read `.claude/house-style.md` "Traditional course design"
-     where its instructions say "Lab-first design".
+     the user asked for a fresh design.
 
-   Ask it for one shot list per chapter, `out/<chapter-id>/design.md` and
-   `out/<chapter-id>/beats.spec.json`, written in one pass so anchors,
-   motifs, and color meanings carry across chapters, with a short
-   `## Across the video` section at the top of the first chapter's shot
-   list naming what carries. Holds are sized to what moves: about 0.2 s
-   added to the voice's own break over a still frame, and a key
-   animation's run time plus about 1 s of silence, counting the voice's
-   own break. The designer gets no tool names, no code, and no earlier
-   build. Resolve each spec with `node scripts/beats.mjs <transcript>
-   --spec out/<chapter-id>/beats.spec.json --out
-   public/chapters/<chapter-id>/beats.json` and send any problems back to
-   it.
-2. **Feasibility.** Launch one `sketch-builder` per chapter in feasibility
-   mode, all in one message, and keep each agent ID. Each marks every beat
-   DRAW, ADAPT, MANIM, BLENDER, STOCK, or CAN'T, measures every string at
-   the designer's cap height, and checks the holds against the voice's own
-   breaks. Send any MANIM elements to `manim-builder` for its own answer.
-   Only then ask the user about the Manim toolchain if it isn't installed
-   (`scripts/setup-manim.sh`, about 2 GB).
-3. **Mediate.** Settle anything purely technical with the builders
-   yourself: engine assignment, a shape shifted to fit its lettering, split
-   points. Take every ADAPT and CAN'T back to the designer in visual terms
-   only:
-   - what the viewer would see instead;
-   - two or three alternatives;
-   - never an API or tool name.
-
-   The designer decides whether each alternative keeps its intent, or
-   redesigns the beat; a change to a shared motif is made in every chapter
-   that uses it. Two rounds at most. Anything still unresolved goes to the
-   user, with both positions stated fairly.
-4. **Engine plan.** Append `## Engine plan` to each chapter's shot list:
+   Write every chapter in one pass so anchors, motifs, and color meanings
+   carry across chapters, with a short `## Across the video` section at the
+   top of the first chapter's shot list naming what carries. Holds are
+   sized to what moves: about 0.2 s added to the voice's own break over a
+   still frame, and a key animation's run time plus about 1 s of silence,
+   counting the voice's own break. Design the clearest explanation for the
+   learner before thinking about how it's drawn; the toolkit's limits come
+   in the next step, not this one. Resolve each spec with `node
+   scripts/beats.mjs <transcript> --spec out/<chapter-id>/beats.spec.json
+   --out public/chapters/<chapter-id>/beats.json` and fix any phrase it
+   can't find.
+2. **Check them against the toolkit.** Now read
+   `.claude/agents/sketch-builder.md` and sketch-style.md, and go through
+   every shot list beat by beat, as its feasibility mode describes: measure
+   every string with `layoutText` at its cap height and fit the boxes to
+   the real widths, check each hold against the voice's own break, check
+   that no beat phrase reuses the previous beat's words, and check the
+   palette roles. Where a beat can't be drawn as designed, change it to the
+   closest version that keeps its intent (a change to a shared motif is
+   made in every chapter that uses it), and note each change in that shot
+   list's `## Design log` in visual terms. If a MANIM element is needed and
+   the toolchain isn't installed, ask the user before running
+   `scripts/setup-manim.sh` (about 2 GB); `manim-builder` in feasibility
+   mode can confirm the element first.
+3. **Engine plan.** Append `## Engine plan` to each chapter's shot list:
    everything is drawn unless listed; list each MANIM, BLENDER or STOCK
    element with its window, its card's box, and why it had to be exact.
-   The designer never reads this section. Give each asset request a source,
-   with the builders' input:
-   - **stock:** search Envato Elements with the designer's terms
+   Give each asset request a source:
+   - **stock:** search Envato Elements with the shot list's terms
      (`mcp__envato__search_graphics`, `search_stock_video`, `search_3d`,
      `search_photos`, `search_fonts`) and give the user 3-5 candidate links
      per request with a line on how each fits; the connector only searches,
@@ -199,8 +199,8 @@ user reviews it once.
      photos, CAD), models it to scale, and renders frames. Use it only when
      stock won't serve (a specific real device, an exploded view, a
      true-to-scale assembly), because it's slow; estimate its time;
-   - **fallback:** the designer's shapes-and-type version.
-5. **Audio policy.** ElevenLabs usage is limited, so new narration is a last
+   - **fallback:** a shapes-and-type version, drawn.
+4. **Audio policy.** ElevenLabs usage is limited, so new narration is a last
    resort:
    - Holds and pauses come from splitting the existing audio, never from
      regenerating it.
@@ -211,30 +211,32 @@ user reviews it once.
      changed chapters' MP3s first; never `--force`).
    - Before running it, tell the user the character count.
    - Afterwards: re-transcribe, rebuild captions, rebuild each changed
-     chapter's beats.json from the same beats.spec.json, and send the
-     designer only the beats that moved.
-6. **Review stop.** Show the user every chapter's shot list together: per
-   chapter, the scene table, what changed from the visual brief, and open
-   questions; the `## Across the video` motifs; each engine plan; any
-   background the designer proposes; all narration changes with their
+     chapter's beats.json from the same beats.spec.json, and retime only
+     the beats that moved.
+5. **Review stop.** Show the user every chapter's shot list together: per
+   chapter, the scene table, what changed from the visual brief, the Design
+   log's toolkit changes, and open questions; the `## Across the video`
+   motifs; each engine plan; any background you propose; all narration changes with their
    combined character count; and each asset request with its source and
    search terms, so the user can look in the licensed asset library
    (CLAUDE.md "Licensed asset library"). A Blender asset needs the user's
    go-ahead here, with its time estimate. Don't build until the user
    approves. An asset the user finds gets copied into `public/` for the
    builders; one that isn't found means the beat uses its fallback.
-7. **Build.** For each chapter, scaffold a stub (`src/<Prefix>V<N>Ch<M>.tsx`
+6. **Build.** For each chapter, scaffold a stub (`src/<Prefix>V<N>Ch<M>.tsx`
    exporting a component that renders nothing plus its schema and defaults)
    and register `<Prefix>V<N>Ch<M>` and `<Prefix>V<N>Ch<M>-Overlay` in
    `src/Root.tsx` with an inline `defaultProps` literal and the duration
    from the chapter's beats.json (`round(end x FPS)`, holds and tail
    included). The prefix is the outline's, PascalCased. Typecheck clean.
-   Before the build starts, re-resolve beats.json with any hold a builder
-   corrected (a hold adds to the voice's own break) and tell the user if an
-   approved number changed. Then send each chapter's `sketch-builder` its
-   build (slug, video and chapter numbers, chapter ID, composition ID, shot
-   list, beats.json, continuity note), plus `manim-builder` and one
-   `blender-builder` per approved exact element, all in one message.
+   Then, in one message, start what runs in parallel: one `sketch-builder`
+   per chapter in build mode (slug, video and chapter numbers, chapter ID,
+   composition ID, shot list, beats.json, continuity note), `sound-engineer`
+   in plan mode (step 8), and any `manim-builder` and one `blender-builder`
+   per approved exact element. A one-chapter video you build yourself
+   while those run. If a builder finds a hold has to change (a
+   hold adds to the voice's own break), re-resolve that beats.json and tell
+   the user if an approved number moved.
    Blender research comes first: show the user the reference sheet
    (dimensions and sources) if the object must be exact, and ask before any
    reference photos or CAD files are downloaded. A Manim layer starts as a
@@ -242,17 +244,20 @@ user reviews it once.
    the layer hidden. If a builder asks for a shared change (a doodle to
    promote into `src/components/sketch/`), make it yourself and tell the
    other builders it's there.
-8. **Review.** Per chapter, render composite stills with
-   `node scripts/stills.mjs <Id> out/stills/<Id> <f1,f2,...>` and send
-   them, with the composition ID, the shot list, and the item type
-   (a standalone chapter of a multi-chapter video: title card at frame 0,
-   the ground-only tail or, for the last chapter, the thank-you card at the
-   end), to a `stills-reviewer`. Reviews run in parallel. Route each
-   finding to the builder that owns it; any finding that changes the design
-   itself goes back to the designer first. Check that shared motifs look the
-   same in every chapter. Repeat until each chapter is CLEAN. If you accept
-   a finding as intentional, say so in the report.
-9. **Sound.** Launch `sound-engineer` in plan mode with every chapter of
+7. **Review** (the stills gate). Each builder returns its chapter's stills
+   (`node scripts/stills.mjs <Id> out/stills/<Id> <f1,f2,...>`). Review
+   them yourself, since you didn't build them, against sketch-style.md
+   "Checks" and the item type (a standalone chapter of a multi-chapter
+   video: title card at frame 0, the ground-only tail or, for the last
+   chapter, the thank-you card at the end); a contact sheet per chapter
+   helps. Check that shared motifs look the same in every chapter. Fix
+   small findings yourself; send a large one to that chapter's builder with
+   `SendMessage` while it still has its context. A chapter you built
+   yourself goes to `stills-reviewer` instead. A finding that would change
+   the design goes to the user if it touches something they approved.
+   Repeat until each chapter is clean. If you accept a finding as
+   intentional, say so in the report.
+8. **Sound.** `sound-engineer` in plan mode gets every chapter of
    the video (shot lists, beats.json, transcripts) and the video's mix sheet
    if one exists (`courses/<slug>/sound/<prefix>-vN.md`). The plan gives a
    different track per chapter, lo-fi first, with the title silent apart
@@ -261,8 +266,8 @@ user reviews it once.
    music still sounding so the Premiere crossfade has music on both sides.
    Show the user its music candidates per chapter (with preview links), its
    effect cues, and its download list (file name, Epidemic ID, size), and
-   download nothing until they pick. Then run it in build mode with the
-   picks: it writes each chapter's `public/chapters/<chapter-id>/mix.json`
+   download nothing until they pick. Then send it the picks with
+   `SendMessage` for build mode: it writes each chapter's `public/chapters/<chapter-id>/mix.json`
    and mastered `.voice.wav`. Mount `<MixTrack>` in each chapter, point its
    narration Sequences at the mastered voice, render the stems it asks for
    from the toggles, and send them back for measurement. Fix every level
@@ -270,8 +275,8 @@ user reviews it once.
    before the handoff. Licensed audio in `public/audio/` stays out of git;
    the mix sheet records each file's Epidemic ID so it can be downloaded
    again.
-10. **Studio handoff.** Start Studio. Tell the user which controls are in
-    each chapter's props panel (the audio toggles, and anything the builder
+9. **Studio handoff.** Start Studio. Tell the user which controls are in
+    each chapter's props panel (the audio toggles, and anything the build
     exposed), and, if a chapter has a Manim layer, which are in
     `manim/<chapter-id>/layout.json` and how `scripts/manim-watch.sh`
     re-renders it on save. Wait for their changes. They hear the full mix in
@@ -280,7 +285,7 @@ user reviews it once.
     at than describe, offer the review editor (CLAUDE.md "Review editor"):
     they mark the frame, press Send, and you run `/revise <chapter-id>`.
     Repeat until they have nothing left open.
-11. **Final.** If a chapter has Manim layers, encode them (`manim-render.sh`
+10. **Final.** If a chapter has Manim layers, encode them (`manim-render.sh`
     without `--frames`) and switch each `ManimLayer` to its `.webm`. Then
     continue with "Per video" step 5 (Render).
 
@@ -292,7 +297,7 @@ one-chapter video: `/video <slug> 0` or `/video <slug> <N>` (the review's
 global number), composition
 `<Prefix>Intro` or `<Prefix>Review`, one MP4 plus VTT. The intro is
 marketing-style; if its script or the outline doesn't say whether it keeps
-the hand-drawn look and a chapter title card, ask the user before briefing
-the designer, and say what you'd otherwise assume (hand-drawn, a title card
+the hand-drawn look and a chapter title card, ask the user before writing
+the shot list, and say what you'd otherwise assume (hand-drawn, a title card
 with the path's name, no close line (the scripts leave it out of the
 intro), and the ground-only tail at the end).

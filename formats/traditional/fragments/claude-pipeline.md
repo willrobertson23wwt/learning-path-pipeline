@@ -59,17 +59,18 @@ objectives, and vendor docs for coverage, gaps, and suggested shapes;
 commands, outputs, and claims. Briefs land in `courses/<slug>/research/` and
 are reused (rules in `.claude/house-style.md` "Research briefs").
 `script-linter` checks chapter scripts before any audio is generated
-(`/scripts`, `/audio`, `/produce` call it). For each video, `/video` runs
-`video-designer` (one shot list per chapter, the video's continuity across
-chapters, no tools), `sketch-builder` (draws each chapter and builds its
-composition), `sound-engineer` (one music track per chapter, effects,
-levels), and on demand `manim-builder` or `blender-builder` for exact
-pieces, then `stills-reviewer` on each chapter's stills before it renders,
-and `article-writer` in the background for the video's article.
-`prose-checker` rereads every saved piece of learner prose after the
-author's own unslop pass. `/lab-review` runs `lab-walker` (the review itself,
-in a fresh context) and then `lab-learner` (follows the learner pages
-literally, never sees SETUP.md) alongside `prose-checker`. Parallel agents share one working tree (no worktrees), so each writes only its own
+(`/scripts`, `/audio`, `/produce` call it). The main thread decides the
+rest by "Who does the work" above. In `/video` it writes every chapter's
+shot list itself in one pass (from `video-designer.md`), so the video's
+continuity carries across chapters, then builds the chapters in parallel
+with one `sketch-builder` each and reviews their stills itself; it hands
+off the sound (`sound-engineer`, one music track per chapter, effects,
+levels), exact pieces (`manim-builder`, `blender-builder`), and the video's
+article (`article-writer`, in the background). `prose-checker` rereads
+learner prose the main thread wrote (the outline, lab pages in
+`/lab-review`, articles). `/lab-review` walks the lab itself, or through
+`lab-walker` when the same conversation drafted it, and always runs
+`lab-learner` (follows the learner pages literally, never sees SETUP.md). Parallel agents share one working tree (no worktrees), so each writes only its own
 files, and the main thread owns `Root.tsx`, shared components, the outline,
 CLAUDE.md, `caption-map.json`, and all final renders.
 
@@ -141,7 +142,7 @@ dry-runs the lab on them.
    its `narration.vtt`. If the transcript is missing, run
    `node scripts/transcribe.mjs public/chapters/<folder>/narration.mp3`, then
    `node scripts/captions.mjs` on the transcript with `--map` and `--script`.
-2. The video designer's shot list for the chapter (`out/<chapter-id>/design.md`,
+2. The chapter's shot list (`out/<chapter-id>/design.md`,
    approved by the user) and its resolved `public/chapters/<chapter-id>/beats.json`
    drive the build; register the chapter in `src/Root.tsx` as
    `<Prefix>V<N>Ch<M>` (and `-Overlay`).

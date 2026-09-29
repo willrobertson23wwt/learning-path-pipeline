@@ -11,7 +11,8 @@
 # one-frame Remotion composition that shows the SVG with <Img>). Plain
 # Python 3, no dependencies. Colors are the light-mode ramps the diagrams
 # were first drawn with: gray = you or a skill, purple = an agent that
-# writes files, teal = a read-only reviewer; dashed = on demand or a choice.
+# writes files, teal = a read-only reviewer; dashed = on demand or a choice
+# (the main thread decides, by CLAUDE.md "Who does the work").
 import os
 C = {
  'gray':   dict(fill='#F1EFE8', stroke='#5F5E5A', t='#2C2C2A', s='#5F5E5A'),
@@ -59,11 +60,11 @@ b.append('<text x="420" y="73" text-anchor="middle" font-size="12" fill="#5F5E5A
 b.append(arr(105, 98, 105, 113))
 rows = [
  ('/outline', 'path plan', [('researcher', 'outline mode', 'purple'), ('prose-checker', 'rereads prose', 'teal')]),
- ('/scripts', 'narration scripts', [('researcher', 'module or lab brief', 'purple'), ('script-linter', 'pre-audio QA', 'teal'), ('prose-checker', 'rereads prose', 'teal')]),
+ ('/scripts', 'narration scripts', [('researcher', 'module or lab brief', 'purple'), ('script-linter', 'pre-audio QA', 'teal'), ('prose-checker', 'large batches only', 'teal', True)]),
  ('/audio', 'narration', [('script-linter', 'gate before voice', 'teal')]),
  ('/video', 'videos and media', None),
- ('/lab', 'lab guide', [('researcher', 'reuses the brief', 'purple'), ('prose-checker', 'rereads prose', 'teal')]),
- ('/lab-review', 'fresh-eyes check', [('lab-walker', 'review and fixes', 'purple'), ('lab-learner', 'literal learner', 'teal'), ('prose-checker', 'runs alongside', 'teal')]),
+ ('/lab', 'lab guide', [('researcher', 'reuses the brief', 'purple')]),
+ ('/lab-review', 'fresh-eyes check', [('lab-walker', 'if drafted here', 'purple', True), ('lab-learner', 'literal learner', 'teal'), ('prose-checker', 'runs alongside', 'teal')]),
 ]
 cols = [200, 360, 510]
 for i, (skill, sub, agents) in enumerate(rows):
@@ -72,39 +73,39 @@ for i, (skill, sub, agents) in enumerate(rows):
     b.append(arr(172, y + 28, 197, y + 28))
     if agents is None:
         b.append(f'<rect x="200" y="{y}" width="440" height="56" rx="8" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="5 4"/>'
-                 f'<text x="420" y="{y+23}" text-anchor="middle" font-size="14" font-weight="600" fill="#2C2C2A">8 agents, shot list to final mix</text>'
+                 f'<text x="420" y="{y+23}" text-anchor="middle" font-size="14" font-weight="600" fill="#2C2C2A">main chat designs; agents build and mix</text>'
                  f'<text x="420" y="{y+43}" text-anchor="middle" font-size="12" fill="#5F5E5A">detail in the video stage diagram</text>')
     else:
-        for j, (n, s2, c) in enumerate(agents):
-            b.append(box(cols[j], y, 130, n, s2, c))
+        for j, (n, s2, c, *d) in enumerate(agents):
+            b.append(box(cols[j], y, 130, n, s2, c, dashed=bool(d)))
             if j > 0 and not (skill == '/lab-review' and j == 2):
                 b.append(arr(cols[j - 1] + 132, y + 28, cols[j] - 3, y + 28))
     if i < len(rows) - 1:
         b.append(arr(105, y + 58, 105, y + 73))
 b.append(legend(582, [(40, 'gray', 'skill (you review after each)'), (250, 'purple', 'agent that writes files'), (430, 'teal', 'read-only reviewer')]))
-b.append('<text x="40" y="626" font-size="12" fill="#5F5E5A">Both formats run the same stages and agents; the format decides what each skill writes.</text>')
-ov = svg(680, 'Learning path pipeline: skills and their agents', 'One template, two formats. Stages run top to bottom; each row runs its agents left to right.', ''.join(b))
+b.append('<text x="40" y="626" font-size="12" fill="#5F5E5A">Dashed: the main chat decides. Both formats run the same stages; the format decides what each writes.</text>')
+ov = svg(680, 'Learning path pipeline: skills and their agents', 'One template, two formats. The main chat runs each stage and calls these agents; rows read left to right.', ''.join(b))
 
 # Video stage
 b = []
-b.append(box(200, 40, 280, 'video-designer', 'shot list, revises on feedback', 'purple'))
+b.append(box(200, 40, 280, 'Main chat: the shot list', 'designs first, then checks the toolkit', 'gray'))
 b.append(arr(340, 98, 340, 117))
 b.append(box(200, 120, 280, 'You approve the shot list', 'review stop', 'gray'))
 b.append(path('M340 178 L340 190 L130 190 L130 205', dashed=True))
 b.append(arr(340, 178, 340, 205))
 b.append(path('M340 190 L550 190 L550 205', dashed=True))
 b.append(box(40, 208, 180, 'manim-builder', 'exact plots, on demand', 'purple', dashed=True))
-b.append(box(250, 208, 180, 'sketch-builder', 'draws it, builds the video', 'purple'))
+b.append(box(250, 208, 180, 'sketch-builder', 'parallel builds; else main chat', 'purple', dashed=True))
 b.append(box(460, 208, 180, 'blender-builder', 'real 3D devices, on demand', 'purple', dashed=True))
 b.append(path('M222 236 L247 236', dashed=True))
 b.append(path('M458 236 L433 236', dashed=True))
 b.append(arr(340, 266, 340, 297))
 steps = [
- ('sound-engineer', 'music, effects, voice master', 'purple'),
+ ('sound-engineer', 'plans alongside the build', 'purple'),
  ('You pick music and effects', 'approve downloads', 'gray'),
- ('stills-reviewer', 'findings go back to builders', 'teal'),
+ ('Stills review', 'whoever didn&#8217;t build it', 'teal'),
  ('You tweak in Studio', 'positions, toggles', 'gray'),
- ('Final render', 'main thread, loudness check', 'gray'),
+ ('Final render', 'main chat, loudness check', 'gray'),
 ]
 for i, (n, s, c) in enumerate(steps):
     y = 300 + i * 80
@@ -113,15 +114,15 @@ for i, (n, s, c) in enumerate(steps):
         b.append(arr(340, y + 58, 340, y + 77))
 b.append('<line x1="40" y1="700" x2="640" y2="700" stroke="#B4B2A9" stroke-width="0.75" stroke-dasharray="4 4"/>')
 b.append('<text x="40" y="692" font-size="12" fill="#5F5E5A">Also in /video:</text>')
-b.append(box(40, 716, 150, 'media-builder', 'GIFs, cards (lab-first)', 'purple'))
-b.append(box(212, 716, 140, 'stills-reviewer', 'checks stills', 'teal'))
+b.append(box(40, 716, 150, 'media-builder', '3+ GIFs, cards', 'purple', dashed=True))
+b.append(box(212, 716, 140, 'stills-reviewer', 'if main chat built it', 'teal', dashed=True))
 b.append(arr(192, 744, 209, 744))
 b.append(box(378, 716, 130, 'article-writer', 'a video&#8217;s article', 'purple'))
-b.append(box(530, 716, 130, 'prose-checker', 'rereads article', 'teal'))
+b.append(box(530, 716, 130, 'Main chat', 'reviews the article', 'gray'))
 b.append(arr(510, 744, 527, 744))
-b.append(legend(792, [(40, 'gray', 'you or the main thread'), (230, 'purple', 'writes files'), (370, 'teal', 'read-only reviewer')]))
-b.append('<text x="40" y="838" font-size="12" fill="#5F5E5A">Traditional: all of a video&#8217;s chapters in one pass. Lab-first: each video, plus GIFs and cards.</text>')
-vs = svg(890, 'The /video stage: hand-drawn narrated video flow', 'Builders check feasibility with the designer first. Dashed: only for exact pieces.', ''.join(b))
+b.append(legend(792, [(40, 'gray', 'you or the main chat'), (230, 'purple', 'writes files'), (370, 'teal', 'review')]))
+b.append('<text x="40" y="838" font-size="12" fill="#5F5E5A">Traditional: all of a video&#8217;s chapters in one pass, built in parallel. Lab-first: each video, plus GIFs and cards.</text>')
+vs = svg(890, 'The /video stage: hand-drawn narrated video flow', 'The main chat designs and orchestrates. Dashed: the main chat decides, or only for exact pieces.', ''.join(b))
 
 import sys
 outs = sys.argv[1:] or [os.path.expanduser('~/Documents')]

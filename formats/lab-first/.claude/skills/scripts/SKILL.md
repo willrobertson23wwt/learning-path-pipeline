@@ -26,8 +26,10 @@ micro-video explains. If the brief contradicts the approved outline on
 scope, write the spec as outlined and raise the conflict in your report.
 
 When the specs are written, run the `script-linter` agent on the slug and
-range and, in parallel, `prose-checker` on the video and card files. Fix
-their BLOCKING and FIX findings and include any remaining NOTEs in your
+range: you wrote them, so the check before audio credits are spent is
+someone else's. Your own unslop pass covers the prose; add `prose-checker`
+on the video and card files, in parallel with the linter, only for a batch
+of more than one lab or when the user asks. Fix BLOCKING and FIX findings and include any remaining NOTEs in your
 report. Then stop. The user reviews the specs before `/audio`, because every
 generated minute of narration costs ElevenLabs credits.
 

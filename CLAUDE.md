@@ -59,6 +59,41 @@ Explain pipeline terms the first time you use one with the user, such as
 "guidance level", "predict prompt" or "chapter 0", in a plain sentence. Don't assume they
 share vocabulary the skills made up.
 
+## Who does the work (main thread and agents)
+
+The main chat is the orchestrator (user decision, 2026-09-29, after the
+fixed agent chains made every stage slow). It keeps the whole picture,
+talks with the user, makes the decisions, and does the work itself unless
+handing it off is clearly better. The skills say what has to be true at
+each step (a gate), not which agent does it. The agents in
+`.claude/agents/` are specialists to call on, and their files double as
+role references: read `video-designer.md` before writing a shot list
+yourself, `sketch-builder.md` before building one.
+
+Hand work to an agent only when one of these holds, and say which in a
+line when you do:
+
+1. **Independence is the point.** The one who built or wrote something
+   doesn't sign it off. Stills get checked, and a lab gets walked and read
+   as a learner, by someone who didn't make them. If you made it, use the
+   reviewer agent. If an agent made it, you can review it yourself.
+2. **Parallel work.** Several independent items at once (three GIFs, two
+   narrated videos, the sound plan while the picture is built): one agent
+   each, all launched in one message.
+3. **Noisy work.** Output you'd only need the result of: Blender and Manim
+   renders, music and effect searches, wide web research.
+4. **Long-running work** that can go on in the background while you and
+   the user keep talking.
+
+Otherwise work in the main thread. A subagent starts cold (it rereads this
+file and every reference before it starts), and each handoff costs that
+again, so one-off tasks, small fixes, and anything the user is watching
+closely are faster here. When an agent reports, its files are yours: fix
+small findings yourself rather than sending them back; send a large fix
+to the same agent with `SendMessage` (it keeps its context) instead of
+launching a new one. The user's approval stops in a skill stay exactly
+where they are, whoever does the work around them.
+
 ## Platform profile (fill in per learning path)
 
 The skills read this section when a rule depends on the platform being taught.

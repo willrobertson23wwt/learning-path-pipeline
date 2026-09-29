@@ -25,11 +25,15 @@ invent "realistic" output beyond what the walk requires you to correct.
 
 ## How this runs
 
-Three agents, so the review isn't done by whoever drafted the lab:
+The review isn't done by whoever drafted the lab (CLAUDE.md "Who does the
+work"):
 
-1. **`lab-walker`** carries out steps 1-6 below in a fresh context and
-   returns the step 6 report. Keep its agent ID.
-2. When it returns, launch in parallel:
+1. **The walk (steps 1-6 below).** If this conversation drafted the lab
+   (`/lab` ran here), hand the walk to `lab-walker`, which starts fresh,
+   and keep its agent ID. If the lab was drafted elsewhere, do steps 1-6
+   here yourself.
+2. **Then, in parallel** (in one message, and you can launch them while
+   you finish step 6 if the pages won't change much):
    - **`prose-checker`** on `description.md`, `environment.md`, every
      `module-*.md`, and `solutions.md` in the capstone.
    - **`lab-learner`** with the lab slug, plus the course slug and the lab's
@@ -37,17 +41,19 @@ Three agents, so the review isn't done by whoever drafted the lab:
      module number the lab closes). Find them from the
      `**Lab repo:** <lab-slug>` line in `courses/*/outline.md`; if none
      matches, run it without them and say so. It reads only what a learner
-     sees, never SETUP.md, so it catches gaps the walk can't see.
-3. Triage. Send every prose-checker FIX, and every learner BLOCKING or
-   CLARIFY finding with an unambiguous wording fix, back to the walker with
-   `SendMessage`. A prose-checker finding that contradicts the Linux
-   Intermediate labs' voice (see `.claude/style-guide.md` "Lab pages") is
-   not a fix; drop it. Keep learner findings that need a design decision (a
-   step to add, a concept the videos didn't teach) for the user.
-4. Report the walker's step 6 report, its fix-round replies, and a
-   **learner findings for you** list of what you kept back. Stop for review.
-
-If the agents are unavailable, do steps 1-6 here yourself.
+     sees, never SETUP.md, so it catches gaps the walk can't see. It always
+     runs as an agent: you've read SETUP.md, so you can't read as a learner.
+3. **Triage.** Fix every prose-checker FIX, and every learner BLOCKING or
+   CLARIFY finding with an unambiguous wording fix, yourself (send a large
+   batch to the walker with `SendMessage` if it did the walk and still has
+   its context), and keep SETUP.md, the quickref page, shots_spec.py and
+   the dryrun states in sync with each change, as step 6 does. A
+   prose-checker finding that contradicts the Linux Intermediate labs'
+   voice (see `.claude/style-guide.md` "Lab pages") is not a fix; drop it.
+   Keep learner findings that need a design decision (a step to add, a
+   concept the videos didn't teach) for the user.
+4. **Report** the step 6 report, the triage fixes, and a **learner findings
+   for you** list of what you kept back. Stop for review.
 
 ## Read first
 

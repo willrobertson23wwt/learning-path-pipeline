@@ -47,17 +47,19 @@ brief per lab that fact-checks its steps and predict outcomes.
 Briefs land in `courses/<slug>/research/` and are reused (rules in
 `.claude/house-style.md` "Research briefs"). `script-linter` checks media
 specs before any audio is generated (`/scripts`, `/audio`, `/produce` call
-it). `/video` runs `article-writer` in the background for standalone
-videos; for each narrated video, `video-designer` (the shot list, no
-tools), `sketch-builder` (draws it and builds the composition),
-`sound-engineer` (music, effects, levels), and on demand `manim-builder`
-or `blender-builder` for exact pieces; one `media-builder` per GIF or card
-in parallel; and `stills-reviewer` on each item's stills before it
-renders. `prose-checker` rereads every saved
-piece of learner prose after the author's own unslop pass. `/lab-review`
-runs `lab-walker` (the review itself, in a fresh context) and then
-`lab-learner` (follows the learner pages literally, never sees SETUP.md or
-this lab's predict answers) alongside `prose-checker`. Parallel agents share one working tree (no worktrees): each writes only its own
+it). The main thread decides the rest by "Who does the work" above. In
+`/video` it writes each shot list itself (from `video-designer.md`) and
+builds a single narrated item (from `sketch-builder.md`); it hands off
+parallel builds (`sketch-builder` for two or more narrated items,
+`media-builder` for three or more GIFs and cards), the sound
+(`sound-engineer`), exact pieces (`manim-builder`, `blender-builder`), and
+standalone articles (`article-writer`, in the background). Whoever didn't
+build an item checks its stills (`stills-reviewer` when the main thread
+built it). `prose-checker` rereads learner prose the main thread wrote (the
+outline, lab pages in `/lab-review`, articles). `/lab-review` walks the lab
+itself, or through `lab-walker` when the same conversation drafted it, and
+always runs `lab-learner` (follows the learner pages literally, never sees
+SETUP.md or this lab's predict answers). Parallel agents share one working tree (no worktrees): each writes only its own
 files, and the main thread owns `Root.tsx`, shared components, the outline,
 CLAUDE.md, `caption-map.json`, and all final renders.
 

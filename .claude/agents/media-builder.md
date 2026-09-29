@@ -1,6 +1,6 @@
 ---
 name: media-builder
-description: Builds ONE media item for a lab-first path (a silent looping GIF or a static reference card; narrated videos and the briefing go to sketch-builder) as a Remotion composition from its spec, the video's transcript when there is one, and the lab's continuity note; renders a still at every beat and returns the stills list for stills-reviewer. Writes only its own item's files; never touches Root.tsx, shared components, or other items. Several run in parallel from /video step 4, one per item.
+description: Builds ONE media item for a lab-first path (a silent looping GIF or a static reference card; narrated videos and the briefing go to sketch-builder) as a Remotion composition from its spec, the video's transcript when there is one, and the lab's continuity note; renders a still at every beat and returns the stills list for stills-reviewer. Writes only its own item's files; never touches Root.tsx, shared components, or other items. Used by /video when a lab has three or more GIFs and cards, one per item in parallel; the main thread builds one or two itself.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: claude-opus-5-5
 effort: high

@@ -1,6 +1,6 @@
 ---
 name: prose-checker
-description: Read-only unslop reviewer. Give it one or more saved learner-facing files (media specs, articles, lab pages, the path page, the outline); it flags AI tells, house-style prose misses, and style-guide breaks with the unslop rule number or style-guide ID, the quoted line, and a suggested rewrite, respecting the course-content exceptions. The author fixes what it flags. Used after the author's own unslop pass by /scripts, /article, /lab, /lab-review, /outline, and /video.
+description: Read-only unslop reviewer. Give it one or more saved learner-facing files (media specs, articles, lab pages, the path page, the outline); it flags AI tells, house-style prose misses, and style-guide breaks with the unslop rule number or style-guide ID, the quoted line, and a suggested rewrite, respecting the course-content exceptions. The author fixes what it flags. Used after the author's own unslop pass on prose the main thread wrote: by /outline, /lab-review, /article and /video for articles, and /scripts for large batches.
 tools: Read, Glob, Grep
 model: claude-opus-5-5
 effort: medium

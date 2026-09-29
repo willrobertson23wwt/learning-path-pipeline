@@ -144,7 +144,7 @@ file. Don't repeat those, except where a count is out of range below.
 - On-screen text other than commands and output runs longer than about
   four words, or repeats a narration sentence. NOTE.
 - The brief names tools, components, or engines instead of what the viewer
-  sees (the designer works tool-free). NOTE.
+  sees (the shot list is designed before tools come in). NOTE.
 
 **Placeholders:** IPs, hostnames, CVEs, tenant IDs, and serials look
 reserved or fictional (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24,
