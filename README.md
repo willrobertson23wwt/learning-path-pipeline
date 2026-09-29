@@ -199,6 +199,17 @@ course work happens in that folder, never in this one.
 Then open Claude Code in the new folder and work through the stages. Each
 one writes plain files and stops for your review before the next.
 
+**Or start from an empty folder.** To make the folder yourself (say
+`~/ClaudeCode/powershell-fundamentals/`) and scaffold into it, install a
+personal `/new-path` once: a file at `~/.claude/skills/new-path/SKILL.md`
+that tells Claude to read this repo's `.claude/skills/new-path/SKILL.md`
+(give its full path) and follow it. Personal skills work in every folder,
+so `/new-path <topic>` then runs anywhere; in an empty folder it
+scaffolds in place instead of making a sibling. Keep `/video`, `/article`
+and the other course skills out of `~/.claude/skills/`: a personal skill
+overrides a project skill with the same name, so it would replace every
+path's own copy.
+
 **Traditional path:**
 
 | Stage | Command | Writes | You review |

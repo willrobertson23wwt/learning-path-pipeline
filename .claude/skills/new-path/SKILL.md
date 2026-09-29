@@ -1,13 +1,26 @@
 ---
 name: new-path
-description: Scaffold a new learning-path project (its own git repo, a sibling folder) from the learning-path-pipeline template in one of two formats, traditional (narrated videos of 2-4 chapters, an article per video, a closing lab per module) or lab-first (the labs are the course, with GIFs, micro-videos and reference cards embedded in their steps); fill in its CLAUDE.md platform profile and smoke-test the render. Run only from the template, and only when the user explicitly invokes /new-path.
+description: Scaffold a new learning-path project (its own git repo: the current folder when it's new and empty, otherwise a sibling of the template) from the learning-path-pipeline template in one of two formats, traditional (narrated videos of 2-4 chapters, an article per video, a closing lab per module) or lab-first (the labs are the course, with GIFs, micro-videos and reference cards embedded in their steps); fill in its CLAUDE.md platform profile and smoke-test the render. Runs from the template, or from a new empty folder through the personal /new-path wrapper; only when the user explicitly invokes /new-path.
 argument-hint: <learning-path topic>
 disable-model-invocation: true
 ---
 
 Scaffold a standalone learning path. `$ARGUMENTS` is the topic (e.g.
-`/new-path Linux Filesystem`). The new folder is created as a SIBLING of the
-template: `../<slug>/` (short kebab-case slug from the topic).
+`/new-path Linux Filesystem`). Two folders matter:
+
+- **TEMPLATE**: the folder holding this skill (`learning-path-pipeline`).
+  Run every copy and `scripts/apply-format.mjs` from here.
+- **TARGET**: where the path goes.
+  - If the session's working folder isn't the template and holds nothing
+    but hidden system files (`.DS_Store`), TARGET is that folder: the user
+    made it for this path. Keep its name; take the slug from it
+    (kebab-cased) unless the user gives another.
+  - Otherwise TARGET is a sibling of the template, `<TEMPLATE>/../<slug>/`
+    (short kebab-case slug from the topic).
+  - A working folder that isn't the template and isn't empty: stop and ask
+    (don't scaffold over someone's files).
+
+Say which TARGET you picked before copying anything.
 
 The template (`learning-path-pipeline`, its `package.json` `name`) holds
 everything a path needs:
@@ -34,9 +47,9 @@ scaffolded folder.
 
 ## Steps
 
-1. Check you're in the template: `package.json`'s `name` is
-   `learning-path-pipeline` and `formats/` exists. Otherwise stop: this
-   isn't the template.
+1. Check TEMPLATE: its `package.json` `name` is `learning-path-pipeline`
+   and `formats/` exists. Otherwise stop: the template isn't where this
+   skill says it is.
 2. **Ask the format** (one question, with these two options, unless the
    user already said):
    - **Traditional:** a video course. Modules of 4-6 narrated videos (4-6
@@ -49,15 +62,15 @@ scaffolded folder.
      challenge capstone. Worked example: `linux-filesystem-path.md`.
    Both make their videos the same way (hand-drawn, the sound engineer's
    mix, the designer's shot lists).
-3. If `../<slug>` already exists, stop and ask.
-4. Create `../<slug>/` and copy the template into it, except `.git/`,
+3. For a sibling TARGET, if it already exists, stop and ask.
+4. Create TARGET if needed and copy the template into it, except `.git/`,
    `node_modules/`, `out/`, `whisper.cpp/`, `courses/`, `labs/`,
    `deliverables/`, `archives/`, `.pixi/`, `.tinytex/`, `public/manim/`,
    `public/audio/`, `manim/media/`, `README.md`, `formats/` (applied in the
    next step), and `.claude/skills/new-path/` (scaffolding stays in the
    template).
-5. Apply the format: `node scripts/apply-format.mjs <traditional|lab-first>
-   ../<slug>`. It copies that format's files over the shared ones and fills
+5. Apply the format, from TEMPLATE: `node scripts/apply-format.mjs
+   <traditional|lab-first> <TARGET>`. It copies that format's files over the shared ones and fills
    every FORMAT slot in `CLAUDE.md` and `.claude/house-style.md`, and fails
    without changing anything if a slot or fragment is missing. Check its
    output lists the seven skills and three agents.
@@ -94,9 +107,13 @@ scaffolded folder.
     ~/.claude/projects/` shows the pattern). Create the folder if it's
     missing. Keep `MEMORY.md` as the index. Don't overwrite a file that's
     already there; tell the user which notes you copied.
-13. `git init -b main`, initial commit ("Scaffold <title> learning path
+13. In TARGET, `git init -b main`, initial commit ("Scaffold <title> learning path
     (<format>)").
-14. Tell the user: `cd ../<slug>`, open a new Claude Code session there, and
-    run `/outline <topic>`. The skills and agents came along in `.claude/`,
+14. Tell the user how to continue. For a sibling TARGET: open a new Claude
+    Code session in it and run `/outline <topic>`. For the current folder:
+    read its new `CLAUDE.md` now so this session follows it, and check
+    whether `/outline` is already listed (Claude Code usually picks up new
+    `.claude/skills/` folders live); if it isn't, the user starts a new
+    session in the same folder, and nothing is lost. The skills and agents came along in `.claude/`,
     the format's rules are in its CLAUDE.md and house style, and the notes
     are in Claude's memory for that folder.
