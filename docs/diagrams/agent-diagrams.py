@@ -1,23 +1,30 @@
-# Draws the two agent diagrams in docs/diagrams/ as SVG (the PNGs next to
-# them are 2x renders of these SVGs):
+# Draws the pipeline diagrams in docs/diagrams/ as SVG, and with --png also
+# renders each one to a 1360 px wide PNG with headless Chrome:
 #
-#   python3 docs/diagrams/agent-diagrams.py docs/diagrams [~/Documents ...]
+#   python3 docs/diagrams/agent-diagrams.py docs/diagrams --png
 #
-#   learning-path-agents-overview.svg     every skill and the agents it runs
-#   learning-path-agents-video-stage.svg  the /video stage in detail
+#   learning-path-agents-overview   every skill and the agents it runs
+#   skills-video-section            the video section's skills and helpers
+#   stage-*                         one per stage, top to bottom: the main
+#                                   chat's steps, your stops, and what each
+#                                   step hands off to
 #
-# Edit the rows and boxes below when a skill or agent changes, rerun, and
-# re-export the PNGs from the SVGs at 1360 px wide (any browser, or a
-# one-frame Remotion composition that shows the SVG with <Img>). Plain
-# Python 3, no dependencies. Colors are the light-mode ramps the diagrams
-# were first drawn with: gray = you or a skill, purple = an agent that
-# writes files, teal = a read-only reviewer; dashed = on demand or a choice
-# (the main thread decides, by CLAUDE.md "Who does the work").
+# Edit the rows below when a skill or agent changes, rerun, and commit the
+# SVGs and PNGs together. Plain Python 3, no dependencies (Chrome for
+# --png; set $CHROME if it isn't in the usual place). Colors are the
+# light-mode ramps the diagrams were first drawn with: gray = you or a
+# skill, amber = a stop for you, purple = an agent that writes files, teal
+# = a read-only reviewer, blue = an outside tool or repo, coral = a helper
+# skill; dashed = on demand or a choice (the main thread decides, by
+# CLAUDE.md "Who does the work").
 import os
 C = {
  'gray':   dict(fill='#F1EFE8', stroke='#5F5E5A', t='#2C2C2A', s='#5F5E5A'),
  'purple': dict(fill='#EEEDFE', stroke='#534AB7', t='#26215C', s='#534AB7'),
  'teal':   dict(fill='#E1F5EE', stroke='#0F6E56', t='#04342C', s='#0F6E56'),
+ 'amber':  dict(fill='#FAEEDA', stroke='#854F0B', t='#412402', s='#854F0B'),
+ 'blue':   dict(fill='#E6F1FB', stroke='#185FA5', t='#042C53', s='#185FA5'),
+ 'coral':  dict(fill='#FAECE7', stroke='#993C1D', t='#4A1B0C', s='#993C1D'),
 }
 ARR = '#5F5E5A'
 FONT = "font-family=\"-apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif\""
@@ -41,6 +48,7 @@ def legend(y, items):
                    f'<text x="{x+22}" y="{y+12}" font-size="12" fill="#444441">{label}</text>')
     return ''.join(out)
 def svg(h, title, sub, body):
+    sub = sub.replace('<', '&lt;').replace('>', '&gt;')
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="{h*2}" viewBox="0 0 680 {h}" {FONT}>'
             f'<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
             f'<path d="M2 1L8 5L2 9" fill="none" stroke="{ARR}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>'
@@ -48,6 +56,39 @@ def svg(h, title, sub, body):
             f'<text x="40" y="34" font-size="18" font-weight="600" fill="#2C2C2A">{title}</text>'
             f'<text x="40" y="54" font-size="12" fill="#5F5E5A">{sub}</text>'
             f'<g transform="translate(0 40)">{body}</g></svg>')
+
+
+# One stage, top to bottom: the main column is the stage's steps (the main
+# chat, or a stop for you); boxes to its right are what that step hands off
+# to, an agent or an outside tool. Each row is
+#   (title, sub, color, dashed, [(title, sub, color, dashed), ...])
+# and each side list may be empty.
+X0, W0, X1, W1, H, GAP, SGAP = 40, 260, 360, 280, 56, 26, 10
+def flow(title, sub, rows, legend_items, notes=()):
+    b, y, prev = [], 40, None
+    for i, (t, s2, c, d, side) in enumerate(rows):
+        hgt = max(H, len(side) * H + (len(side) - 1) * SGAP)
+        my = y + (hgt - H) / 2 if len(side) > 1 else y
+        if prev is not None:
+            b.append(arr(X0 + W0 / 2, prev + 2, X0 + W0 / 2, my - 3))
+        prev = my + H
+        b.append(box(X0, my, W0, t, s2, c, dashed=d))
+        for j, (st, ss, sc, sd) in enumerate(side):
+            sy = y + j * (H + SGAP)
+            b.append(box(X1, sy, W1, st, ss, sc, dashed=sd))
+            if j == 0 and len(side) == 1:
+                b.append(path(f'M{X0+W0+2} {my+28} L{X1-3} {sy+28}', dashed=sd))
+            else:
+                b.append(path(f'M{X0+W0+2} {my+28} L330 {my+28} L330 {sy+28} L{X1-3} {sy+28}', dashed=sd))
+        y += hgt + GAP
+    y += 34 - GAP
+    b.append(legend(y, legend_items))
+    y += 40
+    for n in notes:
+        n = n.replace('<', '&lt;').replace('>', '&gt;')
+        b.append(f'<text x="40" y="{y}" font-size="12" fill="#5F5E5A">{n}</text>')
+        y += 20
+    return svg(y + 40 + 10, title, sub, ''.join(b))
 
 # Overview
 b = []
@@ -86,47 +127,207 @@ b.append(legend(582, [(40, 'gray', 'skill (you review after each)'), (250, 'purp
 b.append('<text x="40" y="626" font-size="12" fill="#5F5E5A">Dashed: the main chat decides. Both formats run the same stages; the format decides what each writes.</text>')
 ov = svg(680, 'Learning path pipeline: skills and their agents', 'One template, two formats. The main chat runs each stage and calls these agents; rows read left to right.', ''.join(b))
 
-# Video stage
-b = []
-b.append(box(200, 40, 280, 'Main chat: the shot list', 'designs first, then checks the toolkit', 'gray'))
-b.append(arr(340, 98, 340, 117))
-b.append(box(200, 120, 280, 'You approve the shot list', 'review stop', 'gray'))
-b.append(path('M340 178 L340 190 L130 190 L130 205', dashed=True))
-b.append(arr(340, 178, 340, 205))
-b.append(path('M340 190 L550 190 L550 205', dashed=True))
-b.append(box(40, 208, 180, 'manim-builder', 'exact plots, on demand', 'purple', dashed=True))
-b.append(box(250, 208, 180, 'sketch-builder', 'parallel builds; else main chat', 'purple', dashed=True))
-b.append(box(460, 208, 180, 'blender-builder', 'real 3D devices, on demand', 'purple', dashed=True))
-b.append(path('M222 236 L247 236', dashed=True))
-b.append(path('M458 236 L433 236', dashed=True))
-b.append(arr(340, 266, 340, 297))
-steps = [
- ('sound-engineer', 'plans alongside the build', 'purple'),
- ('You pick music and effects', 'approve downloads', 'gray'),
- ('Stills review', 'whoever didn&#8217;t build it', 'teal'),
- ('You tweak in Studio', 'positions, toggles', 'gray'),
- ('Final render', 'main chat, loudness check', 'gray'),
-]
-for i, (n, s, c) in enumerate(steps):
-    y = 300 + i * 80
-    b.append(box(200, y, 280, n, s, c))
-    if i < len(steps) - 1:
-        b.append(arr(340, y + 58, 340, y + 77))
-b.append('<line x1="40" y1="700" x2="640" y2="700" stroke="#B4B2A9" stroke-width="0.75" stroke-dasharray="4 4"/>')
-b.append('<text x="40" y="692" font-size="12" fill="#5F5E5A">Also in /video:</text>')
-b.append(box(40, 716, 150, 'media-builder', '3+ GIFs, cards', 'purple', dashed=True))
-b.append(box(212, 716, 140, 'stills-reviewer', 'if main chat built it', 'teal', dashed=True))
-b.append(arr(192, 744, 209, 744))
-b.append(box(378, 716, 130, 'article-writer', 'a video&#8217;s article', 'purple'))
-b.append(box(530, 716, 130, 'Main chat', 'reviews the article', 'gray'))
-b.append(arr(510, 744, 527, 744))
-b.append(legend(792, [(40, 'gray', 'you or the main chat'), (230, 'purple', 'writes files'), (370, 'teal', 'review')]))
-b.append('<text x="40" y="838" font-size="12" fill="#5F5E5A">Traditional: all of a video&#8217;s chapters in one pass, built in parallel. Lab-first: each video, plus GIFs and cards.</text>')
-vs = svg(890, 'The /video stage: hand-drawn narrated video flow', 'The main chat designs and orchestrates. Dashed: the main chat decides, or only for exact pieces.', ''.join(b))
 
-import sys
-outs = sys.argv[1:] or [os.path.expanduser('~/Documents')]
+# Stage diagrams. Row helpers: M = a main-chat step, U = a stop for you,
+# A = an agent that writes files, R = a read-only reviewer agent, E = an
+# outside tool or repo, K = a helper skill. Pass dashed=True for "only when
+# needed" (the main thread decides, or a condition holds).
+def M(t, s, side=(), d=False): return (t, s, 'gray', d, list(side))
+def U(t, s, side=(), d=False): return (t, s, 'amber', d, list(side))
+def A(t, s, d=False): return (t, s, 'purple', d)
+def R(t, s, d=False): return (t, s, 'teal', d)
+def E(t, s, d=False): return (t, s, 'blue', d)
+def K(t, s, d=False): return (t, s, 'coral', d)
+LG = [(40, 'gray', 'main chat'), (150, 'amber', 'your stop'), (260, 'purple', 'agent, writes files'), (430, 'teal', 'reviewer, read-only')]
+LGE = LG[:2] + [(260, 'purple', 'agent'), (350, 'teal', 'reviewer'), (460, 'blue', 'outside tool')]
+DASH = 'Dashed: only when needed (the main chat decides, or the condition in the box holds).'
+
+STAGES = {}
+
+STAGES['stage-new-path'] = flow('/new-path: start a learning path',
+ 'Run from the template, or from a new empty folder through the personal wrapper.', [
+  M('Pick the target', 'This empty folder, or a sibling'),
+  U('Traditional or lab-first?', 'Asked unless you already said'),
+  M('Copy, apply the format', 'Template files, then apply-format'),
+  U('Platform details', 'Shell, prompt, elevation, prefix'),
+  M('Install and smoke test', 'npm install, tsc, one still', [E('lp-toolkit', 'Fetched at the pinned tag')]),
+  M('Memory notes, git init', 'Notes copied, first commit'),
+  U('Open the new folder', 'Then run /outline there'),
+ ], [LG[0], LG[1], (260, 'blue', 'outside tool or repo')],
+ ['No agents. Nothing course-specific is ever written into the template itself.'])
+
+STAGES['stage-outline'] = flow('/outline: plan the path',
+ 'An interactive plan, built with you step by step from a research survey.', [
+  M('Scope, start research', 'Picks the slug first', [A('researcher', 'Outline mode, in the background')]),
+  U('Scoping questions', 'Audience, outcome, environment'),
+  U('Research findings', 'You pick the shape and topics'),
+  U('The skeleton', 'Revised until you approve it'),
+  M('Full draft', 'Design rules, unslop, saved as draft', [R('prose-checker', 'Rereads the saved outline')]),
+  U('You approve the outline', 'You set status: approved'),
+ ], LG,
+ ['Traditional: modules, globally numbered videos of 2-4 chapters, a closing lab per module.',
+  'Lab-first: a Module 0 briefing, labs with guidance levels, GIFs and cards, a capstone.'])
+
+STAGES['stage-scripts'] = flow('/scripts: narration and visual briefs',
+ 'Every word the narrator says, written before any narration credits are spent.', [
+  M('Read the outline', 'Asks if it is still a draft'),
+  M('Research briefs', 'For each module or lab in range', [A('researcher', 'One per module or lab, in parallel')]),
+  M('Write the scripts', 'Narration, visual brief, unslop'),
+  M('Check and fix', 'Blocking and fix findings', [R('script-linter', 'Always: the pre-audio check'), R('prose-checker', 'Batches, or when you ask', True)]),
+  U('You review the scripts', 'Edit freely before /audio'),
+ ], LG,
+ ['Traditional: each video gets 00-intro.md (chapter 0) and one file per chapter.',
+  'Lab-first: one spec per media ID: narration for videos, a loop spec per GIF, a layout per card.', DASH])
+
+STAGES['stage-audio'] = flow('/audio: narration, timings and captions',
+ 'Spends ElevenLabs credits, so it runs only when you ask for it.', [
+  M('Dry run', 'Character counts, the plan', [R('script-linter', 'Lints in parallel; blocking stops it')]),
+  M('Generate narration', 'npx lp-generate-audio', [E('ElevenLabs', 'Skips takes that already exist')]),
+  M('Transcribe and caption', 'lp-transcribe, lp-captions'),
+  U('You listen to every take', 'Retakes: fix the script, rerun'),
+ ], LGE,
+ ['Traditional: every chapter and chapter 0; regenerate at most once per video, after the shot list.',
+  'Lab-first: videos and the briefing only. GIFs and cards are silent.',
+  '/produce runs /audio then /video and skips only this listen stop.'])
+
+STAGES['stage-video-traditional'] = flow('/video, traditional: one video, 2-4 chapters',
+ 'Every chapter designed in one pass, then built in parallel. The main chat orchestrates.', [
+  M('Inputs and continuity', 'Scripts, transcripts, a style note', [A('article-writer', 'The article, in the background')]),
+  M('Shot lists, every chapter', 'You, using video-designer.md', [A('video-designer', 'Only for a fresh design', True)]),
+  M('Toolkit check, engine plan', 'Measure text, size the holds', [A('manim-builder', 'Feasibility of exact pieces', True)]),
+  U('You approve the shot lists', 'Narration changes, assets, Blender'),
+  M('Scaffold and launch', 'Stubs in Root.tsx, one message', [A('sketch-builder', 'One per chapter, in parallel'), A('sound-engineer', 'Plan mode: music candidates'), A('manim / blender-builder', 'Exact plots or real 3D devices', True)]),
+  M('Stills review gate', 'You check the builders’ stills', [R('stills-reviewer', 'Only for a chapter you built', True)]),
+  U('You pick the music', 'Nothing downloads before this', [A('sound-engineer', 'Build mode: mix, mastered voice')]),
+  U('Studio handoff', 'Your tweaks; /revise for notes'),
+  M('Render, captions, loudness', 'One chapter at a time'),
+  M('Deliver and record', 'MP4, VTT, article, Course Status'),
+ ], LG,
+ ['Chapter 0 is narration only: its MP3 and captions go straight to deliverables/.', DASH])
+
+STAGES['stage-video-lab-first'] = flow('/video, lab-first: one lab’s media',
+ 'The briefing, micro-videos, GIFs and cards a lab embeds. The main chat orchestrates.', [
+  M('Inputs and continuity', 'Specs, transcripts, a lab note', [A('article-writer', 'Standalone videos only, background', True)]),
+  M('GIFs and cards', 'Built from their specs', [A('media-builder', 'Three or more: one each, parallel', True)]),
+  M('Shot lists, narrated items', 'Design first, then toolkit check', [A('video-designer', 'Only for a fresh design', True)]),
+  U('You approve the shot lists', 'Assets, Blender, narration changes'),
+  M('Build narrated items', 'You, or builders in parallel', [A('sketch-builder', 'Two or more: one per item', True), A('sound-engineer', 'Plan mode, alongside the build'), A('manim / blender-builder', 'Exact plots or real 3D devices', True)]),
+  M('Stills review gate', 'Whoever didn’t build it checks', [R('stills-reviewer', 'For items you built', True)]),
+  U('You pick the music', 'Nothing downloads before this', [A('sound-engineer', 'Build mode: mix, mastered voice')]),
+  U('Studio handoff', 'Your tweaks; /revise for notes'),
+  M('Render each item', 'Video, muted GIF loop, card still'),
+  M('Deliver and record', 'deliverables/, the lab repo, status'),
+ ], LG,
+ ['Media IDs: <prefix>-briefing, <prefix>-lN-vM (micro-video), <prefix>-lN-gM (GIF), <prefix>-card-<name>.', DASH])
+
+STAGES['stage-article'] = flow('/article: the written version of a video',
+ 'Usually started by /video in the background; run it alone to write or redo one.', [
+  M('Check the inputs', 'Scripts, the outline description'),
+  M('Description lines', 'Writes any that are missing'),
+  M('Write the articles', 'From the reviewed scripts', [A('article-writer', 'One per video, in parallel')]),
+  M('Independent check', 'Against unslop and house style', [R('prose-checker', 'Only if you wrote the article', True)]),
+  U('You review the articles', 'Paths, word counts, gaps'),
+ ], LG,
+ ['Lab-first: standalone videos only (the briefing, or items marked standalone).', DASH])
+
+STAGES['stage-revise'] = flow('/revise: act on your review notes',
+ 'Notes come from the review editor: a mark on a frame, or a time range, with a comment.', [
+  U('You mark frames', 'In the review editor, then Send'),
+  M('Load the notes', 'Submitted or reopened ones'),
+  M('Find each element', 'Beats, bounding box, shot list'),
+  M('Fix each note', 'Redraw, retime, reposition', [A('sound-engineer', 'Music or effect notes', True), A('manim / blender-builder', 'Exact layers', True)]),
+  M('After-stills', 'Typecheck, compare the frames', [R('stills-reviewer', 'If more than a tweak changed', True)]),
+  U('You verify or reopen', 'In the editor'),
+ ], LG,
+ ['A change to the narration wording is out of scope: it goes back through /audio.', DASH])
+
+STAGES['stage-lab'] = flow('/lab: draft a lab guide',
+ 'A WWT lab repo draft in labs/<lab-slug>/, from the outline, scripts and research.', [
+  M('Read the inputs', 'Outline, scripts, articles'),
+  M('Research brief', 'If missing or out of date', [A('researcher', 'Lab or module mode')]),
+  U('Module split', 'Only if the outline has none', d=True),
+  M('Write learner pages', 'Index, environment, modules'),
+  M('Write internal files', 'SETUP, SUPPORT, LISTING, shots'),
+  M('Unslop and checks', 'Dryrun states checked'),
+  U('You review the draft', 'Then /lab-review'),
+ ], LG,
+ ['Traditional: one fully guided lab per module.',
+  'Lab-first: guidance levels and embedded media. /lab <slug> capstone adds a Solutions page,',
+  'and /lab <slug> 0 writes the path page instead of a lab.', DASH])
+
+STAGES['stage-lab-review'] = flow('/lab-review and /lab-topology',
+ 'A documentation-only review before any VM exists, then the environment diagram.', [
+  M('Walk the lab', 'Commands, house rules, unslop', [A('lab-walker', 'If /lab ran in this chat', True)]),
+  M('Fresh-eyes reviews', 'Launched together, read-only', [R('lab-learner', 'Follows it as a learner would'), R('prose-checker', 'Rereads the learner pages')]),
+  M('Triage and sync', 'Apply fixes, sync the files'),
+  U('You review the report', 'Design questions held for you'),
+  M('/lab-topology', 'Hand-drawn SVG of the devices', [E('headless Chrome', 'Renders and checks the SVG')]),
+  U('You approve the diagram', 'Then its alt text goes in'),
+ ], LGE, ['No screenshots and no VM work at this stage.', DASH])
+
+STAGES['stage-lab-build-setup'] = flow('/lab-build and /lab-setup',
+ 'From a reviewed guide to a golden vApp, then the dry run and screenshots.', [
+  M('/lab-build: read the lab', 'Environment page, SETUP.md'),
+  M('Lay out the vApp', 'Images, networks, firewall', [E('Lab Builder', 'lab.yaml, PLAN.md, catalog match')]),
+  M('Plan the build', 'Nothing to change or destroy', [E('terraform', 'Plan only, never applied')]),
+  U('You run the build', 'And note the vApp address'),
+  M('/lab-setup: audit', 'Read-only, over SSH', [E('the vApp', 'lab-ssh and lab-scp')]),
+  U('You open egress', 'Ports 80 and 443 at the edge'),
+  M('Upgrade and set up', 'setup.sh, hand-check, clean'),
+  M('Record the build', 'SETUP, SUPPORT, quickref IPs'),
+  U('You close egress, snapshot', 'The golden image'),
+  U('Dry run and screenshots', 'By hand: real output, PNGs'),
+ ], [LG[0], LG[1], (260, 'blue', 'outside tool or system')],
+ ['Skip /lab-build when the ATC team delivers a stock vApp. No agents in either skill.'])
+
+STAGES['stage-closeout'] = flow('/closeout and /toolkit-review',
+ 'Archive a finished path, then share what it built through lp-toolkit.', [
+  M('Preconditions', 'Deliverables present, git clean'),
+  M('Dry run, build the zip', 'Manifest, verified listing'),
+  U('Delete the renders?', 'Only on a clear yes'),
+  M('Toolkit review: gather', 'Repeats, workarounds, drift'),
+  U('You pick candidates', 'Row by row, or skip it'),
+  M('Add to lp-toolkit', 'Linked checkout, stills check', [E('lp-toolkit repo', 'One version bump and tag')]),
+  U('You approve the push', 'Then the path moves to the tag'),
+ ], [LG[0], LG[1], (260, 'blue', 'outside repo')],
+ ['/toolkit-review runs the last four steps on its own, any time, from a path folder.',
+  'In /closeout it runs on a whole-path closeout only, and never changes the delivered path.'])
+
+STAGES['skills-video-section'] = flow('The video section: skills and where they fit',
+ 'Stage skills run in order and wait for you; helpers sit beside the stage that uses them.', [
+  M('/outline', 'Videos, chapters, visual moments'),
+  M('/scripts', 'Narration and visual brief', [K('/unslop', 'Cuts AI tells before saving')]),
+  M('/audio', 'Narration, timings, captions', [K('/produce', '/audio then /video, no listen stop', True)]),
+  U('You listen to the takes', 'Retakes go back to /audio'),
+  M('/video', 'Design, build, mix, render', [K('/article', 'Written version, in background'), K('/revise', 'Fixes notes marked in the editor')]),
+  M('/closeout', 'Zips deliverables, frees disk', [K('/toolkit-review', 'Moves shared code to lp-toolkit')]),
+ ], [(40, 'gray', 'stage skill'), (160, 'amber', 'your check'), (280, 'coral', 'helper skill')],
+ ['Dashed: a shortcut you run by request.'])
+
+import shutil, subprocess, sys
+def find_chrome():
+    if os.environ.get('CHROME'):
+        return os.environ['CHROME']
+    for c in ('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+              r'C:\Program Files\Google\Chrome\Application\chrome.exe'):
+        if os.path.exists(c):
+            return c
+    for n in ('google-chrome', 'google-chrome-stable', 'chrome', 'chromium'):
+        if shutil.which(n):
+            return shutil.which(n)
+    sys.exit('Chrome not found; set $CHROME, or drop --png.')
+args = [a for a in sys.argv[1:] if a != '--png']
+png = '--png' in sys.argv
+outs = args or [os.path.expanduser('~/Documents')]
+diagrams = {'learning-path-agents-overview': ov, **STAGES}
 for out in outs:
-    for name, svgtext in (('learning-path-agents-overview', ov), ('learning-path-agents-video-stage', vs)):
-        open(os.path.join(out, name + '.svg'), 'w').write(svgtext)
-        print(os.path.join(out, name + '.svg'))
+    for name, svgtext in diagrams.items():
+        f = os.path.abspath(os.path.join(out, name + '.svg'))
+        open(f, 'w').write(svgtext)
+        print(f)
+        if png:
+            hgt = int(svgtext.split('height="', 1)[1].split('"', 1)[0])
+            subprocess.run([find_chrome(), '--headless', '--disable-gpu', '--hide-scrollbars',
+                            f'--window-size=1360,{hgt}', f'--screenshot={f[:-4]}.png', 'file://' + f],
+                           check=True, capture_output=True)
+            print(f[:-4] + '.png')

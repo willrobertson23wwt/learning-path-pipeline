@@ -276,19 +276,25 @@ Every skill and the agents it runs, in both formats:
 
 ![Learning path pipeline: skills and their agents](docs/diagrams/learning-path-agents-overview.png)
 
-The `/video` stage in detail:
+The `/video` stage in detail (traditional; the lab-first version is in the
+diagrams page):
 
-![The /video stage: hand-drawn narrated video flow](docs/diagrams/learning-path-agents-video-stage.png)
+![/video, traditional: one video, 2-4 chapters](docs/diagrams/stage-video-traditional.png)
 
-The diagrams are drawn by `docs/diagrams/agent-diagrams.py` (plain Python);
-update it when a skill or agent changes.
+[docs/diagrams/](docs/diagrams/README.md) has one diagram per stage:
+`/new-path`, `/outline`, `/scripts`, `/audio`, `/video` (both formats),
+`/article`, `/revise`, `/lab`, `/lab-review` and `/lab-topology`,
+`/lab-build` and `/lab-setup`, and `/closeout` with `/toolkit-review`, plus
+a map of the video section's skills. They are all drawn by
+`docs/diagrams/agent-diagrams.py` (plain Python); update it when a skill or
+agent changes.
 
 ## What is in this repo
 
 | Path | What it is |
 |---|---|
 | `CLAUDE.md` | Project instructions Claude Code loads. Platform-neutral except the **Platform profile** section, which each course fills in. |
-| `docs/diagrams/` | The agent diagrams above (SVG and PNG) and the script that draws them. |
+| `docs/diagrams/` | The pipeline diagrams (one per stage, SVG and PNG), their index page, and the script that draws them. |
 | `formats/traditional/`, `formats/lab-first/` | What differs by format: the `/outline`, `/scripts`, `/audio`, `/video`, `/article`, `/produce` and `/lab` skills, the `researcher`, `script-linter` and `article-writer` agents, the worked example path, and the fragments that fill the FORMAT sections of `CLAUDE.md` and the house style. `/new-path` applies one with `scripts/apply-format.mjs`. |
 | `.claude/house-style.md` | Rules the skills share: the template guard, the course-design rules (filled in per format), learner-prose rules, and research-brief reuse. |
 | `.claude/references/` | The video playbook (`video-design.md` and its three cited briefs), the hand-drawn house style (`sketch-style.md`), the sound rules (`sound-design.md`), the Manim and Blender styles, the writing research, and worked examples (`examples/li-v6-ch1-hd/`, a hand-drawn chapter; `examples/li-v6-ch1/`, the Manim version). |
