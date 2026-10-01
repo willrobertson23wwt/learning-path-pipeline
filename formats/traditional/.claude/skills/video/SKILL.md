@@ -51,8 +51,9 @@ work". The defaults for this skill:
 worktrees). Each builder writes only its own chapter's files; you own every
 shared file (`Root.tsx`, shared components, the outline, CLAUDE.md,
 `caption-map.json`) and every final render. If a builder asks for a shared
-change (a doodle to promote into `src/components/sketch/`), make it
-yourself and tell the other builders it's there. Once a builder has
+change (a doodle to promote into `lp-toolkit/sketch`), make it yourself
+in a linked toolkit checkout (`lp-toolkit`'s README) and tell the other
+builders it's there. Once a builder has
 reported, its files are yours too.
 
 For a range, finish each video (design, build, verify, render, deliver)
@@ -97,7 +98,7 @@ fails, say so plainly and carry on with the rest.
    out/<chapter-id>.mp4`. No overlay `.mov` unless the user asks.
 6. **Check captions.** `/audio` built each chapter's `narration.vtt` with
    `--script`, so cue text comes from the script's narration and only the
-   timings from whisper. Rerun `node scripts/captions.mjs
+   timings from whisper. Rerun `npx lp-captions
    public/chapters/<chapter-id>/narration.transcript.json --map
    courses/<slug>/caption-map.json --script
    courses/<slug>/scripts/NN-<video-slug>/MM-<chapter-slug>.md` if the VTT
@@ -140,8 +141,8 @@ fails, say so plainly and carry on with the rest.
 The whole video goes through each step together, so the user reviews it
 once.
 
-1. **Write the shot lists, vision first.** For each chapter, run `node
-   scripts/beats.mjs public/chapters/<chapter-id>/narration.transcript.json
+1. **Write the shot lists, vision first.** For each chapter, run `npx
+   lp-beats public/chapters/<chapter-id>/narration.transcript.json
    --words`. Read `.claude/agents/video-designer.md` and its reading list
    (where it says "Lab-first design", read `.claude/house-style.md`
    "Traditional course design"), then write one shot list per chapter,
@@ -169,8 +170,8 @@ once.
    still frame, and a key animation's run time plus about 1 s of silence,
    counting the voice's own break. Design the clearest explanation for the
    learner before thinking about how it's drawn; the toolkit's limits come
-   in the next step, not this one. Resolve each spec with `node
-   scripts/beats.mjs <transcript> --spec out/<chapter-id>/beats.spec.json
+   in the next step, not this one. Resolve each spec with `npx
+   lp-beats <transcript> --spec out/<chapter-id>/beats.spec.json
    --out public/chapters/<chapter-id>/beats.json` and fix any phrase it
    can't find.
 2. **Check them against the toolkit.** Now read
@@ -242,10 +243,10 @@ once.
    reference photos or CAD files are downloaded. A Manim layer starts as a
    frames folder; while it's missing, the drawing renders its stills with
    the layer hidden. If a builder asks for a shared change (a doodle to
-   promote into `src/components/sketch/`), make it yourself and tell the
-   other builders it's there.
+   promote into `lp-toolkit/sketch`), make it yourself in a linked toolkit
+   checkout (`lp-toolkit`'s README) and tell the other builders it's there.
 7. **Review** (the stills gate). Each builder returns its chapter's stills
-   (`node scripts/stills.mjs <Id> out/stills/<Id> <f1,f2,...>`). Review
+   (`npx lp-stills <Id> out/stills/<Id> <f1,f2,...>`). Review
    them yourself, since you didn't build them, against sketch-style.md
    "Checks" and the item type (a standalone chapter of a multi-chapter
    video: title card at frame 0, the ground-only tail or, for the last

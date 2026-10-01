@@ -47,7 +47,7 @@ voice's way everywhere else.
 - `public/audio/<video-id>/`: the licensed music and effect files and the
   mastered narration (`<media-id>.voice.wav`).
 - `public/chapters/<media-id>/mix.json`: the `Mix` that `MixTrack`
-  (`src/components/MixTrack.tsx`) plays: `{music: MixCue[], sfx: MixCue[]}`,
+  (`MixTrack` from `lp-toolkit`) plays: `{music: MixCue[], sfx: MixCue[]}`,
   times in composition seconds, gains in dB, music envelopes as
   `[seconds, dB]` points.
 - `out/<media-id>/sound/`: stems, measurement logs, scratch.

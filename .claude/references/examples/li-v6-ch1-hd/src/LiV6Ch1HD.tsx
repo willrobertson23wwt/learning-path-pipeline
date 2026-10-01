@@ -1,16 +1,13 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, interpolateColors, useCurrentFrame} from 'remotion';
 import {z} from 'zod';
-import {NavyGround} from '../../components/sketch/Ground';
-import {HandText, layoutText, TextSpan} from '../../components/sketch/HandText';
-import {Ink, InkDefs} from '../../components/sketch/Ink';
-import {INK} from '../../components/sketch/palette';
-import {arrow, blob, braceV, cloud, computer, cross, ellipse, house, line, office, rack, wobble} from '../../components/sketch/shapes';
-import {SweepMask} from '../../components/sketch/Sweep';
-import {TitleLight} from '../../components/sketch/TitleLight';
-import {Stroke} from '../../components/sketch/geom';
-import {MixTrack} from '../../components/MixTrack';
-import type {Mix} from '../../components/MixTrack';
+import {
+  arrow, blob, braceV, cloud, computer, cross, ellipse, HandText, house, Ink, INK, InkDefs, layoutText, line, NavyGround, office, rack,
+  SweepMask, TitleLight, wobble,
+} from 'lp-toolkit/sketch';
+import type {Stroke, TextSpan} from 'lp-toolkit/sketch';
+import {MixTrack} from 'lp-toolkit';
+import type {Mix} from 'lp-toolkit';
 import {FPS} from '../../constants';
 import mixFile from '../../../public/chapters/li-v6-ch1-hd/mix.json';
 import {B, COMP_FRAMES} from './kit';

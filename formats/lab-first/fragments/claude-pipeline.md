@@ -29,9 +29,9 @@ user review; never run the next stage unprompted:
    narration above a `## Visual brief` heading for videos and the briefing, a
    `## Loop spec` for GIFs, a `## Card layout` for cards. Frontmatter
    `folder:` (the media ID) names the `public/chapters/<folder>/` dir.
-3. `/audio <slug> [lab]` → `scripts/generate-audio.mjs` (ElevenLabs, key +
+3. `/audio <slug> [lab]` → `lp-generate-audio` (ElevenLabs, key +
    voice ID in `.env`) writes each narrated item's `narration.mp3`, then
-   `scripts/transcribe.mjs` for timings and `scripts/captions.mjs --script`
+   `lp-transcribe` for timings and `lp-captions --script`
    for its `narration.vtt` (cue text from the spec, phonetic spellings mapped
    back to real syntax by `courses/<slug>/caption-map.json`).
 4. `/video <slug> <lab>` → the per-media workflow below for every item in
@@ -131,8 +131,8 @@ from SETUP.md and dry-runs the lab on them.
    `public/chapters/<media-id>/narration.mp3`, its
    `narration.transcript.json` (word-level timings via whisper.cpp), and its
    `narration.vtt`. If the transcript is missing, run
-   `node scripts/transcribe.mjs public/chapters/<folder>/narration.mp3`, then
-   `node scripts/captions.mjs` on the transcript with `--map` and
+   `npx lp-transcribe public/chapters/<folder>/narration.mp3`, then
+   `npx lp-captions` on the transcript with `--map` and
    `--script`. GIFs and cards need only their spec.
 2. Map narration cues (or the loop spec's beat times) → beats, build the item
    per its spec (`courses/<slug>/scripts/NN-*/<media-id>.md`), register it in

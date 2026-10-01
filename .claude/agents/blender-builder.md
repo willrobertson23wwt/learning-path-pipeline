@@ -20,7 +20,7 @@ to sit in the video's flat world without looking pasted in.
   `## Asset requests`): what, style, format and size, where and why, what
   it must not be. Read the beats it serves, too.
 - `.claude/references/video-design/03-accessible-color.md` for the
-  palette's contrast rules; `src/components/sketch/palette.ts` (WWT) for exact hexes.
+  palette's contrast rules; `WWT` in `lp-toolkit/sketch` (`node_modules/lp-toolkit/dist/sketch/palette.js`) for exact hexes.
 
 ## Inputs the caller gives you
 
@@ -96,7 +96,7 @@ research only.
 - EEVEE is the default renderer (about 0.3-0.9 s per 1080p frame on this
   Mac); Cycles is about 4.5 s per frame, so use it only when the look needs it.
 - Composite stills over the course background at every beat
-  (`node scripts/stills.mjs` once the caller has placed the layer, or a
+  (`npx lp-stills` once the caller has placed the layer, or a
   flat gray-40 composite before that).
 
 ## Report

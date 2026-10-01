@@ -1,6 +1,6 @@
 import {useMemo} from 'react';
 import {AbsoluteFill, getStaticFiles, useCurrentFrame, useVideoConfig} from 'remotion';
-import {ManimLayer} from '../ManimLayer';
+import {ManimLayer} from 'lp-toolkit';
 
 // ManimLayer, guarded: in frames mode it loads `<src>/NNNN.png` per frame and
 // a missing file would fail the render, so each frame is checked against

@@ -62,7 +62,7 @@ NN is the video's global number, zero-padded (`01-functions-and-return-values/`)
 MM is the chapter's number within the video (`03-return-values-done-right.md`).
 Slugs come from the outline's video and chapter titles.
 
-Frontmatter drives `scripts/generate-audio.mjs` (it selects by `video` and
+Frontmatter drives `lp-generate-audio` (it selects by `video` and
 writes to `folder`):
 
 ```markdown

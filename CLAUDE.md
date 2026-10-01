@@ -29,20 +29,21 @@
 
 The media is built with Remotion from ElevenLabs narration: audio-synced
 motion graphics, rendered as MP4s (navy ground, audio baked in) and, for a
-lab-first path's GIFs, as muted looping MP4s with a PNG poster. The Remotion toolkit and its
-worked example chapter (`src/ExampleCh1.tsx`, `src/components/example-ch1/`,
-`public/chapters/example-ch1/`, composition `ExampleCh1`) come from the
-`learning-path-pipeline` repo; the example is the pattern reference for the
+lab-first path's GIFs, as muted looping MP4s with a PNG poster. The Remotion toolkit
+is the `lp-toolkit` package (see "Environment / gotchas"); the worked example
+chapter (`src/ExampleCh1.tsx`, `src/components/example-ch1/`,
+`public/chapters/example-ch1/`, composition `ExampleCh1`) comes from the
+`learning-path-pipeline` repo, and it is the pattern reference for the
 conventions below until the path has media of its own. Narrated videos are
 **hand-drawn** (user decision, 2026-09-25, after an A/B against Manim and
 the older Remotion look): marker line art, hand lettering and doodles drawn
 on stroke by stroke as the narrator speaks, on the WWT navy ground, the
-look of the minutephysics explainers. They're built in Remotion with this
-template's toolkit, `src/components/sketch/` (rules in
+look of the minutephysics explainers. They're built in Remotion with the
+shared toolkit, `lp-toolkit/sketch` (rules in
 `.claude/references/sketch-style.md`; worked example, li-v6-ch1-hd, in
 `.claude/references/examples/li-v6-ch1-hd/`). Manim stays for exact plots
 and diagrams only, shown as a card in the drawing (`manim/_kit/`,
-`ManimLayer.tsx`; its old whole-chapter example is
+`ManimLayer`; its old whole-chapter example is
 `.claude/references/examples/li-v6-ch1/`). Every chapter still
 registers a `-Overlay` composition (transparent ProRes 4444, alpha channel),
 but overlay renders are **not produced by default**, only if the user asks.
@@ -161,10 +162,20 @@ Keep it short; one line each.
   installs a bogus `tsc` package).
 - `src/index.ts` imports `tailwind.css`; keep it even if no chapter uses
   Tailwind classes.
-- **The hand-drawn toolkit's libraries** (added by `/new-path`, pinned):
-  `roughjs`, `perfect-freehand`, and `@remotion/noise` at the installed
-  Remotion version. The lettering is converted from the EMS single-line
-  fonts into `src/assets/hand/` (`scripts/hand-font.mjs`).
+- **The shared toolkit is a package, `lp-toolkit`** (its own repo,
+  `github:willrobertson23wwt/lp-toolkit`, pinned to a tag in
+  `package.json`; npm builds it on install). It holds the hand-drawn kit,
+  the terminal kit, the theme, `layout`, `MixTrack`, `ManimLayer`,
+  `HudIcon`, the cards, the hand fonts, and the video tools (`npx
+  lp-generate-audio`, `lp-transcribe`, `lp-beats`, `lp-captions`,
+  `lp-stills`). Import from `lp-toolkit/sketch`, `lp-toolkit/terminal`,
+  `lp-toolkit/theme`, `lp-toolkit/layout`, and `lp-toolkit` for the rest.
+  `@remotion/noise` stays a direct dependency at the installed Remotion
+  version. Don't copy toolkit code into the path to change it: use a
+  setting (`configureHand(...)` in `src/index.ts` for the lettering), or
+  add the option to `lp-toolkit`, release a tag and move this path to it
+  (its `README.md` has the steps). To work on the toolkit while this path
+  uses it, link a local checkout: `npm i ../lp-toolkit`.
 - **Manim toolchain, only when a video needs an exact plot or diagram**,
   per project, no Homebrew or sudo (Homebrew and sudo are blocked on WWT
   machines): `scripts/setup-manim.sh` installs pixi into `.pixi/bin/`,
@@ -196,16 +207,16 @@ npx remotion still <Id> out/<media-id>.png --frame=0
 # Captions: text from the script's narration (map turns phonetic spellings back
 # into real syntax), timings from the transcript; read the warnings it prints.
 # Once beats.json exists (/video), add --beats so cues follow the holds:
-node scripts/captions.mjs public/chapters/<id>/narration.transcript.json \
+npx lp-captions public/chapters/<id>/narration.transcript.json \
   --map courses/<slug>/caption-map.json \
   --script courses/<slug>/scripts/<folder>/<script>.md \
   [--beats public/chapters/<id>/beats.json]
 
 # Narrated videos (the /video "Designing a narrated item" flow):
-node scripts/beats.mjs public/chapters/<id>/narration.transcript.json --words   # timed words for the designer
-node scripts/beats.mjs public/chapters/<id>/narration.transcript.json \
+npx lp-beats public/chapters/<id>/narration.transcript.json --words   # timed words for the designer
+npx lp-beats public/chapters/<id>/narration.transcript.json \
   --spec out/<id>/beats.spec.json --out public/chapters/<id>/beats.json
-node scripts/stills.mjs <Id> out/stills/<Id> <f1,f2,...>   # stills at many frames, one bundle
+npx lp-stills <Id> out/stills/<Id> <f1,f2,...>   # stills at many frames, one bundle
 
 # A Manim layer (exact plots and diagrams only):
 scripts/manim-render.sh manim/<id>/scene.py <Class> public/manim/<id>/<name>.webm --frames  # frames for Studio
@@ -270,18 +281,17 @@ video. GIFs and cards are lab-first only. Patterns for videos:
   + `src/components/example-ch1/`): all panels render inside one
   `<Sequence from={offset}>` so `useCurrentFrame()` equals the audio frame, and
   each panel self-gates on a beat-timing table `T` (seconds) in the chapter's
-  `kit*.ts`. The reusable terminal toolkit lives at
-  `src/components/terminal/kit.tsx`: `TermWindow`, `typedText` (type-on),
+  `kit*.ts`. The reusable terminal toolkit is
+  `lp-toolkit/terminal`: `TermWindow`, `typedText` (type-on),
   `Cursor`, `Pill`, `Padlock`, `Check`, `appear`/`fadeInOut` easing helpers.
   `TermWindow` is a generic dark console panel: it renders a bash prompt, a
   PowerShell prompt, an IOS prompt, or a config-file editor equally well. The
   prompt string and syntax colors are yours to set per chapter.
 
-Shared: `src/components/theme.ts` (the WWT palette under the runtime's
-names, plus `GROUND`; `sketch/palette.ts` has the tokens and roles), `TitleCard`,
-`ThankYouCard`, `HudIcon` (Lottie badges), `scripts/prepare-hud.mjs`
-(strips/recolors HUD callout JSON into `src/assets/hud/*.json`; rerun to add
-icons).
+Shared, all in `lp-toolkit`: `lp-toolkit/theme` (the WWT palette under the
+runtime's names, plus `GROUND`; `WWT` and `INK` from `lp-toolkit/sketch` are
+the tokens and roles), `TitleCard`, `ThankYouCard`, `HudIcon` (Lottie
+badges; new icons are added in the toolkit with its `tools/prepare-hud.mjs`).
 
 `BUFFER_SECONDS` (in `src/constants.ts`) is **0**: clips start on frame 0 (audio +
 graphics aligned) with no padding, since transitions are handled in Premiere directly.
@@ -315,7 +325,7 @@ the scene window (`SCENES.A: [aIn, T.fadeOut]`), and a video-closing chapter pas
 
 So the user can reposition elements and show/hide them live in Remotion Studio
 (`npm run studio`) without editing code, every bespoke chapter exposes a Zod `schema`.
-The reusable plumbing is `src/components/layout.tsx`:
+The reusable plumbing is `lp-toolkit/layout`:
 
 - `<LayoutProvider values={props}>` wraps the chapter's main stage.
 - Panels read positions with `useNum('key', DEFAULT)` and visibility with
@@ -367,14 +377,14 @@ editor, which hot-reloads as you edit.
   chapter stage, since backdrops belong on the non-transparent variant only).
 - **Backgrounds: the WWT navy sheet** (user decision, 2026-09-25,
   replacing the 2026-09-24 charcoal). Every narrated video's lesson frames
-  sit on `<NavyGround />` (`src/components/sketch/Ground.tsx`): WWT navy
+  sit on `<NavyGround />` (`lp-toolkit/sketch`): WWT navy
   (#1D1E48) lightest behind the drawing, falling to navy-ink (#11122E) in
   the corners, with a frozen fine grain. A standalone video's title and its
   thank-you card sit on `<TitleLight />` over it: two soft pools of WWT
   blue and indigo light drifting at about 30 px/s, fading with the title
   to exactly the lesson ground. Only the main marker and secondary colors
   sit on the title light; red never does. GIFs and cards use the flat
-  navy `GROUND` from `theme.ts`. Grounds sit behind
+  navy `GROUND` from `lp-toolkit/theme`. Grounds sit behind
   `{transparent ? null : ...}` guards, never in the overlay. Render with
   JPEG quality 95 (`remotion.config.ts`), or the falloff bands after
   encoding. The older `PaperBackdrop`/`TransitionBackdrop` stay only for
@@ -421,7 +431,7 @@ editor, which hot-reloads as you edit.
   orange-50 (the other side; "host"), key gold (the reveal, the setting
   that decides), problem red-50 (always with a cross or the word), success
   green (thick strokes only). Tokens and roles in
-  `src/components/sketch/palette.ts`; `theme.ts` maps the runtime's
+  `lp-toolkit/sketch` (`WWT`, `INK`); `lp-toolkit/theme` maps the runtime's
   `ACCENT`/`DANGER`/`SUCCESS`/`WARNING`/panel names to them. Full-strength
   brand colors are for fills and thick strokes only (4.5:1 or less on
   navy). Contrast table: `.claude/references/video-design/03-accessible-color.md`.
@@ -479,8 +489,8 @@ editor, which hot-reloads as you edit.
   last chapter):** narration ends with
   "Hope you found this helpful and I'd like to thank you for watching." and the
   sheet is wiped for `<SketchThankYou inSec={B.thankIn} />`
-  (`src/components/sketch/`): the title light fades back in and "Thank You
-  for Watching!" letters itself on (`ThankYouCard.tsx` is the older look's
+  (`lp-toolkit/sketch`): the title light fades back in and "Thank You
+  for Watching!" letters itself on (`ThankYouCard` is the older look's
   version). No next-video teasers. Embedded
   micro-videos have no close: they hand back to the lab ("head back and try
   it") and end on their final beat (`/scripts` enforces both).

@@ -31,7 +31,7 @@ The caller gives you a course slug and a video number or inclusive range
 The narration is everything between the frontmatter and `## Visual brief`,
 and the brief is everything after it.
 
-`scripts/generate-audio.mjs --dry-run` already reports character counts per
+`lp-generate-audio --dry-run` already reports character counts per
 file. Don't repeat those, except where a count is out of range below.
 
 ## Checks

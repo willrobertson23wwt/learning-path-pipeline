@@ -1,7 +1,7 @@
 import {useCurrentFrame, useVideoConfig} from 'remotion';
-import {ACCENT, FONT_STACK, LINE, MONO_STACK, PANEL_BG} from '../theme';
-import {appear} from '../terminal/kit';
-import {useFlag, useNum} from '../layout';
+import {ACCENT, FONT_STACK, LINE, MONO_STACK, PANEL_BG} from 'lp-toolkit/theme';
+import {appear} from 'lp-toolkit/terminal';
+import {useFlag, useNum} from 'lp-toolkit/layout';
 import {DEFAULT_STAGE_CENTER_Y, SCENES, sceneFade, T1} from './kit1';
 
 const CHIPS = ['Functions', 'Arrays', 'Traps & options', 'Debugging', 'Scheduling'];

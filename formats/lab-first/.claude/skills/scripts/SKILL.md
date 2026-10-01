@@ -70,7 +70,7 @@ The body depends on the type.
 ## Video and briefing
 
 Narration above `## Visual brief`, exactly as for the voice to read, then the
-brief. `scripts/generate-audio.mjs` sends everything above the heading to
+brief. `lp-generate-audio` sends everything above the heading to
 ElevenLabs.
 
 ```markdown

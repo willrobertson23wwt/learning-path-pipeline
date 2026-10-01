@@ -47,7 +47,7 @@ ElevenLabs usage is limited, so every request counts:
 
 1. **Dry run and show the plan** (files, character counts, rough
    durations, and the total characters):
-   `node scripts/generate-audio.mjs <slug> [video|first-last] --dry-run`.
+   `npx lp-generate-audio <slug> [video|first-last] --dry-run`.
    Files whose `narration.mp3` already exists show as skipped. Flag
    anything off before any credits are spent:
    - a chapter's rough duration far from its outline length (the dry run
@@ -67,7 +67,7 @@ ElevenLabs usage is limited, so every request counts:
    BLOCKING finding stops generation until the script is fixed or the user
    says to go ahead.
 
-2. **Generate:** `node scripts/generate-audio.mjs <slug> [video|first-last]`.
+2. **Generate:** `npx lp-generate-audio <slug> [video|first-last]`.
    Existing MP3s are skipped, so a range picks up where it left off. To
    retake some chapters after a script edit, delete those chapters'
    `narration.mp3` files and run the video once. `--force` with a single
@@ -77,8 +77,8 @@ ElevenLabs usage is limited, so every request counts:
    takes the user already approved.
 
 3. **Transcribe and caption** each newly generated MP3, chapter 0 included:
-   `node scripts/transcribe.mjs public/chapters/<folder>/narration.mp3`, then
-   `node scripts/captions.mjs public/chapters/<folder>/narration.transcript.json --map courses/<slug>/caption-map.json --script courses/<slug>/scripts/NN-<video-slug>/MM-<chapter-slug>.md`.
+   `npx lp-transcribe public/chapters/<folder>/narration.mp3`, then
+   `npx lp-captions public/chapters/<folder>/narration.transcript.json --map courses/<slug>/caption-map.json --script courses/<slug>/scripts/NN-<video-slug>/MM-<chapter-slug>.md`.
    The generate step prints both commands for every file it wrote. Every
    chapter ships with captions (a design rule), and chapter 0's cover the
    intro segment of the assembled video. With `--script`, the cue text

@@ -39,7 +39,7 @@ viewer sees, and you say how to make it, or what you can make instead.
 - `out/stills/<CompositionId>-manim/`
 
 Need something shared (a kit helper, a theme token)? Build it locally and
-ask the caller to promote it.
+ask the caller to promote it into `lp-toolkit`.
 
 ## Feasibility mode
 
@@ -77,7 +77,7 @@ Don't write the real scene yet.
    <Class> public/manim/<id>/<name>.webm --frames` writes
    `public/manim/<id>/<name>/0000.png...`. The composition's `ManimLayer`
    points at that folder, so the caller and the user scrub it frame-exact in
-   Studio. `node scripts/stills.mjs <CompositionId> <outDir> <f1,f2,...>`
+   Studio. `npx lp-stills <CompositionId> <outDir> <f1,f2,...>`
    renders composite stills (the drawing, its card, and your layer)
    from one bundle in seconds. Judge your work there, not on transparent
    PNGs.

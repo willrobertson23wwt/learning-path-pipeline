@@ -23,7 +23,7 @@ If `.env` and the profile disagree, stop and ask which is right.
 ## Steps
 
 1. **Dry run and show the plan** (files, character counts, rough durations):
-   `node scripts/generate-audio.mjs <slug> [lab|first-last] --dry-run`.
+   `npx lp-generate-audio <slug> [lab|first-last] --dry-run`.
    Flag anything off before any credits are spent: a duration far from the
    spec's `length`, over the per-request character limit (4,900 on
    eleven_v3), or missing `folder:` frontmatter. In parallel, run the `script-linter` agent on the same slug
@@ -32,15 +32,15 @@ If `.env` and the profile disagree, stop and ask which is right.
    line, and brief quotes that must match the narration verbatim. Show its findings with the plan. Any BLOCKING finding
    stops generation until the script is fixed or the user says to go ahead.
 
-2. **Generate:** `node scripts/generate-audio.mjs <slug> [lab|first-last]`.
+2. **Generate:** `npx lp-generate-audio <slug> [lab|first-last]`.
    Existing MP3s are skipped. To retake one video after a script edit,
    delete its `narration.mp3`; to redo one whole lab, pass its number plus
    `--force`. Don't use `--force` on the whole path or a multi-lab range: it
    re-bills every video and overwrites takes the user already approved.
 
 3. **Transcribe and caption** each newly generated MP3:
-   `node scripts/transcribe.mjs public/chapters/<folder>/narration.mp3`, then
-   `node scripts/captions.mjs public/chapters/<folder>/narration.transcript.json --map courses/<slug>/caption-map.json --script courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md`.
+   `npx lp-transcribe public/chapters/<folder>/narration.mp3`, then
+   `npx lp-captions public/chapters/<folder>/narration.transcript.json --map courses/<slug>/caption-map.json --script courses/<slug>/scripts/NN-<lab-slug>/<media-id>.md`.
    Every micro-video and the briefing ships with captions (a design rule).
    With `--script`, the cue text comes from the spec's narration and only
    the timings come from whisper, so whisper's mishearings never reach the

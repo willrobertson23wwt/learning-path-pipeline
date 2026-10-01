@@ -27,9 +27,10 @@ everything a path needs:
 
 - **Shared by both formats:** the Remotion runtime (`package.json`,
   `package-lock.json`, `tsconfig.json`, `remotion.config.ts`, `src/` with
-  the hand-drawn toolkit `src/components/sketch/`, its lettering
-  `src/assets/hand/`, the WWT palette in `theme.ts` and `tailwind.css`,
-  `MixTrack.tsx`, `ManimLayer.tsx`, and the `ExampleCh1` example; `public/`),
+  `tailwind.css` and the `ExampleCh1` example; `public/`), and through
+  `package.json` the shared toolkit `lp-toolkit` at a pinned tag (the
+  hand-drawn kit and its lettering, the WWT palette, `MixTrack`,
+  `ManimLayer`, the video tools; it isn't copied, `npm install` fetches it),
   `manim/_kit/`, `pixi.toml`, `pixi.lock`, `.gitattributes`, `.gitignore`,
   `scripts/`, `.env.example`, `CLAUDE.md` and `.claude/house-style.md` with
   their FORMAT slots, and the rest of `.claude/` (shared skills, agents,
@@ -89,8 +90,8 @@ scaffolded folder.
 9. Copy `.env` from the template if present (gitignored, local
    convenience); otherwise remind the user to create it from
    `.env.example`.
-10. `npm install` (Node PATH setup per CLAUDE.md; the drawing libraries are
-    already pinned in `package.json`), then `npx tsc --noEmit` and
+10. `npm install` (Node PATH setup per CLAUDE.md; it fetches and builds
+    `lp-toolkit` at the tag `package.json` pins), then `npx tsc --noEmit` and
     `npx remotion still ExampleCh1 out/smoke.png --frame=300` to verify the
     scaffold builds and renders.
 11. **Manim toolchain: not now.** Narrated videos are drawn in Remotion, so

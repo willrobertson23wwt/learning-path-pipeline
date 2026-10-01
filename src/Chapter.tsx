@@ -1,11 +1,7 @@
 import {AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig} from 'remotion';
-import {BulletList} from './components/BulletList';
-import {LowerThird} from './components/LowerThird';
-import {PrinciplePanel} from './components/PrinciplePanel';
-import {TitleCard} from './components/TitleCard';
-import {Waveform} from './components/Waveform';
-import {FONT_STACK} from './components/theme';
-import {ChapterTimeline, Cue} from './types';
+import {BulletList, LowerThird, PrinciplePanel, TitleCard, Waveform} from 'lp-toolkit';
+import type {ChapterTimeline, Cue} from 'lp-toolkit';
+import {FONT_STACK} from 'lp-toolkit/theme';
 
 // Transparent lead-in and tail (seconds) added to each chapter so the clip has
 // handles to trim and cross-fade in Premiere. Also extends the duration in Root.

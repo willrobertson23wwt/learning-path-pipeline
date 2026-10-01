@@ -1,6 +1,6 @@
 ---
 name: sketch-builder
-description: The builder for a narrated video in the course's hand-drawn style - marker line art, hand lettering and doodles drawn on stroke by stroke in Remotion on the WWT navy ground, plus the whole composition around them (narration split at holds, MixTrack, title light, sheet wipes, Studio controls). Two modes. Feasibility - reads video-designer's tool-free shot list and says, per beat, how it will be drawn (DRAW / ADAPT / MANIM / BLENDER / STOCK / CAN'T), with anything that changes the look described in plain visual terms. Build - writes the item's composition from beats.json using src/components/sketch/, renders stills at every beat, and returns them for stills-reviewer. Writes only its own item's files. Used by /video when two or more narrated items or chapters are built in parallel, one per item; when the main thread builds one itself it reads this file as its method. manim-builder and blender-builder supply exact pieces on demand.
+description: The builder for a narrated video in the course's hand-drawn style - marker line art, hand lettering and doodles drawn on stroke by stroke in Remotion on the WWT navy ground, plus the whole composition around them (narration split at holds, MixTrack, title light, sheet wipes, Studio controls). Two modes. Feasibility - reads video-designer's tool-free shot list and says, per beat, how it will be drawn (DRAW / ADAPT / MANIM / BLENDER / STOCK / CAN'T), with anything that changes the look described in plain visual terms. Build - writes the item's composition from beats.json using lp-toolkit/sketch, renders stills at every beat, and returns them for stills-reviewer. Writes only its own item's files. Used by /video when two or more narrated items or chapters are built in parallel, one per item; when the main thread builds one itself it reads this file as its method. manim-builder and blender-builder supply exact pieces on demand.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: claude-opus-5-5
 effort: high
@@ -44,10 +44,11 @@ changes it makes to the shot list directly, noted in `## Design log`.
   audio-cut table, `NarrationTrack.tsx`, local doodles and helpers)
 - `out/stills/<CompositionId>/`
 
-The caller owns `Root.tsx`, `src/components/` (the sketch toolkit, theme,
-`MixTrack`), `public/chapters/<id>/beats.json` and `mix.json`, and every
-final render. A doodle or helper other videos could use: build it locally
-and ask the caller to promote it into `src/components/sketch/`.
+The caller owns `Root.tsx`, the shared toolkit (the `lp-toolkit` package:
+sketch kit, theme, `MixTrack`; never edit it under `node_modules/`),
+`public/chapters/<id>/beats.json` and `mix.json`, and every final render. A
+doodle or helper other videos could use: build it locally and ask the
+caller to promote it into `lp-toolkit/sketch`.
 
 ## Feasibility mode
 
@@ -103,7 +104,7 @@ Also flag:
 6. **Exact pieces.** A `ManimLayer` or Blender frames folder sits on a card
    (navy-ink fill, 2 px border at white 30-40%) at the engine plan's box;
    while the layer is missing, render with it hidden.
-7. **Stills:** `node scripts/stills.mjs <Id> out/stills/<Id> <f1,f2,...>`
+7. **Stills:** `npx lp-stills <Id> out/stills/<Id> <f1,f2,...>`
    (one bundle). Take every beat mid-draw and settled, every scene's
    fullest frame, the reveal mid-move and at rest, every wipe mid-sweep and
    the clean sheet after it, the first and last frames. Look at them

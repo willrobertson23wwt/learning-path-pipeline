@@ -29,7 +29,7 @@ until the user chooses), any Blender go-ahead, and the Studio handoff.
   `MM-<chapter-slug>.md` the outline lists). If scripts are missing, stop
   and point at `/scripts`. This skill produces from reviewed scripts; it
   never writes them.
-- Run the audio dry run (`node scripts/generate-audio.mjs <slug> <video>
+- Run the audio dry run (`npx lp-generate-audio <slug> <video>
   --dry-run`) and the `script-linter` agent on the same video at once. If
   anything is off (word counts far out of range, over the character limit,
   a missing `folder:`, or any BLOCKING linter finding), stop and report. A

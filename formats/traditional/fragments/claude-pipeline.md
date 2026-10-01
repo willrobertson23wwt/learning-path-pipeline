@@ -39,9 +39,9 @@ user review; never run the next stage unprompted:
    `00-intro.md` per video): narration above a `## Visual brief` heading.
    Frontmatter `folder:` (the chapter ID) names the `public/chapters/<folder>/`
    dir.
-3. `/audio <slug> [video]` → `scripts/generate-audio.mjs` (ElevenLabs, key +
+3. `/audio <slug> [video]` → `lp-generate-audio` (ElevenLabs, key +
    voice ID in `.env`) writes each chapter's `narration.mp3`, then
-   `scripts/transcribe.mjs` for timings and `scripts/captions.mjs --script`
+   `lp-transcribe` for timings and `lp-captions --script`
    for its `narration.vtt` (cue text from the script, phonetic spellings
    mapped back to real syntax by `courses/<slug>/caption-map.json`).
 4. `/video <slug> <video | first-last>` → the per-chapter workflow below for
@@ -140,8 +140,8 @@ dry-runs the lab on them.
 1. `/audio` has already written `public/chapters/<chapter-id>/narration.mp3`,
    its `narration.transcript.json` (word-level timings via whisper.cpp), and
    its `narration.vtt`. If the transcript is missing, run
-   `node scripts/transcribe.mjs public/chapters/<folder>/narration.mp3`, then
-   `node scripts/captions.mjs` on the transcript with `--map` and `--script`.
+   `npx lp-transcribe public/chapters/<folder>/narration.mp3`, then
+   `npx lp-captions` on the transcript with `--map` and `--script`.
 2. The chapter's shot list (`out/<chapter-id>/design.md`,
    approved by the user) and its resolved `public/chapters/<chapter-id>/beats.json`
    drive the build; register the chapter in `src/Root.tsx` as

@@ -29,8 +29,8 @@ composition in `src/Root.tsx` with the right size and duration. Keep the
 stub's export names (the component, `<name>Schema`, `<name>Defaults`) so
 Root.tsx keeps compiling.
 
-Don't edit anything else: not `Root.tsx`, `theme.ts`, `constants.ts`,
-`layout.tsx`, `components/terminal/kit.tsx`, `TitleCard`, `ThankYouCard`,
+Don't edit anything else: not `Root.tsx`, `constants.ts`, the `lp-toolkit`
+package (theme, layout, the terminal kit, `TitleCard`, `ThankYouCard`),
 another item's files, or CLAUDE.md. If you need a shared change (a new kit
 helper, a theme token), build what you can locally in your own folder and
 put the request in your report so the caller can promote it.

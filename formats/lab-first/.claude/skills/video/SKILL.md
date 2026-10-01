@@ -116,7 +116,7 @@ so plainly and carry on with the rest.
    - card: `npx remotion still <Id> out/<id>.png --frame=0`.
 7. **Check captions.** `/audio` built each `public/chapters/<id>/narration.vtt`
    with `--script`, so cue text comes from the spec's narration and only the
-   timings from whisper. Rerun `node scripts/captions.mjs <transcript>
+   timings from whisper. Rerun `npx lp-captions <transcript>
    --map courses/<slug>/caption-map.json --script <spec>` if the VTT is
    missing or older than the spec, and read its warnings: a cue above 20
    characters per second, the file's average wpm, and any place the script
@@ -147,7 +147,7 @@ so plainly and carry on with the rest.
 
 This replaces steps 4 and 5 for videos and the briefing.
 
-1. **Write the shot list, vision first.** Run `node scripts/beats.mjs
+1. **Write the shot list, vision first.** Run `npx lp-beats
    <transcript> --words` for the timed transcript. Read
    `.claude/agents/video-designer.md` and its reading list, then write
    `out/<id>/design.md` and `out/<id>/beats.spec.json` in the shape it
@@ -221,7 +221,7 @@ This replaces steps 4 and 5 for videos and the briefing.
    to the voice's own break), re-resolve beats.json and tell the user if an
    approved number moved.
 7. **Review** (the stills gate). Render composite stills with
-   `scripts/stills.mjs` (every beat mid-draw and settled, each scene's
+   `lp-stills` (every beat mid-draw and settled, each scene's
    fullest frame, the reveal, every wipe, first and last frames) and look
    at a contact sheet yourself first. Then send them to the reviewer; if
    you built it, that's `stills-reviewer`, which also reads sketch-style.md

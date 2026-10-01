@@ -1,4 +1,4 @@
-import {appear} from '../terminal/kit';
+import {appear} from 'lp-toolkit/terminal';
 
 // Beat timings (SECONDS, relative to narration start) for the worked example chapter
 // (originally Linux Intermediate video 1 chapter 1), "From Repeated Blocks to Functions". Derived from

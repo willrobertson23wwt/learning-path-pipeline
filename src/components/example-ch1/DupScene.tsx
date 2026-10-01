@@ -1,7 +1,7 @@
 import {useCurrentFrame, useVideoConfig} from 'remotion';
-import {ACCENT, DANGER, LINE, MONO_STACK, SUCCESS, WARNING} from '../theme';
-import {appear, Cursor, Pill, TermWindow, typedText} from '../terminal/kit';
-import {useFlag, useNum} from '../layout';
+import {ACCENT, DANGER, LINE, MONO_STACK, SUCCESS, WARNING} from 'lp-toolkit/theme';
+import {appear, Cursor, Pill, TermWindow, typedText} from 'lp-toolkit/terminal';
+import {useFlag, useNum} from 'lp-toolkit/layout';
 import {DEFAULT_STAGE_CENTER_Y, SCENES, sceneFade, T1} from './kit1';
 
 const FILE_FONT = 22;

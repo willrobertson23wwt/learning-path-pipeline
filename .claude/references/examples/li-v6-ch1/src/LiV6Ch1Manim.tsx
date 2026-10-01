@@ -9,10 +9,11 @@
 import {AbsoluteFill} from 'remotion';
 import {z} from 'zod';
 import {CourseLessonBackdrop, CourseTitleBackdrop} from './components/CourseBackdrop';
-import {Mix, MixTrack} from './components/MixTrack';
+import {MixTrack} from 'lp-toolkit';
+import type {Mix} from 'lp-toolkit';
 import mixJson from '../public/chapters/li-v6-ch1/mix.json';
 import mixBedJson from '../public/chapters/li-v6-ch1/mix.bed.json';
-import {LayoutProvider, useFlag, useNum} from './components/layout';
+import {LayoutProvider, useFlag, useNum} from 'lp-toolkit/layout';
 import {GuardedManimLayer} from './components/li-v6-ch1/GuardedManimLayer';
 import {NarrationTrack} from './components/li-v6-ch1/NarrationTrack';
 import {

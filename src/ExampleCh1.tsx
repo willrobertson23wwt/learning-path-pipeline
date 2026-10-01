@@ -5,10 +5,9 @@ import {DupScene} from './components/example-ch1/DupScene';
 import {DefineFirstScene} from './components/example-ch1/DefineFirstScene';
 import {RoadmapScene} from './components/example-ch1/RoadmapScene';
 import {DEFAULT_STAGE_CENTER_Y, T1} from './components/example-ch1/kit1';
-import {LayoutProvider} from './components/layout';
-import {PaperBackdrop, TransitionBackdrop} from './components/Backdrop';
-import {TitleCard} from './components/TitleCard';
-import {FONT_STACK} from './components/theme';
+import {LayoutProvider} from 'lp-toolkit/layout';
+import {PaperBackdrop, TitleCard, TransitionBackdrop} from 'lp-toolkit';
+import {FONT_STACK} from 'lp-toolkit/theme';
 
 export const EXAMPLE_CH1_AUDIO = 'chapters/example-ch1/narration.mp3';
 

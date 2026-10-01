@@ -11,14 +11,14 @@ The pilot of the Manim-first video pipeline, built in the linux-intermediate
 course (branch `manim-pilot`, a test rebuild of "Addresses and Prefixes",
 chapter 1 of video 6; that course is finished and posted, so never build
 in it). These files are a reference copy, not compiled: new paths build their
-own chapters from the patterns here. The shared pieces they use are real
-template files (`manim/_kit/`, `src/components/ManimLayer.tsx`, `MixTrack.tsx`,
-`scripts/`).
+own chapters from the patterns here. The shared pieces they use are
+`manim/_kit/` and the Manim scripts in the template, and `ManimLayer`,
+`MixTrack` and the `lp-*` tools from the `lp-toolkit` package.
 
 | File | What it shows |
 |---|---|
 | `design.md` | The video-designer's shot list: Vision through Design log, Holds, Sound, the Background proposal the user chose (L1 + T1), the Engine plan. |
-| `beats.spec.json` → `beats.json` | Beat-to-phrase map and its resolved timing (`node scripts/beats.mjs <transcript> --spec ... --out ...`), with holds sized to what moves (0.2 s over a still frame, 1.5 s around the reveal). |
+| `beats.spec.json` → `beats.json` | Beat-to-phrase map and its resolved timing (`npx lp-beats <transcript> --spec ... --out ...`), with holds sized to what moves (0.2 s over a still frame, 1.5 s around the reveal). |
 | `narration.md` | The narration the design started from. |
 | `manim/scene.py`, `manim/layout.json` | One `BeatScene` over the whole chapter, every tunable in layout.json. |
 | `src/LiV6Ch1Manim.tsx` | The wrapper: course backdrops behind `transparent` guards, `ManimLayer` (via `GuardedManimLayer`), the narration split at holds, `MixTrack`, the Studio schema (layer placement and audio toggles). |

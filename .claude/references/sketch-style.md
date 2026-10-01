@@ -14,7 +14,7 @@ otherwise. Worked example: `examples/li-v6-ch1-hd/` (read its
 
 ## Division of labor
 
-Remotion draws everything, with the toolkit in `src/components/sketch/`.
+Remotion draws everything, with the toolkit in `lp-toolkit/sketch`.
 One composition file per chapter holds the drawing, the narration split, the
 mix, and the Studio schema. Two on-demand specialists supply what can't be
 doodled, each shown as a clean card laid onto the drawing:
@@ -28,7 +28,7 @@ doodled, each shown as a clean card laid onto the drawing:
 Use them only when the shot list asks for something exact; the
 drawing is the default for everything else.
 
-## The toolkit (`src/components/sketch/`, barrel `index.ts`)
+## The toolkit (`lp-toolkit/sketch`)
 
 - **Geometry is strokes.** Everything is a list of strokes (`Stroke` =
   points, one pen-down each): glyphs, rough.js shapes, hand-built doodles.
@@ -40,7 +40,10 @@ drawing is the default for everything else.
 - **Lettering is `HandText`.** The house hand is EMS Readability, a
   single-line plotter font, so letters write on as pen strokes. Each letter
   has a seeded wobble (baseline, tilt, size, spacing) plus a slow wander
-  along its strokes; `jitter` and `wobble` default to 1.4. It is condensed
+  along its strokes; `jitter` and `wobble` default to 1.4 (a path that
+  wants steadier letters throughout sets its own once, with
+  `configureHand({jitter, wobble})` in `src/index.ts`). `centerInk` centers
+  a line on its drawn ink instead of its advance widths. It is condensed
   to 86% width. `cap` is the cap height in px (the designer's sizes are cap
   heights). `text` takes `TextSpan[]` for several colors in one line.
   `layoutText()` measures without drawing: same seed, same `jitter`, same

@@ -1,7 +1,7 @@
 import {interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
-import {ACCENT, DANGER, LINE, MONO_STACK, SUCCESS} from '../theme';
-import {appear, Check, Pill, TermWindow} from '../terminal/kit';
-import {useFlag, useNum} from '../layout';
+import {ACCENT, DANGER, LINE, MONO_STACK, SUCCESS} from 'lp-toolkit/theme';
+import {appear, Check, Pill, TermWindow} from 'lp-toolkit/terminal';
+import {useFlag, useNum} from 'lp-toolkit/layout';
 import {DEFAULT_STAGE_CENTER_Y, SCENES, sceneFade, T1} from './kit1';
 
 const ROW_H = 56;

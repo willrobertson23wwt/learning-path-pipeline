@@ -56,7 +56,7 @@ music + SFX + voiceover baked in.
 
 - **Narration**: write the VO script to
   `courses/labdrop/scripts/NN-<name>/01-full.md` (frontmatter `folder:
-  labdrop-vN`), generate via `node scripts/generate-audio.mjs labdrop`,
+  labdrop-vN`), generate via `npx lp-generate-audio labdrop`,
   transcribe, and retime every beat from the transcript (comp beat =
   transcript cue + `narrOff`). ~150 words ≈ 45 s.
 - **Music beats**: detect real onsets before animating the sting. Decode

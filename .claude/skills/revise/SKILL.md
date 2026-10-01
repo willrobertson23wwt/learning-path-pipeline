@@ -52,7 +52,7 @@ composition registered as `id="<compositionId>"` in `src/Root.tsx`, its
    design.md. Elements that share the screen at that frame but belong to an
    earlier beat are candidates too.
 3. If two elements still fit, render the frame
-   (`node scripts/stills.mjs <Id> out/stills-review/<Id> <frame>`) and
+   (`npx lp-stills <Id> out/stills-review/<Id> <frame>`) and
    compare it with the annotated still. If you still can't tell, ask the user
    and name the candidates. Don't guess.
 
@@ -65,7 +65,7 @@ be fixed in parallel (one builder per chapter, in one message).
 | The note is about | Who fixes it |
 |---|---|
 | Position, size, colour, wording on screen, a stroke that looks wrong | You: a `DEFAULT_*` constant or a prop for a tweak; for a redrawn doodle or a new element, read `.claude/agents/sketch-builder.md` (or `media-builder.md` for a GIF or card) and redraw it. |
-| Timing: too fast, too slow, holds too long, appears too early | `out/<chapter-id>/beats.spec.json` (a phrase anchor, `offset`, or `hold`), then re-resolve with `node scripts/beats.mjs … --spec … --out public/chapters/<chapter-id>/beats.json`. Never hand-edit times in beats.json. |
+| Timing: too fast, too slow, holds too long, appears too early | `out/<chapter-id>/beats.spec.json` (a phrase anchor, `offset`, or `hold`), then re-resolve with `npx lp-beats … --spec … --out public/chapters/<chapter-id>/beats.json`. Never hand-edit times in beats.json. |
 | What the shot shows: a different diagram, a new scene, a change of layout | You: update design.md first (the method in `.claude/agents/video-designer.md`), then the chapter. Ask the user before changing the design's scope. |
 | Music, effects, levels | A level you can read off `mix.json` yourself; a new track or effect, or a re-measure, goes to `sound-engineer` (it owns the mix sheet and the Epidemic tools) |
 | An exact plot or diagram layer | `manim-builder` or `blender-builder` |
@@ -81,7 +81,7 @@ the same beat often interact, so read them together before editing.
 
 1. `npx tsc --noEmit`.
 2. Render the after-stills for every note you fixed, in one bundle:
-   `node scripts/stills.mjs <Id> out/<chapter-id>/review/stills/.after <f1,f2,...>`
+   `npx lp-stills <Id> out/<chapter-id>/review/stills/.after <f1,f2,...>`
    (each note's `frame`; for a range note, also its `endFrame`). Copy each
    `f<frame>.png` to `stills/<note-id>.after.png`, then delete the `.after`
    folder.
