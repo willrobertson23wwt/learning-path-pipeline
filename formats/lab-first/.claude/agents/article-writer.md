@@ -2,7 +2,7 @@
 name: article-writer
 description: Writes the companion article for ONE standalone video (the briefing, or a video the outline marks standalone) by following the /article skill, from the video's reviewed spec and outline entry. Writes only courses/<slug>/articles/<media-id>.md. Runs in the background from /video (it needs only the spec, not renders) and in parallel, one per video, for /article batches.
 tools: Read, Write, Edit, Glob, Grep
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: medium
 ---
 

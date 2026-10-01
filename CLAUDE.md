@@ -94,6 +94,20 @@ to the same agent with `SendMessage` (it keeps its context) instead of
 launching a new one. The user's approval stops in a skill stay exactly
 where they are, whoever does the work around them.
 
+**Model per agent** (user decision, 2026-10-01: spend fewer tokens; Sonnet
+5.5 is the floor, never Haiku). Each agent's frontmatter sets its default:
+Sonnet 5.5 for work that checks against written rules or follows a
+template (`prose-checker`, `script-linter`, `lab-learner`,
+`stills-reviewer`, `media-builder`, `article-writer`), Opus 5.5 for
+judgment-heavy work (`video-designer`, `sketch-builder`, `manim-builder`,
+`blender-builder`, `sound-engineer`, `researcher`, `lab-walker`). Override
+per call with the Agent tool's `model` when a task is easier or harder than
+the agent's usual one: `sonnet` for an Opus agent on a small, well-specified
+job (one fix round, a re-check of a few stills, a short brief); `opus` for a
+Sonnet agent on something unusually subtle. A `general-purpose` or
+`Explore` agent for a search or a mechanical edit runs on `sonnet`. Say the
+model in the same line as the reason for handing off.
+
 ## Platform profile (fill in per learning path)
 
 The skills read this section when a rule depends on the platform being taught.

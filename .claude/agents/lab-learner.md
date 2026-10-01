@@ -2,7 +2,7 @@
 name: lab-learner
 description: Read-only literal-learner pass on a lab guide. Follows the pages a learner sees (index, environment, the quickref page, modules, and the capstone's Solutions page last) step by step, knowing only what a learner would know, and reports every place a real learner would get stuck, guess, or see something the guide didn't promise. Launched by /lab-review after the lab-walker review.
 tools: Read, Glob, Grep
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: medium
 ---
 

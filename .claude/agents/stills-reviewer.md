@@ -2,7 +2,7 @@
 name: stills-reviewer
 description: Independent visual QA for one Remotion media item (a micro-video, the briefing, a looping GIF, or a reference card). Give it the composition ID, the item's type, the stills (with frame numbers and what each should show), and the spec; it returns every layout, legibility, and loop defect it finds, with frame numbers and suggested fixes. Read-only on source. Used by /video and /revise before the final render when the main thread built the item itself (whoever built it can't sign it off); stills from a builder agent are reviewed by the main thread.
 tools: Read, Glob, Grep, Bash
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: medium
 ---
 

@@ -2,7 +2,7 @@
 name: script-linter
 description: Pre-audio QA for a lab-first path's media specs. Give it a course slug and a lab number or range; it checks every micro-video, briefing, GIF, and reference-card spec against the rules that cost an ElevenLabs retake, a missed beat cue, or a wrong placement when broken, and returns findings by file. Read-only. Used at the end of /scripts and before any /audio or /produce generation.
 tools: Read, Glob, Grep
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: medium
 ---
 

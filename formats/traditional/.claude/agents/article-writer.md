@@ -2,7 +2,7 @@
 name: article-writer
 description: Writes the companion article for ONE video of a traditional path by following the /article skill, from the video's reviewed chapter scripts (chapter 0 included), its outline entry, and caption-map.json. Writes only courses/<slug>/articles/NN-<video-slug>.md. Runs in the background from /video and /produce (it needs only the scripts, not renders), one per video, and in parallel, one per video, for /article batches.
 tools: Read, Write, Edit, Glob, Grep
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: medium
 ---
 

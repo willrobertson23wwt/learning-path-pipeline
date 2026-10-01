@@ -2,7 +2,7 @@
 name: script-linter
 description: Pre-audio QA for a traditional path's chapter scripts. Give it a course slug and a video number or range; it checks every chapter script, every chapter 0 intro, and the path intro and review scripts against the rules that cost an ElevenLabs retake or a missed beat cue when broken (budgets, spoken-only narration, phonetic spellings, the video close, folder IDs, holds), and returns findings by file. Read-only. Used at the end of /scripts and before any /audio or /produce generation.
 tools: Read, Glob, Grep
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: medium
 ---
 
