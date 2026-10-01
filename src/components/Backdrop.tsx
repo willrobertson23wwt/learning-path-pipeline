@@ -1,7 +1,12 @@
-import {AbsoluteFill, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, OffthreadVideo, getStaticFiles, interpolate, staticFile, useCurrentFrame} from 'remotion';
 
 export const PAPER_BG = 'backgrounds/paper-dark.jpg';
 export const TRANSITION_LOOP = 'backgrounds/transition-loop.mp4';
+
+// The loop (26 MB) is kept out of git; a fresh clone doesn't have it, and
+// the title then sits on the backdrop under it alone.
+const hasTransitionLoop = () =>
+  getStaticFiles().some((f) => f.name === TRANSITION_LOOP);
 
 // Full-frame crumpled-paper texture behind chapter content. Render ONLY when
 // not transparent — the -Overlay render must stay fully transparent.
@@ -40,6 +45,7 @@ export const TransitionBackdrop: React.FC<{
     {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}
   );
   const opacity = enter * exit;
+  if (!hasTransitionLoop()) return null;
   return (
     <AbsoluteFill style={{opacity}}>
       <OffthreadVideo

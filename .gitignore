@@ -28,3 +28,7 @@ public/manim/
 manim/media/
 __pycache__/
 public/audio/
+
+# Large background loop from the older look, kept locally only (not in git;
+# TransitionBackdrop skips it when missing)
+public/backgrounds/transition-loop.mp4
