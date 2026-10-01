@@ -175,7 +175,9 @@ Keep it short; one line each.
   setting (`configureHand(...)` in `src/index.ts` for the lettering), or
   add the option to `lp-toolkit`, release a tag and move this path to it
   (its `README.md` has the steps). To work on the toolkit while this path
-  uses it, link a local checkout: `npm i ../lp-toolkit`.
+  uses it, link a local checkout: `npm i ../lp-toolkit`. `/toolkit-review`
+  checks the path for pieces worth promoting; `/closeout` runs it at the
+  end of a path.
 - **Manim toolchain, only when a video needs an exact plot or diagram**,
   per project, no Homebrew or sudo (Homebrew and sudo are blocked on WWT
   machines): `scripts/setup-manim.sh` installs pixi into `.pixi/bin/`,

@@ -70,6 +70,13 @@ Lab repos (`labs/`) are not archived; each publishes to its own GitHub repo.
 5. Suggest where the zip goes (the team share or the course's archive
    bucket) and note the manifest path so the receiver can verify hashes.
    Do not upload anywhere yourself.
+6. **Toolkit review, on a whole-path closeout.** Before the path goes
+   quiet, check what it built that other paths could use: follow
+   `.claude/skills/toolkit-review/SKILL.md` from step 1. Its approval stop
+   stays where it is, and the user can skip the review. The path is
+   delivered by now, so the review only takes from it and never changes
+   it (no "use the toolkit" switches). For a range closeout, offer it
+   instead of running it.
 
 ## Notes
 
